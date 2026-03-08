@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aymane Social</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      color: #1c1e21;
+    }
+    .container {
+      max-width: 760px;
+      margin: 24px auto;
+      padding: 14px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .header h1 {
+      margin: 0;
+      color: #1877f2;
+      font-size: 34px;
+    }
+    .header p {
+      margin: 8px 0 0;
+      color: #666;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #d8dee4;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      background: #1877f2;
+      color: white;
+      font-size: 15px;
+    }
+    button.green { background: #42b72a; }
+    button.dark { background: #444; }
+    button.red { background: #e53935; }
+    .status {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f7f7f7;
+      font-size: 14px;
+      color: #333;
+    }
+    .profile-box {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #1877f2;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+      overflow: hidden;
+    }
+    .feed-empty {
+      text-align: center;
+      color: #666;
+      padding: 20px;
+    }
+    .post {
+      border: 1px solid #e5e7eb;
+      background: #fafbfc;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .post-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .post-user {
+      font-weight: bold;
+      color: #1877f2;
+    }
+    .post-date {
+      color: #666;
+      font-size: 12px;
+    }
+    .post-content {
+      white-space: pre-wrap;
+      line-height: 1.5;
+      margin: 8px 0 10px;
+    }
+    .small {
+      font-size: 12px;
+      color: #777;
+    }
+    @media (max-width: 640px) {
+      .row { grid-template-columns: 1fr; }
+      .actions { flex-direction: column; }
+      button { width: 100%; }
+      .profile-box { grid-template-columns: 1fr; }
+      .avatar { margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Aymane Social</h1>
+      <p>Créer un compte, se connecter et publier</p>
+    </div>
+
+    <div class="card">
+      <h2>Compte</h2>
+      <div class="row">
+        <input type="email" id="email" placeholder="Email" />
+        <input type="password" id="password" placeholder="Mot de passe" />
+      </div>
+      <div class="actions">
+        <button onclick="signUp()">Créer un compte</button>
+        <button class="green" onclick="signIn()">Se connecter</button>
+        <button class="dark" onclick="signOut()">Se déconnecter</button>
+      </div>
+      <div class="status" id="authStatus">Non connecté</div>
+    </div>
+
+    <div class="card">
+      <h2>Mon profil</h2>
+      <div class="profile-box">
+        <div class="avatar" id="avatarPreview">A</div>
+        <div>
+          <input type="text" id="username" placeholder="Pseudo" maxlength="30" />
+          <input type="text" id="avatarUrl" placeholder="URL de photo (optionnel)" />
+          <textarea id="bio" placeholder="Petite bio" maxlength="160"></textarea>
+          <div class="actions">
+            <button onclick="saveProfile()">Enregistrer le profil</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Publier</h2>
+      <textarea id="postContent" placeholder="Écris quelque chose..." maxlength="500"></textarea>
+      <div class="actions">
+        <button onclick="addPost()">Publier</button>
+      </div>
+      <div class="small">Maximum 500 caractères</div>
+    </div>
+
+    <div class="card">
+      <h2>Fil d’actualité</h2>
+      <div id="posts"></div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
+    const SUPABASE_KEY = "sb_secret__pLtP-EAB4vu-IDjvBfGIQ_bra41FKq";
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function signUp() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        alert("Entre un email et un mot de passe.");
+        return;
+      }
+
+      const { data, error } = await client.auth.signUp({ email, password });
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      const user = data.user;
+      if (user) {
+        const defaultUsername = email.split("@")[0];
+        await client.from("profiles").upsert({
+          id: user.id,
+          username: defaultUsername,
+          avatar_url: "",
+          bio: ""
+        });
+      }
+
+      alert("Compte créé.");
+      await checkUser();
+      await loadFeed();
+    }
+
+    async function signIn() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        alert("Entre un email et un mot de passe.");
+        return;
+      }
+
+      const { error } = await client.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      await checkUser();
+      await loadMyProfile();
+      await loadFeed();
+      alert("Connexion réussie.");
+    }
+
+    async function signOut() {
+      const { error } = await client.auth.signOut();
+      if (error) {
+        alert(error.message);
+        return;
+      }
+      document.getElementById("authStatus").innerText = "Non connecté";
+      document.getElementById("username").value = "";
+      document.getElementById("avatarUrl").value = "";
+      document.getElementById("bio").value = "";
+      document.getElementById("avatarPreview").innerHTML = "A";
+      await loadFeed();
+      alert("Déconnecté.");
+    }
+
+    async function getCurrentUser() {
+      const { data } = await client.auth.getUser();
+      return data.user || null;
+    }
+
+    async function checkUser() {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        document.getElementById("authStatus").innerText = "Non connecté";
+        return;
+      }
+
+      document.getElementById("authStatus").innerText = "Connecté : " + user.email;
+    }
+
+    async function loadMyProfile() {
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      const { data, error } = await client
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error || !data) return;
+
+      document.getElementById("username").value = data.username || "";
+      document.getElementById("avatarUrl").value = data.avatar_url || "";
+      document.getElementById("bio").value = data.bio || "";
+      renderAvatar(data.username, data.avatar_url);
+    }
+
+    async function saveProfile() {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        alert("Connecte-toi d'abord.");
+        return;
+      }
+
+      const username = document.getElementById("username").value.trim();
+      const avatar_url = document.getElementById("avatarUrl").value.trim();
+      const bio = document.getElementById("bio").value.trim();
+
+      if (!username) {
+        alert("Entre un pseudo.");
+        return;
+      }
+
+      const { error } = await client.from("profiles").upsert({
+        id: user.id,
+        username,
+        avatar_url,
+        bio
+      });
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      renderAvatar(username, avatar_url);
+      await loadFeed();
+      alert("Profil enregistré.");
+    }
+
+    function renderAvatar(username, avatarUrl) {
+      const box = document.getElementById("avatarPreview");
+      if (avatarUrl) {
+        box.innerHTML = '<img src="' + escapeHtml(avatarUrl) + '" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+      } else {
+        const letter = username ? username.charAt(0).toUpperCase() : "A";
+        box.innerHTML = letter;
+      }
+    }
+
+    async function addPost() {
+      const user = await getCurrentUser();
+      const content = document.getElementById("postContent").value.trim();
+
+      if (!user) {
+        alert("Connecte-toi d'abord.");
+        return;
+      }
+
+      if (!content) {
+        alert("Écris un message.");
+        return;
+      }
+
+      const { error } = await client.from("posts").insert({
+        user_id: user.id,
+        content
+      });
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      document.getElementById("postContent").value = "";
+      await loadFeed();
+    }
+
+    async function deletePost(postId) {
+      const user = await getCurrentUser();
+      if (!user) {
+        alert("Connecte-toi d'abord.");
+        return;
+      }
+
+      const ok = confirm("Supprimer ce post ?");
+      if (!ok) return;
+
+      const { error } = await client
+        .from("posts")
+        .delete()
+        .eq("id", postId);
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      await loadFeed();
+    }
+
+    async function loadFeed() {
+      const postsDiv = document.getElementById("posts");
+      postsDiv.innerHTML = '<div class="feed-empty">Chargement...</div>';
+
+      const user = await getCurrentUser();
+
+      const { data, error } = await client
+        .from("posts")
+        .select(`
+          id,
+          content,
+          created_at,
+          user_id,
+          profiles (
+            username,
+            avatar_url
+          )
+        `)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        postsDiv.innerHTML = '<div class="feed-empty">Erreur de chargement.</div>';
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        postsDiv.innerHTML = '<div class="feed-empty">Aucun post pour le moment.</div>';
+        return;
+      }
+
+      postsDiv.innerHTML = "";
+
+      data.forEach(post => {
+        const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+        const username = profile?.username || "Utilisateur";
+        const avatarUrl = profile?.avatar_url || "";
+        const date = new Date(post.created_at).toLocaleString("fr-FR");
+
+        const canDelete = user && user.id === post.user_id;
+
+        const avatarHtml = avatarUrl
+          ? '<img src="' + escapeHtml(avatarUrl) + '" alt="avatar" style="width:38px;height:38px;border-radius:50%;object-fit:cover;">'
+          : '<div style="width:38px;height:38px;border-radius:50%;background:#1877f2;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;">' + escapeHtml(username.charAt(0).toUpperCase()) + '</div>';
+
+        const div = document.createElement("div");
+        div.className = "post";
+        div.innerHTML = `
+          <div class="post-top">
+            <div style="display:flex;align-items:center;gap:10px;">
+              ${avatarHtml}
+              <div>
+                <div class="post-user">${escapeHtml(username)}</div>
+                <div class="post-date">${date}</div>
+              </div>
+            </div>
+            ${canDelete ? `<button class="red" onclick="deletePost(${post.id})">Supprimer</button>` : ""}
+          </div>
+          <div class="post-content">${escapeHtml(post.content)}</div>
+        `;
+        postsDiv.appendChild(div);
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.innerText = text || "";
+      return div.innerHTML;
+    }
+
+    client.auth.onAuthStateChange(async () => {
+      await checkUser();
+      await loadMyProfile();
+      await loadFeed();
+    });
+
+    (async function init() {
+      await checkUser();
+      await loadMyProfile();
+      await loadFeed();
+    })();
+  </script>
+</body>
+</html>
