@@ -6,813 +6,874 @@
   <title>Aymane Social</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * {
-      box-sizing: border-box;
+    :root{
+      --bg:#f3f5f8;
+      --card:#ffffff;
+      --text:#1c1e21;
+      --muted:#6b7280;
+      --primary:#1877f2;
+      --danger:#d93025;
+      --shadow: 0 10px 24px rgba(0,0,0,.08);
+      --radius:16px;
     }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      color: #1c1e21;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
     }
-
-    .app {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 16px;
+    .app{max-width:980px;margin:0 auto;padding:16px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;flex-wrap:wrap;margin-bottom:14px;
     }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{
+      width:38px;height:38px;border-radius:12px;
+      background:var(--primary);color:#fff;display:grid;place-items:center;
+      font-weight:800;box-shadow:var(--shadow);
     }
-
-    .topbar h1 {
-      margin: 0;
-      color: #1877f2;
+    h1{margin:0;font-size:20px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 10px;
+      border-radius:999px;background:rgba(24,119,242,.10);color:var(--primary);
+      font-weight:600;
     }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .card{
+      background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+      padding:16px;margin-bottom:16px;
     }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    .hidden{display:none !important}
+    h2{margin:0 0 10px 0;font-size:18px}
+    .sub{color:var(--muted);font-size:12px;margin-top:6px}
+    input,textarea,button{font:inherit}
+    input,textarea{
+      width:100%;padding:12px;border:1px solid #d7dbe3;border-radius:12px;
+      margin-top:8px;background:white;outline:none;
     }
-
-    h2 {
-      margin-top: 0;
+    textarea{min-height:90px;resize:vertical}
+    button{
+      padding:12px 14px;border:none;border-radius:12px;cursor:pointer;
+      background:var(--primary);color:white;font-weight:700;
     }
+    button.secondary{background:#111827}
+    button.danger{background:var(--danger)}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:760px){ .grid2{grid-template-columns:1fr} }
 
-    input,
-    textarea,
-    button {
-      font: inherit;
+    .profile-layout{display:grid;grid-template-columns:100px 1fr;gap:14px}
+    @media (max-width:760px){ .profile-layout{grid-template-columns:1fr} }
+    .avatar{
+      width:100px;height:100px;border-radius:20px;background:var(--primary);
+      color:white;font-weight:900;font-size:36px;display:grid;place-items:center;
+      overflow:hidden;
     }
+    .avatar img{width:100%;height:100%;object-fit:cover}
 
-    input,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #d6dbe1;
-      border-radius: 10px;
-      margin: 8px 0;
-      background: white;
+    .post{
+      background:#fafbff;border:1px solid #e6e9f2;border-radius:16px;
+      padding:14px;margin-bottom:14px;
     }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
+    .post-head{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:10px;flex-wrap:wrap;margin-bottom:10px;
     }
-
-    button {
-      border: none;
-      border-radius: 10px;
-      padding: 12px 16px;
-      background: #1877f2;
-      color: white;
-      cursor: pointer;
+    .post-user{display:flex;align-items:center;gap:10px;min-width:220px}
+    .mini-avatar{
+      width:44px;height:44px;border-radius:14px;background:var(--primary);
+      color:white;display:grid;place-items:center;font-weight:900;overflow:hidden;
     }
-
-    button.secondary {
-      background: #444;
+    .mini-avatar img{width:100%;height:100%;object-fit:cover}
+    .post-meta b{color:var(--primary)}
+    .post-meta .date{font-size:12px;color:var(--muted)}
+    .post-body{white-space:pre-wrap}
+    .post img.post-img{
+      width:100%;max-height:420px;object-fit:cover;border-radius:14px;
+      margin-top:10px;border:1px solid #e6e9f2;
     }
-
-    button.danger {
-      background: #d93025;
+    .actions{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px;
     }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 8px;
+    .chip{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;
+      border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:800;
+      font-size:12px;
     }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+    .comments{margin-top:12px;border-top:1px solid #e6e9f2;padding-top:12px}
+    .comment{
+      background:white;border:1px solid #e6e6e6;border-radius:12px;
+      padding:10px;margin-top:8px;font-size:14px;
     }
+    .comment small{color:var(--muted)}
+    .empty{color:var(--muted);text-align:center;padding:10px}
 
-    .profile-layout {
-      display: grid;
-      grid-template-columns: 90px 1fr;
-      gap: 14px;
+    .chat{
+      margin-top:10px;border:1px solid #e6e9f2;border-radius:16px;
+      overflow:hidden;background:#fbfbff;
     }
-
-    .avatar-preview {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      background: #1877f2;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 34px;
-      font-weight: bold;
-      overflow: hidden;
+    .chat-scroll{max-height:320px;overflow:auto;padding:12px}
+    .msg{
+      max-width:78%;padding:10px 12px;border-radius:14px;margin:8px 0;
+      border:1px solid #e6e9f2;background:white;
     }
-
-    .post {
-      border: 1px solid #e3e7ed;
-      border-radius: 14px;
-      padding: 14px;
-      background: #fafbfc;
-      margin-bottom: 14px;
+    .msg.me{
+      margin-left:auto;background:#e8f0ff;border-color:#cfe0ff;
     }
-
-    .post-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .post-user {
-      font-weight: bold;
-      color: #1877f2;
-    }
-
-    .post-date {
-      font-size: 12px;
-      color: #666;
-    }
-
-    .post-image {
-      width: 100%;
-      max-height: 360px;
-      object-fit: cover;
-      border-radius: 12px;
-      margin-top: 10px;
-      border: 1px solid #e3e7ed;
-    }
-
-    .post-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 12px;
-    }
-
-    .comment-box {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid #e5e7eb;
-    }
-
-    .comment {
-      background: white;
-      border: 1px solid #e6e6e6;
-      border-radius: 10px;
-      padding: 8px 10px;
-      margin-top: 8px;
-    }
-
-    .message {
-      background: #fafbfc;
-      border: 1px solid #e3e7ed;
-      border-radius: 12px;
-      padding: 10px;
-      margin-top: 10px;
-    }
-
-    .empty {
-      color: #666;
-      text-align: center;
-      padding: 12px;
-    }
-
-    .small {
-      font-size: 12px;
-      color: #666;
-    }
-
-    @media (max-width: 700px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-
-      .profile-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .avatar-preview {
-        margin: 0 auto;
-      }
-
-      .actions button {
-        width: 100%;
-      }
-    }
+    .msg .who{font-weight:900;font-size:13px}
+    .msg .time{font-size:11px;color:var(--muted)}
+    footer{color:var(--muted);font-size:12px;text-align:center;padding:10px 0}
   </style>
 </head>
 <body>
   <div class="app">
     <header class="topbar">
-      <h1>Aymane Social</h1>
-      <div class="topbar-actions">
-        <span id="authStatus">Non connecté</span>
-        <button id="logoutBtn" class="secondary">Déconnexion</button>
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <h1>Aymane Social</h1>
+          <div class="sub">Mini réseau social avec posts, likes, commentaires et messages</div>
+        </div>
+      </div>
+      <div class="right">
+        <span class="pill" id="authStatus">Non connecté</span>
+        <button id="logoutBtn" class="secondary" disabled>Déconnexion</button>
       </div>
     </header>
 
-    <section class="card">
+    <section class="card" id="authCard">
       <h2>Connexion / Inscription</h2>
-      <div class="grid-2">
-        <input type="email" id="email" placeholder="Email" />
-        <input type="password" id="password" placeholder="Mot de passe" />
+      <div class="grid2">
+        <div>
+          <label>Email</label>
+          <input id="email" type="email" placeholder="ex: aymane@gmail.com" />
+        </div>
+        <div>
+          <label>Mot de passe</label>
+          <input id="password" type="password" placeholder="6+ caractères" />
+        </div>
       </div>
-      <div class="actions">
+      <div class="row" style="margin-top:10px">
         <button id="signupBtn">Créer un compte</button>
-        <button id="signinBtn">Se connecter</button>
+        <button id="signinBtn" class="secondary">Se connecter</button>
       </div>
     </section>
 
-    <section class="card">
+    <section class="card hidden" id="profileCard" data-auth="required">
       <h2>Mon profil</h2>
       <div class="profile-layout">
-        <div class="avatar-preview" id="avatarPreview">A</div>
+        <div class="avatar" id="avatarPreview">A</div>
         <div>
-          <input type="text" id="username" placeholder="Pseudo" maxlength="30" />
-          <input type="text" id="avatarUrl" placeholder="Lien image profil (optionnel)" />
-          <textarea id="bio" placeholder="Bio" maxlength="160"></textarea>
-          <div class="actions">
+          <label>Pseudo</label>
+          <input id="username" type="text" placeholder="ex: aymane" maxlength="30" />
+
+          <label>Avatar URL (optionnel)</label>
+          <input id="avatarUrl" type="url" placeholder="https://..." />
+
+          <label>Bio</label>
+          <textarea id="bio" placeholder="Présente-toi..." maxlength="160"></textarea>
+
+          <div class="row">
             <button id="saveProfileBtn">Enregistrer le profil</button>
+            <span class="chip" id="profileHint">Profil non chargé</span>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="card">
+    <section class="card hidden" id="postComposerCard" data-auth="required">
       <h2>Nouveau post</h2>
+      <label>Texte</label>
       <textarea id="postContent" placeholder="Écris quelque chose..." maxlength="500"></textarea>
-      <input type="text" id="postImageUrl" placeholder="Lien image (optionnel)" />
-      <div class="actions">
+
+      <label>Image URL (optionnel)</label>
+      <input id="postImageUrl" type="url" placeholder="https://..." />
+
+      <div class="row">
         <button id="addPostBtn">Publier</button>
+        <span class="sub">Texte obligatoire. Image optionnelle via URL.</span>
       </div>
-      <div class="small">Texte obligatoire. Image facultative par lien URL.</div>
     </section>
 
-    <section class="card">
-      <h2>Fil d’actualité</h2>
-      <div id="feed"></div>
+    <section class="card" id="feedCard">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">Fil d’actualité</h2>
+        <div class="row">
+          <button id="reloadFeedBtn" class="secondary">Rafraîchir</button>
+        </div>
+      </div>
+      <div id="feed" class="empty" style="margin-top:12px">Chargement…</div>
     </section>
 
-    <section class="card">
+    <section class="card hidden" id="messagesCard" data-auth="required">
       <h2>Messagerie simple</h2>
-      <input type="text" id="messageReceiver" placeholder="Pseudo du destinataire" />
-      <textarea id="messageContent" placeholder="Ton message..."></textarea>
-      <div class="actions">
-        <button id="sendMessageBtn">Envoyer</button>
-        <button id="loadMessagesBtn" class="secondary">Actualiser les messages</button>
+
+      <div class="grid2">
+        <div>
+          <label>Pseudo du destinataire</label>
+          <input id="messageTo" type="text" placeholder="ex: yassine" />
+          <div class="sub">Laisse vide pour voir tes derniers messages.</div>
+        </div>
+        <div>
+          <label>Ton message</label>
+          <textarea id="messageBody" placeholder="Écris ton message..." maxlength="800"></textarea>
+        </div>
       </div>
-      <div id="messagesBox"></div>
+
+      <div class="row" style="margin-top:10px">
+        <button id="sendMsgBtn">Envoyer</button>
+        <button id="loadMsgBtn" class="secondary">Charger</button>
+        <span class="chip" id="msgHint">—</span>
+      </div>
+
+      <div class="chat" style="margin-top:12px">
+        <div class="chat-scroll" id="chatBox">
+          <div class="empty">Aucun message chargé.</div>
+        </div>
+      </div>
     </section>
+
+    <footer>
+      Aymane Social
+    </footer>
   </div>
 
   <script>
-const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
-const SUPABASE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
-</script>
+    const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
 
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const $ = (id) => document.getElementById(id);
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-    const authStatus = document.getElementById("authStatus");
-    const feed = document.getElementById("feed");
-    const messagesBox = document.getElementById("messagesBox");
+    const state = {
+      user: null,
+      session: null,
+      profile: null,
+      refreshing: false
+    };
 
-    document.getElementById("signupBtn").addEventListener("click", signUp);
-    document.getElementById("signinBtn").addEventListener("click", signIn);
-    document.getElementById("logoutBtn").addEventListener("click", signOut);
-    document.getElementById("saveProfileBtn").addEventListener("click", saveProfile);
-    document.getElementById("addPostBtn").addEventListener("click", addPost);
-    document.getElementById("sendMessageBtn").addEventListener("click", sendMessage);
-    document.getElementById("loadMessagesBtn").addEventListener("click", loadMessages);
-
-    function escapeHtml(text) {
-      const div = document.createElement("div");
-      div.innerText = text || "";
-      return div.innerHTML;
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    function renderAvatarPreview(username, avatarUrl) {
-      const avatarPreview = document.getElementById("avatarPreview");
-      if (avatarUrl) {
-        avatarPreview.innerHTML = '<img src="' + escapeHtml(avatarUrl) + '" alt="avatar" style="width:100%;height:100%;object-fit:cover;">';
-      } else {
-        avatarPreview.textContent = (username || "A").charAt(0).toUpperCase();
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
+    }
+
+    function normalizeHttpUrl(maybeUrl) {
+      const s = String(maybeUrl || "").trim();
+      if (!s) return "";
+      try {
+        const u = new URL(s);
+        if (u.protocol !== "http:" && u.protocol !== "https:") return null;
+        return u.toString();
+      } catch {
+        return null;
       }
     }
 
-    async function getCurrentUser() {
-      const { data } = await client.auth.getUser();
-      return data.user || null;
+    function isUuid(s) {
+      return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(s || ""));
+    }
+
+    function friendlyError(err) {
+      if (!err) return "Erreur inconnue.";
+      const msg = (err.message || String(err)).trim();
+
+      if (/email rate limit exceeded/i.test(msg) || /rate limit/i.test(msg)) {
+        return "Trop de tentatives email. Attends 5 à 15 minutes ou essaie un autre email.";
+      }
+      if (/row level security|rls/i.test(msg) || /new row violates row-level security/i.test(msg)) {
+        return "Blocage RLS. Vérifie que tu as bien collé le SQL complet dans Supabase.";
+      }
+      if (err.code === "23505" || /duplicate key/i.test(msg)) {
+        return "Cette valeur existe déjà. Essaie un autre pseudo.";
+      }
+      if (err.code === "42501" || /permission denied/i.test(msg)) {
+        return "Permission refusée. Vérifie les policies SQL.";
+      }
+      return msg;
+    }
+
+    function setAuthedUI() {
+      const authed = !!state.user;
+      $("authStatus").textContent = authed ? `Connecté : ${state.user.email}` : "Non connecté";
+      $("logoutBtn").disabled = !authed;
+
+      document.querySelectorAll("[data-auth='required']").forEach((el) => {
+        el.classList.toggle("hidden", !authed);
+      });
+
+      $("authCard").classList.toggle("hidden", authed);
+    }
+
+    async function requireUser() {
+      const { data, error } = await sb.auth.getUser();
+      if (error || !data?.user) {
+        alert("Connecte-toi d'abord.");
+        return null;
+      }
+      return data.user;
     }
 
     async function signUp() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+      const email = $("email").value.trim();
+      const password = $("password").value;
 
-      if (!email || !password) {
-        alert("Entre un email et un mot de passe.");
-        return;
+      if (!isValidEmail(email)) return alert("Email invalide.");
+      if (!password || password.length < 6) return alert("Mot de passe trop court.");
+
+      const redirectTo = location.origin + location.pathname;
+
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: redirectTo }
+      });
+
+      if (error) return alert(friendlyError(error));
+
+      if (data?.session) {
+        alert("Compte créé et connecté.");
+      } else {
+        alert("Compte créé. Vérifie ton email si la confirmation est activée.");
       }
 
-      const { data, error } = await client.auth.signUp({ email, password });
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-      if (data.user) {
-        const defaultUsername = email.split("@")[0];
-
-        const { error: profileError } = await client.from("profiles").upsert({
-          id: data.user.id,
-          username: defaultUsername,
-          avatar_url: "",
-          bio: ""
-        });
-
-        if (profileError) {
-          alert(profileError.message);
-          return;
-        }
-      }
-
-      alert("Compte créé.");
-      await refreshUI();
+      await refreshAll();
     }
 
     async function signIn() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+      const email = $("email").value.trim();
+      const password = $("password").value;
 
-      if (!email || !password) {
-        alert("Entre un email et un mot de passe.");
-        return;
-      }
+      if (!isValidEmail(email)) return alert("Email invalide.");
+      if (!password) return alert("Entre ton mot de passe.");
 
-      const { error } = await client.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) return alert(friendlyError(error));
 
       alert("Connexion réussie.");
-      await refreshUI();
+      await refreshAll();
     }
 
     async function signOut() {
-      const { error } = await client.auth.signOut();
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-      await refreshUI();
+      const { error } = await sb.auth.signOut();
+      if (error) return alert(friendlyError(error));
+      await refreshAll();
     }
 
-    async function saveProfile() {
-      const user = await getCurrentUser();
-
-      if (!user) {
-        alert("Connecte-toi d'abord.");
+    function renderAvatar(username, avatarUrl) {
+      const box = $("avatarPreview");
+      const u = normalizeHttpUrl(avatarUrl);
+      if (u) {
+        box.innerHTML = `<img src="${escapeHtml(u)}" alt="avatar" />`;
         return;
       }
-
-      const username = document.getElementById("username").value.trim();
-      const avatar_url = document.getElementById("avatarUrl").value.trim();
-      const bio = document.getElementById("bio").value.trim();
-
-      if (!username) {
-        alert("Entre un pseudo.");
-        return;
-      }
-
-      const { error } = await client.from("profiles").upsert({
-        id: user.id,
-        username,
-        avatar_url,
-        bio
-      });
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-      renderAvatarPreview(username, avatar_url);
-      alert("Profil enregistré.");
-      await loadFeed();
-      await loadMessages();
+      const letter = (String(username || "A").trim().charAt(0) || "A").toUpperCase();
+      box.textContent = letter;
     }
 
     async function loadMyProfile() {
-      const user = await getCurrentUser();
+      $("profileHint").textContent = "Chargement…";
+      const user = await requireUser();
+      if (!user) return;
 
-      if (!user) {
-        document.getElementById("username").value = "";
-        document.getElementById("avatarUrl").value = "";
-        document.getElementById("bio").value = "";
-        renderAvatarPreview("A", "");
-        return;
-      }
-
-      const { data, error } = await client
+      const { data, error } = await sb
         .from("profiles")
-        .select("*")
+        .select("id, username, avatar_url, bio")
         .eq("id", user.id)
         .maybeSingle();
 
-      if (error || !data) {
+      if (error) {
+        $("profileHint").textContent = "Erreur profil";
+        return alert(friendlyError(error));
+      }
+
+      if (!data) {
+        state.profile = null;
+        const suggested = (user.email || "user").split("@")[0].slice(0, 30);
+        $("username").value = suggested;
+        $("avatarUrl").value = "";
+        $("bio").value = "";
+        renderAvatar(suggested, "");
+        $("profileHint").textContent = "Profil à créer";
         return;
       }
 
-      document.getElementById("username").value = data.username || "";
-      document.getElementById("avatarUrl").value = data.avatar_url || "";
-      document.getElementById("bio").value = data.bio || "";
-      renderAvatarPreview(data.username, data.avatar_url);
+      state.profile = data;
+      $("username").value = data.username || "";
+      $("avatarUrl").value = data.avatar_url || "";
+      $("bio").value = data.bio || "";
+      renderAvatar(data.username, data.avatar_url);
+      $("profileHint").textContent = "Profil OK";
+    }
+
+    async function saveProfile() {
+      const user = await requireUser();
+      if (!user) return;
+
+      const username = $("username").value.trim();
+      const avatar_url_raw = $("avatarUrl").value.trim();
+      const bio = $("bio").value.trim();
+
+      if (!username || username.length < 3) return alert("Pseudo trop court.");
+      if (username.length > 30) return alert("Pseudo trop long.");
+      if (bio.length > 160) return alert("Bio trop longue.");
+
+      const avatar_url = avatar_url_raw ? normalizeHttpUrl(avatar_url_raw) : "";
+      if (avatar_url_raw && avatar_url === null) return alert("Avatar URL invalide.");
+
+      let res;
+      if (state.profile?.id) {
+        res = await sb
+          .from("profiles")
+          .update({ username, avatar_url, bio })
+          .eq("id", user.id)
+          .select()
+          .maybeSingle();
+      } else {
+        res = await sb
+          .from("profiles")
+          .insert({ id: user.id, username, avatar_url, bio })
+          .select()
+          .maybeSingle();
+      }
+
+      if (res.error) return alert(friendlyError(res.error));
+
+      state.profile = res.data || null;
+      renderAvatar(username, avatar_url);
+      $("profileHint").textContent = "Profil OK";
+      alert("Profil enregistré.");
+      await loadFeed();
     }
 
     async function addPost() {
-      const user = await getCurrentUser();
+      const user = await requireUser();
+      if (!user) return;
 
-      if (!user) {
-        alert("Connecte-toi d'abord.");
-        return;
-      }
+      const content = $("postContent").value.trim();
+      const image_url_raw = $("postImageUrl").value.trim();
 
-      const content = document.getElementById("postContent").value.trim();
-      const image_url = document.getElementById("postImageUrl").value.trim();
+      if (!content) return alert("Le texte du post est obligatoire.");
+      if (content.length > 500) return alert("Post trop long.");
 
-      if (!content) {
-        alert("Écris un message.");
-        return;
-      }
+      const image_url = image_url_raw ? normalizeHttpUrl(image_url_raw) : "";
+      if (image_url_raw && image_url === null) return alert("Image URL invalide.");
 
-      const { error } = await client.from("posts").insert({
+      const { error } = await sb.from("posts").insert({
         user_id: user.id,
         content,
         image_url
       });
 
-      if (error) {
-        alert(error.message);
-        return;
-      }
+      if (error) return alert(friendlyError(error));
 
-      document.getElementById("postContent").value = "";
-      document.getElementById("postImageUrl").value = "";
+      $("postContent").value = "";
+      $("postImageUrl").value = "";
+      alert("Post publié.");
+      await loadFeed();
+    }
+
+    async function deletePost(postId) {
+      const user = await requireUser();
+      if (!user) return;
+      if (!confirm("Supprimer ce post ?")) return;
+
+      const { error } = await sb.from("posts").delete().eq("id", postId);
+      if (error) return alert(friendlyError(error));
+
       await loadFeed();
     }
 
     async function toggleLike(postId) {
-      const user = await getCurrentUser();
+      const user = await requireUser();
+      if (!user) return;
 
-      if (!user) {
-        alert("Connecte-toi d'abord.");
-        return;
-      }
-
-      const { data: existing, error: checkError } = await client
+      const { data: existing, error: e1 } = await sb
         .from("likes")
         .select("id")
         .eq("post_id", postId)
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (checkError) {
-        alert(checkError.message);
-        return;
-      }
+      if (e1) return alert(friendlyError(e1));
 
-      if (existing) {
-        const { error } = await client.from("likes").delete().eq("id", existing.id);
-        if (error) {
-          alert(error.message);
-          return;
-        }
+      if (existing?.id) {
+        const { error } = await sb.from("likes").delete().eq("id", existing.id);
+        if (error) return alert(friendlyError(error));
       } else {
-        const { error } = await client.from("likes").insert({
-          post_id: postId,
-          user_id: user.id
-        });
-        if (error) {
-          alert(error.message);
-          return;
-        }
+        const { error } = await sb.from("likes").insert({ post_id: postId, user_id: user.id });
+        if (error) return alert(friendlyError(error));
       }
 
       await loadFeed();
     }
 
-    async function addComment(postId) {
-      const user = await getCurrentUser();
+    async function addComment(postId, text) {
+      const user = await requireUser();
+      if (!user) return;
 
-      if (!user) {
-        alert("Connecte-toi d'abord.");
-        return;
-      }
+      const content = String(text || "").trim();
+      if (!content) return alert("Commentaire vide.");
+      if (content.length > 300) return alert("Commentaire trop long.");
 
-      const input = document.getElementById("comment-input-" + postId);
-      const content = input.value.trim();
-
-      if (!content) {
-        alert("Écris un commentaire.");
-        return;
-      }
-
-      const { error } = await client.from("comments").insert({
+      const { error } = await sb.from("comments").insert({
         post_id: postId,
         user_id: user.id,
         content
       });
 
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-      input.value = "";
+      if (error) return alert(friendlyError(error));
       await loadFeed();
     }
 
-    async function deletePost(postId) {
-      const user = await getCurrentUser();
-
-      if (!user) {
-        return;
-      }
-
-      const ok = confirm("Supprimer ce post ?");
-      if (!ok) return;
-
-      const { error } = await client.from("posts").delete().eq("id", postId);
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-      await loadFeed();
+    function normalizeProfileObj(p) {
+      if (!p) return null;
+      return Array.isArray(p) ? (p[0] || null) : p;
     }
 
     async function loadFeed() {
-      feed.innerHTML = '<div class="empty">Chargement...</div>';
+      $("feed").innerHTML = `<div class="empty">Chargement…</div>`;
 
-      const user = await getCurrentUser();
+      const sessionRes = await sb.auth.getSession();
+      state.session = sessionRes.data?.session || null;
+      state.user = state.session?.user || null;
 
-      const { data: posts, error } = await client
+      const { data: posts, error } = await sb
         .from("posts")
         .select(`
           id,
+          user_id,
           content,
           image_url,
           created_at,
-          user_id,
-          profiles (
-            username,
-            avatar_url
-          )
+          profiles ( username, avatar_url )
         `)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(50);
 
       if (error) {
-        feed.innerHTML = '<div class="empty">Erreur de chargement.</div>';
+        $("feed").innerHTML = `<div class="empty">Erreur: ${escapeHtml(friendlyError(error))}</div>`;
         return;
       }
 
       if (!posts || posts.length === 0) {
-        feed.innerHTML = '<div class="empty">Aucun post pour le moment.</div>';
+        $("feed").innerHTML = `<div class="empty">Aucun post pour le moment.</div>`;
         return;
       }
 
-      feed.innerHTML = "";
+      const postIds = posts.map(p => p.id);
+
+      const likesRes = await sb
+        .from("likes")
+        .select("post_id, user_id")
+        .in("post_id", postIds);
+
+      const commentsRes = await sb
+        .from("comments")
+        .select(`
+          id,
+          post_id,
+          user_id,
+          content,
+          created_at,
+          profiles ( username )
+        `)
+        .in("post_id", postIds)
+        .order("created_at", { ascending: true });
+
+      const likes = likesRes.data || [];
+      const comments = commentsRes.data || [];
+
+      const likesByPost = new Map();
+      for (const l of likes) {
+        const arr = likesByPost.get(l.post_id) || [];
+        arr.push(l);
+        likesByPost.set(l.post_id, arr);
+      }
+
+      const commentsByPost = new Map();
+      for (const c of comments) {
+        const arr = commentsByPost.get(c.post_id) || [];
+        arr.push(c);
+        commentsByPost.set(c.post_id, arr);
+      }
+
+      const meId = state.user?.id || null;
+      let html = "";
 
       for (const post of posts) {
-        const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+        const profile = normalizeProfileObj(post.profiles);
         const username = profile?.username || "Utilisateur";
         const avatarUrl = profile?.avatar_url || "";
         const date = new Date(post.created_at).toLocaleString("fr-FR");
 
-        const { data: likesData } = await client
-          .from("likes")
-          .select("id, user_id")
-          .eq("post_id", post.id);
+        const postLikes = likesByPost.get(post.id) || [];
+        const likesCount = postLikes.length;
+        const iLike = !!(meId && postLikes.some(x => x.user_id === meId));
+        const canDelete = !!(meId && meId === post.user_id);
 
-        const { data: commentsData } = await client
-          .from("comments")
-          .select(`
-            id,
-            content,
-            created_at,
-            user_id,
-            profiles (
-              username
-            )
-          `)
-          .eq("post_id", post.id)
-          .order("created_at", { ascending: true });
+        const img = post.image_url ? normalizeHttpUrl(post.image_url) : "";
+        const safeImg = img ? `<img class="post-img" src="${escapeHtml(img)}" alt="image">` : "";
 
-        const likesCount = likesData ? likesData.length : 0;
-        const isLiked = !!likesData?.find(like => like.user_id === user?.id);
-        const canDelete = user && user.id === post.user_id;
+        const postComments = commentsByPost.get(post.id) || [];
+        const commentsHtml = postComments.length
+          ? postComments.map(c => {
+              const cp = normalizeProfileObj(c.profiles);
+              const cname = cp?.username || "Utilisateur";
+              const cdate = new Date(c.created_at).toLocaleString("fr-FR");
+              return `
+                <div class="comment">
+                  <div><b>${escapeHtml(cname)}</b> <small>• ${escapeHtml(cdate)}</small></div>
+                  <div>${escapeHtml(c.content)}</div>
+                </div>
+              `;
+            }).join("")
+          : `<div class="empty">Pas encore de commentaires.</div>`;
 
-        const postEl = document.createElement("div");
-        postEl.className = "post";
+        const miniAvatar = (normalizeHttpUrl(avatarUrl))
+          ? `<img src="${escapeHtml(avatarUrl)}" alt="avatar">`
+          : escapeHtml(username.charAt(0).toUpperCase());
 
-        const avatarHtml = avatarUrl
-          ? '<img src="' + escapeHtml(avatarUrl) + '" alt="avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">'
-          : '<div style="width:40px;height:40px;border-radius:50%;background:#1877f2;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;">' + escapeHtml(username.charAt(0).toUpperCase()) + '</div>';
-
-        const commentsHtml = (commentsData || []).map(comment => {
-          const cProfile = Array.isArray(comment.profiles) ? comment.profiles[0] : comment.profiles;
-          const cName = cProfile?.username || "Utilisateur";
-          return `
-            <div class="comment">
-              <strong>${escapeHtml(cName)}</strong><br>
-              ${escapeHtml(comment.content)}
-            </div>
-          `;
-        }).join("");
-
-        postEl.innerHTML = `
-          <div class="post-header">
-            <div style="display:flex;align-items:center;gap:10px;">
-              ${avatarHtml}
-              <div>
-                <div class="post-user">${escapeHtml(username)}</div>
-                <div class="post-date">${date}</div>
+        html += `
+          <div class="post" data-post-id="${post.id}">
+            <div class="post-head">
+              <div class="post-user">
+                <div class="mini-avatar">${miniAvatar}</div>
+                <div class="post-meta">
+                  <div><b>${escapeHtml(username)}</b></div>
+                  <div class="date">${escapeHtml(date)}</div>
+                </div>
               </div>
+              ${canDelete ? `<button class="danger" data-action="delete_post">Supprimer</button>` : ""}
             </div>
-            ${canDelete ? `<button class="danger" onclick="deletePost(${post.id})">Supprimer</button>` : ""}
-          </div>
 
-          <div>${escapeHtml(post.content)}</div>
+            <div class="post-body">${escapeHtml(post.content)}</div>
+            ${safeImg}
 
-          ${post.image_url ? `<img class="post-image" src="${escapeHtml(post.image_url)}" alt="image post">` : ""}
-
-          <div class="post-actions">
-            <button onclick="toggleLike(${post.id})">${isLiked ? "Je n’aime plus" : "J’aime"}</button>
-            <span>${likesCount} j’aime</span>
-          </div>
-
-          <div class="comment-box">
-            <input id="comment-input-${post.id}" type="text" placeholder="Ajouter un commentaire..." />
             <div class="actions">
-              <button onclick="addComment(${post.id})">Commenter</button>
+              <button data-action="toggle_like">${iLike ? "Je n’aime plus" : "J’aime"}</button>
+              <span class="chip">❤️ ${likesCount}</span>
+              <span class="chip">💬 ${postComments.length}</span>
             </div>
-            ${commentsHtml || `<div class="empty">Pas encore de commentaires.</div>`}
+
+            <div class="comments">
+              <div class="row">
+                <input class="commentInput" type="text" maxlength="300" placeholder="Ajouter un commentaire..." />
+                <button class="secondary" data-action="add_comment">Commenter</button>
+              </div>
+              ${commentsHtml}
+            </div>
           </div>
         `;
-
-        feed.appendChild(postEl);
       }
+
+      $("feed").innerHTML = html;
+    }
+
+    $("feed").addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+
+      const postEl = e.target.closest(".post");
+      const postId = Number(postEl?.dataset?.postId);
+      const action = btn.dataset.action;
+
+      if (!postId) return;
+
+      if (action === "delete_post") return deletePost(postId);
+      if (action === "toggle_like") return toggleLike(postId);
+      if (action === "add_comment") {
+        const input = postEl.querySelector(".commentInput");
+        const text = input?.value || "";
+        if (input) input.value = "";
+        return addComment(postId, text);
+      }
+    });
+
+    async function resolveUserIdByUsername(username) {
+      const u = String(username || "").trim();
+      if (!u) return null;
+
+      const { data, error } = await sb
+        .from("profiles")
+        .select("id, username")
+        .eq("username", u)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data || null;
     }
 
     async function sendMessage() {
-      const user = await getCurrentUser();
+      const user = await requireUser();
+      if (!user) return;
 
-      if (!user) {
-        alert("Connecte-toi d'abord.");
-        return;
+      const toUsername = $("messageTo").value.trim();
+      const body = $("messageBody").value.trim();
+
+      if (!toUsername) return alert("Entre le pseudo du destinataire.");
+      if (!body) return alert("Message vide.");
+
+      let receiver;
+      try {
+        receiver = await resolveUserIdByUsername(toUsername);
+      } catch (e) {
+        return alert(friendlyError(e));
       }
 
-      const receiverUsername = document.getElementById("messageReceiver").value.trim();
-      const content = document.getElementById("messageContent").value.trim();
+      if (!receiver?.id) return alert("Destinataire introuvable.");
 
-      if (!receiverUsername || !content) {
-        alert("Entre un destinataire et un message.");
-        return;
-      }
-
-      const { data: receiver, error: receiverError } = await client
-        .from("profiles")
-        .select("id, username")
-        .eq("username", receiverUsername)
-        .maybeSingle();
-
-      if (receiverError || !receiver) {
-        alert("Destinataire introuvable.");
-        return;
-      }
-
-      const { error } = await client.from("messages").insert({
+      const { error } = await sb.from("messages").insert({
         sender_id: user.id,
         receiver_id: receiver.id,
-        content
+        content: body
       });
 
-      if (error) {
-        alert(error.message);
-        return;
-      }
+      if (error) return alert(friendlyError(error));
 
-      document.getElementById("messageContent").value = "";
+      $("messageBody").value = "";
+      $("msgHint").textContent = `Envoyé à @${receiver.username}`;
       await loadMessages();
     }
 
     async function loadMessages() {
-      const user = await getCurrentUser();
+      const user = await requireUser();
+      if (!user) return;
 
-      if (!user) {
-        messagesBox.innerHTML = '<div class="empty">Connecte-toi pour voir les messages.</div>';
+      const toUsername = $("messageTo").value.trim();
+      let rows = [];
+
+      try {
+        if (toUsername) {
+          const other = await resolveUserIdByUsername(toUsername);
+          if (!other?.id) {
+            $("chatBox").innerHTML = `<div class="empty">Pseudo destinataire introuvable.</div>`;
+            return;
+          }
+
+          if (!isUuid(user.id) || !isUuid(other.id)) {
+            $("chatBox").innerHTML = `<div class="empty">IDs invalides.</div>`;
+            return;
+          }
+
+          const filter = `and(sender_id.eq.${user.id},receiver_id.eq.${other.id}),and(sender_id.eq.${other.id},receiver_id.eq.${user.id})`;
+
+          const { data, error } = await sb
+            .from("messages")
+            .select("id, sender_id, receiver_id, content, created_at")
+            .or(filter)
+            .order("created_at", { ascending: true })
+            .limit(100);
+
+          if (error) throw error;
+
+          rows = data || [];
+          $("msgHint").textContent = `Conversation avec @${other.username}`;
+        } else {
+          if (!isUuid(user.id)) {
+            $("chatBox").innerHTML = `<div class="empty">ID utilisateur invalide.</div>`;
+            return;
+          }
+
+          const filter = `sender_id.eq.${user.id},receiver_id.eq.${user.id}`;
+
+          const { data, error } = await sb
+            .from("messages")
+            .select("id, sender_id, receiver_id, content, created_at")
+            .or(filter)
+            .order("created_at", { ascending: false })
+            .limit(50);
+
+          if (error) throw error;
+
+          rows = (data || []).reverse();
+          $("msgHint").textContent = "Derniers messages";
+        }
+      } catch (err) {
+        $("chatBox").innerHTML = `<div class="empty">Erreur messages: ${escapeHtml(friendlyError(err))}</div>`;
         return;
       }
 
-      const { data, error } = await client
-        .from("messages")
-        .select(`
-          id,
-          content,
-          created_at,
-          sender_id,
-          receiver_id
-        `)
-        .order("created_at", { ascending: false })
-        .limit(20);
-
-      if (error) {
-        messagesBox.innerHTML = '<div class="empty">Erreur de chargement des messages.</div>';
+      if (!rows.length) {
+        $("chatBox").innerHTML = `<div class="empty">Aucun message.</div>`;
         return;
       }
 
-      if (!data || data.length === 0) {
-        messagesBox.innerHTML = '<div class="empty">Aucun message.</div>';
-        return;
-      }
+      const ids = Array.from(new Set(rows.flatMap(r => [r.sender_id, r.receiver_id])));
+      const { data: plist } = await sb.from("profiles").select("id, username").in("id", ids);
 
-      const profileIds = [...new Set(data.flatMap(m => [m.sender_id, m.receiver_id]))];
+      const map = {};
+      (plist || []).forEach(p => map[p.id] = p.username);
 
-      const { data: profileList } = await client
-        .from("profiles")
-        .select("id, username")
-        .in("id", profileIds);
-
-      const profileMap = {};
-      (profileList || []).forEach(p => {
-        profileMap[p.id] = p.username;
-      });
-
-      messagesBox.innerHTML = "";
-
-      data.forEach(msg => {
-        const senderName = profileMap[msg.sender_id] || "Utilisateur";
-        const receiverName = profileMap[msg.receiver_id] || "Utilisateur";
-        const date = new Date(msg.created_at).toLocaleString("fr-FR");
-
-        const div = document.createElement("div");
-        div.className = "message";
-        div.innerHTML = `
-          <strong>${escapeHtml(senderName)}</strong> → <strong>${escapeHtml(receiverName)}</strong><br>
-          ${escapeHtml(msg.content)}<br>
-          <small>${date}</small>
+      let html = "";
+      for (const m of rows) {
+        const me = m.sender_id === user.id;
+        const who = map[m.sender_id] || "Utilisateur";
+        const time = new Date(m.created_at).toLocaleString("fr-FR");
+        html += `
+          <div class="msg ${me ? "me" : ""}">
+            <div class="who">${escapeHtml(me ? "Moi" : who)}</div>
+            <div>${escapeHtml(m.content)}</div>
+            <div class="time">${escapeHtml(time)}</div>
+          </div>
         `;
-        messagesBox.appendChild(div);
+      }
+      $("chatBox").innerHTML = html;
+      $("chatBox").scrollTop = $("chatBox").scrollHeight;
+    }
+
+    async function refreshAll() {
+      if (state.refreshing) return;
+      state.refreshing = true;
+
+      try {
+        const { data } = await sb.auth.getSession();
+        state.session = data?.session || null;
+        state.user = state.session?.user || null;
+
+        setAuthedUI();
+        await loadFeed();
+
+        if (state.user) {
+          await loadMyProfile();
+          await loadMessages();
+        } else {
+          $("chatBox").innerHTML = `<div class="empty">Connecte-toi pour voir tes messages.</div>`;
+        }
+      } finally {
+        state.refreshing = false;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      $("signupBtn").addEventListener("click", signUp);
+      $("signinBtn").addEventListener("click", signIn);
+      $("logoutBtn").addEventListener("click", signOut);
+      $("saveProfileBtn").addEventListener("click", saveProfile);
+      $("addPostBtn").addEventListener("click", addPost);
+      $("reloadFeedBtn").addEventListener("click", loadFeed);
+      $("sendMsgBtn").addEventListener("click", sendMessage);
+      $("loadMsgBtn").addEventListener("click", loadMessages);
+
+      $("username").addEventListener("input", () => renderAvatar($("username").value, $("avatarUrl").value));
+      $("avatarUrl").addEventListener("input", () => renderAvatar($("username").value, $("avatarUrl").value));
+
+      sb.auth.onAuthStateChange(async () => {
+        await refreshAll();
       });
-    }
 
-    async function refreshUI() {
-      const user = await getCurrentUser();
-      authStatus.textContent = user ? "Connecté : " + user.email : "Non connecté";
-      await loadMyProfile();
-      await loadFeed();
-      await loadMessages();
-    }
-
-    client.auth.onAuthStateChange(async () => {
-      await refreshUI();
+      await refreshAll();
     });
-
-    window.toggleLike = toggleLike;
-    window.addComment = addComment;
-    window.deletePost = deletePost;
-
-    refreshUI();
   </script>
 </body>
 </html>
