@@ -1,24 +1,2295 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Test boutons</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aymane Social</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --surface3: #252535;
+    --border: #2a2a3d;
+    --accent: #7c6af7;
+    --accent2: #f76a8a;
+    --accent3: #6af7c4;
+    --text: #f0eeff;
+    --text2: #9896b8;
+    --text3: #5a5878;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "DM Sans", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  button, input, textarea {
+    font-family: inherit;
+  }
+
+  #auth-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124,106,247,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 90%, rgba(247,106,138,0.1) 0%, transparent 60%),
+      var(--bg);
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 42px 34px;
+    box-shadow: var(--shadow);
+  }
+
+  .auth-logo {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .logo-text {
+    font-family: "Syne", sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .auth-logo p {
+    color: var(--text2);
+    margin-top: 6px;
+    font-size: 14px;
+  }
+
+  .auth-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 24px;
+  }
+
+  .auth-tab {
+    flex: 1;
+    background: transparent;
+    color: var(--text2);
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .auth-tab.active {
+    background: var(--accent);
+    color: white;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group label {
+    display: block;
+    color: var(--text2);
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 12px;
+    outline: none;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .search-bar:focus,
+  .chat-input:focus,
+  .comment-input:focus {
+    border-color: var(--accent);
+  }
+
+  .btn {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.2s;
+  }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #6a59e8;
+  }
+
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-danger {
+    background: rgba(247,106,138,0.15);
+    color: var(--accent2);
+    border: 1px solid rgba(247,106,138,0.28);
+  }
+
+  #app {
+    display: none;
+    min-height: 100vh;
+  }
+
+  .app-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    max-width: 1280px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 22px 16px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    font-family: "Syne", sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    padding: 12px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 15px;
+  }
+
+  .nav-item:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .nav-item.active {
+    background: rgba(124,106,247,0.15);
+    color: var(--accent);
+  }
+
+  .nav-icon {
+    width: 24px;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .sidebar-profile {
+    margin-top: auto;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .profile-name-small {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .profile-username-small {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .main-content {
+    border-right: 1px solid var(--border);
+    min-height: 100vh;
+  }
+
+  .page {
+    display: none;
+  }
+
+  .page.active {
+    display: block;
+  }
+
+  .page-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+    font-family: "Syne", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .composer {
+    display: flex;
+    gap: 14px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .composer-right {
+    flex: 1;
+  }
+
+  .composer textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 16px;
+    resize: none;
+    min-height: 84px;
+    outline: none;
+  }
+
+  .composer textarea::placeholder {
+    color: var(--text3);
+  }
+
+  .composer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+
+  .tool-btn {
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tool-btn:hover {
+    background: rgba(124,106,247,0.1);
+  }
+
+  .btn-post {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .image-preview {
+    margin-top: 12px;
+    position: relative;
+    display: inline-block;
+  }
+
+  .image-preview img {
+    max-height: 220px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .remove-img {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    cursor: pointer;
+  }
+
+  .post-card {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-card:hover {
+    background: rgba(255,255,255,0.01);
+  }
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .post-author {
+    flex: 1;
+  }
+
+  .post-author .name {
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .post-author .name:hover {
+    color: var(--accent);
+  }
+
+  .post-author .username {
+    color: var(--text2);
+    font-size: 13px;
+  }
+
+  .post-content {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .post-image {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+    cursor: pointer;
+  }
+
+  .post-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    color: var(--text2);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .action-btn:hover {
+    background: var(--surface2);
+  }
+
+  .action-btn.liked {
+    color: var(--accent2);
+  }
+
+  .comments-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .comment {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .comment-body {
+    flex: 1;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 10px 14px;
+  }
+
+  .comment-author {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .comment-text {
+    color: var(--text2);
+    font-size: 14px;
+  }
+
+  .comment-input-wrap {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .comment-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 10px 16px;
+    color: var(--text);
+    outline: none;
+  }
+
+  .right-panel {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 24px 20px;
+  }
+
+  .widget {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .widget-title {
+    font-family: "Syne", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .suggestion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .suggestion-info {
+    flex: 1;
+  }
+
+  .sname {
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .sbio {
+    color: var(--text2);
+    font-size: 12px;
+  }
+
+  .btn-follow {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .search-bar-wrap {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search-bar {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 12px 18px;
+    color: var(--text);
+    outline: none;
+  }
+
+  .profile-banner {
+    height: 140px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  }
+
+  .profile-info {
+    padding: 0 24px 24px;
+  }
+
+  .profile-avatar-wrap {
+    margin-top: -40px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .profile-name {
+    font-family: "Syne", sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  .profile-username {
+    color: var(--text2);
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .profile-bio {
+    font-size: 15px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .profile-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+
+  .stat .num {
+    font-family: "Syne", sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+  }
+
+  .stat .lbl {
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .messages-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 66px);
+  }
+
+  .conversations-list {
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+  }
+
+  .conv-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .conv-item:hover {
+    background: var(--surface2);
+  }
+
+  .conv-item.active {
+    background: rgba(124,106,247,0.12);
+  }
+
+  .conv-info {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .conv-name {
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .conv-preview {
+    color: var(--text2);
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chat-area {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 66px);
+  }
+
+  .chat-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-weight: 700;
+  }
+
+  .messages-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .message-bubble {
+    max-width: 70%;
+    padding: 10px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .message-bubble.sent {
+    background: var(--accent);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .message-bubble.received {
+    background: var(--surface2);
+    color: var(--text);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  .message-time {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-top: 4px;
+  }
+
+  .chat-input-area {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 12px 18px;
+    color: var(--text);
+    outline: none;
+  }
+
+  .btn-send {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .notif-item {
+    display: flex;
+    gap: 12px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .notif-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .notif-icon.like { background: rgba(247,106,138,0.2); }
+  .notif-icon.comment { background: rgba(124,106,247,0.2); }
+  .notif-icon.message { background: rgba(106,247,196,0.2); }
+
+  #toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 24px;
+    z-index: 9999;
+    transition: transform 0.3s ease;
+    box-shadow: var(--shadow);
+  }
+
+  #toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  #toast.success {
+    border-color: var(--accent3);
+    color: var(--accent3);
+  }
+
+  #toast.error {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+
+  .modal-title {
+    font-family: "Syne", sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+  }
+
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text3);
+    font-size: 14px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text3);
+  }
+
+  .empty-state .icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    background: var(--accent2);
+    color: white;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 0 5px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+
+  .settings-section {
+    padding: 24px;
+  }
+
+  .settings-title {
+    font-family: "Syne", sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 18px;
+  }
+
+  .avatar-upload-wrap {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .avatar-upload-wrap input {
+    display: none;
+  }
+
+  .avatar-upload-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: 0.2s;
+    color: white;
+    font-size: 20px;
+  }
+
+  .avatar-upload-wrap:hover .avatar-upload-overlay {
+    opacity: 1;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: white;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .avatar-lg {
+    width: 80px;
+    height: 80px;
+    font-size: 28px;
+  }
+
+  @media (max-width: 1024px) {
+    .app-layout {
+      grid-template-columns: 70px 1fr;
+    }
+    .right-panel {
+      display: none;
+    }
+    .nav-item span:not(.nav-icon) {
+      display: none;
+    }
+    .sidebar-logo {
+      text-align: center;
+      font-size: 18px;
+    }
+    .sidebar-profile .profile-name-small,
+    .sidebar-profile .profile-username-small {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .app-layout {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: auto;
+      height: auto;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-right: none;
+      flex-direction: row;
+      z-index: 100;
+      padding: 8px 16px;
+    }
+    .sidebar-logo,
+    .sidebar-profile {
+      display: none;
+    }
+    .nav-item {
+      flex-direction: column;
+      gap: 2px;
+      padding: 8px;
+      font-size: 10px;
+    }
+    .nav-item .nav-icon {
+      font-size: 22px;
+    }
+    .main-content {
+      padding-bottom: 76px;
+    }
+    .messages-layout {
+      grid-template-columns: 1fr;
+    }
+    .conversations-list {
+      display: none;
+    }
+  }
+</style>
 </head>
-<body style="background:#111;color:white;font-family:Arial;padding:30px">
-  <h1>Test</h1>
+<body>
 
-  <button onclick="test1()">Bouton 1</button>
-  <button onclick="test2()">Bouton 2</button>
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-text">Aymane Social</div>
+      <p>Connectez-vous avec votre réseau</p>
+    </div>
 
-  <script>
-    function test1() {
-      alert("Bouton 1 OK");
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="showAuthTab('login')">Connexion</button>
+      <button class="auth-tab" onclick="showAuthTab('signup')">Inscription</button>
+    </div>
+
+    <div id="login-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="vous@exemple.com">
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="login-password" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" onclick="login()">Se connecter</button>
+    </div>
+
+    <div id="signup-form" style="display:none">
+      <div class="form-group">
+        <label>Nom d'utilisateur</label>
+        <input type="text" id="signup-username" placeholder="@monpseudo">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="vous@exemple.com">
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="signup-password" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" onclick="signup()">Créer mon compte</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-logo">A·S</div>
+
+      <button class="nav-item active" onclick="showPage('feed')" id="nav-feed"><span class="nav-icon">🏠</span><span>Accueil</span></button>
+      <button class="nav-item" onclick="showPage('explore')" id="nav-explore"><span class="nav-icon">🔍</span><span>Explorer</span></button>
+      <button class="nav-item" onclick="showPage('messages')" id="nav-messages"><span class="nav-icon">💬</span><span>Messages</span><span class="badge" id="msg-badge" style="display:none">0</span></button>
+      <button class="nav-item" onclick="showPage('notifications')" id="nav-notifications"><span class="nav-icon">🔔</span><span>Notifications</span><span class="badge" id="notif-badge" style="display:none">0</span></button>
+      <button class="nav-item" onclick="showPage('profile')" id="nav-profile"><span class="nav-icon">👤</span><span>Profil</span></button>
+      <button class="nav-item" onclick="showPage('settings')" id="nav-settings"><span class="nav-icon">⚙️</span><span>Paramètres</span></button>
+
+      <div class="sidebar-profile" id="sidebar-user" onclick="showPage('profile')">
+        <div class="avatar avatar-sm" id="sidebar-avatar-wrap"><span>?</span></div>
+        <div>
+          <div class="profile-name-small" id="sidebar-name">...</div>
+          <div class="profile-username-small" id="sidebar-uname">@...</div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="page active" id="page-feed">
+        <div class="page-header">🏠 Fil d'actualité</div>
+
+        <div class="composer">
+          <div class="avatar" id="composer-avatar-wrap"><span>?</span></div>
+          <div class="composer-right">
+            <textarea id="post-text" placeholder="Quoi de neuf ?" rows="3" maxlength="500"></textarea>
+
+            <div id="post-image-preview" class="image-preview" style="display:none">
+              <img id="post-preview-img" src="" alt="">
+              <button class="remove-img" onclick="removePostImage()">✕</button>
+            </div>
+
+            <div class="composer-actions">
+              <div>
+                <label class="tool-btn" title="Ajouter une image">🖼️
+                  <input type="file" accept="image/*" style="display:none" onchange="handlePostImage(event)">
+                </label>
+              </div>
+              <button class="btn-post" onclick="createPost()">Publier</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="feed-posts"><div class="loading">Chargement</div></div>
+      </div>
+
+      <div class="page" id="page-explore">
+        <div class="page-header">🔍 Explorer</div>
+        <div class="search-bar-wrap">
+          <input class="search-bar" id="search-input" type="text" placeholder="Rechercher des utilisateurs..." oninput="searchUsers(this.value)">
+        </div>
+        <div id="search-results"></div>
+        <div style="padding:16px 24px; color:var(--text3); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Derniers posts</div>
+        <div id="explore-posts"><div class="loading">Chargement</div></div>
+      </div>
+
+      <div class="page" id="page-messages">
+        <div class="messages-layout">
+          <div class="conversations-list">
+            <div style="padding:16px 20px; border-bottom:1px solid var(--border); font-family:'Syne',sans-serif; font-weight:800; font-size:16px;">Messages</div>
+            <div id="conv-list"><div class="loading">Chargement</div></div>
+          </div>
+          <div class="chat-area" id="chat-area">
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--text3);">
+              <div class="empty-state"><div class="icon">💬</div><p>Sélectionnez une conversation</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-notifications">
+        <div class="page-header">🔔 Notifications</div>
+        <div id="notif-list"><div class="loading">Chargement</div></div>
+      </div>
+
+      <div class="page" id="page-profile">
+        <div class="profile-banner"></div>
+        <div class="profile-info">
+          <div class="profile-avatar-wrap">
+            <div class="avatar avatar-lg" id="profile-avatar-wrap"></div>
+            <button class="btn btn-ghost" onclick="showPage('settings')" style="height:fit-content">Modifier le profil</button>
+          </div>
+          <div class="profile-name" id="profile-name">...</div>
+          <div class="profile-username" id="profile-username">@...</div>
+          <div class="profile-bio" id="profile-bio"></div>
+          <div class="profile-stats">
+            <div class="stat">
+              <div class="num" id="profile-posts-count">0</div>
+              <div class="lbl">Posts</div>
+            </div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--border)"></div>
+        <div id="profile-posts"><div class="loading">Chargement</div></div>
+      </div>
+
+      <div class="page" id="page-settings">
+        <div class="page-header">⚙️ Paramètres</div>
+        <div class="settings-section">
+          <div class="settings-title">Mon profil</div>
+
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px;">
+            <label class="avatar-upload-wrap">
+              <div class="avatar avatar-lg" id="settings-avatar-wrap"></div>
+              <div class="avatar-upload-overlay">📷</div>
+              <input type="file" accept="image/*" onchange="uploadAvatar(event)">
+            </label>
+            <div>
+              <div style="font-weight:700;" id="settings-name-display">...</div>
+              <div style="color:var(--text2); font-size:14px;" id="settings-uname-display">...</div>
+              <div style="font-size:12px; color:var(--text3); margin-top:4px;">Cliquez sur la photo pour changer</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Nom d'utilisateur</label>
+            <input type="text" id="settings-username" placeholder="monpseudo">
+          </div>
+
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea id="settings-bio" placeholder="Parlez de vous..." maxlength="160"></textarea>
+          </div>
+
+          <button class="btn btn-primary" style="width:auto; margin-bottom:12px;" onclick="saveProfile()">Sauvegarder</button>
+
+          <div class="divider"></div>
+
+          <div class="settings-title" style="margin-top:8px;">Compte</div>
+          <button class="btn btn-danger" onclick="logout()" style="width:auto;">Se déconnecter</button>
+        </div>
+      </div>
+    </main>
+
+    <aside class="right-panel">
+      <div class="widget">
+        <div class="widget-title">🔍 Recherche rapide</div>
+        <input class="search-bar" type="text" placeholder="Trouver quelqu'un..." style="font-size:13px; padding:10px 16px;" oninput="searchUsersRight(this.value)">
+        <div id="right-search-results" style="margin-top:12px;"></div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-title">👥 Suggestions</div>
+        <div id="suggestions-list"><div style="color:var(--text3); font-size:13px;">Chargement...</div></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<div class="modal-overlay" id="user-modal" onclick="if(event.target===this) closeUserModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Profil</div>
+      <button class="close-btn" onclick="closeUserModal()">✕</button>
+    </div>
+    <div id="user-modal-content"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="lightbox" onclick="if(event.target===this) document.getElementById('lightbox').style.display='none'">
+  <img id="lightbox-img" style="max-width:90vw; max-height:90vh; border-radius:12px; object-fit:contain;">
+</div>
+
+<script>
+const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+let currentProfile = null;
+let currentChatUserId = null;
+let postImageFile = null;
+let realtimeSub = null;
+let inboxSub = null;
+
+function toast(message, type = "success") {
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.className = "show " + type;
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => {
+    el.className = "";
+  }, 3000);
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function getTimeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return "À l'instant";
+  if (minutes < 60) return minutes + "m";
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return hours + "h";
+  const days = Math.floor(hours / 24);
+  if (days < 7) return days + "j";
+  return new Date(dateStr).toLocaleDateString("fr-FR");
+}
+
+function setAvatar(wrapId, initial, avatarUrl) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  if (avatarUrl) {
+    wrap.innerHTML = '<img src="' + avatarUrl + '" alt="">';
+  } else {
+    wrap.innerHTML = "<span>" + escapeHtml(initial) + "</span>";
+  }
+}
+
+function showAuthTab(tab) {
+  document.getElementById("login-form").style.display = tab === "login" ? "block" : "none";
+  document.getElementById("signup-form").style.display = tab === "signup" ? "block" : "none";
+  document.querySelectorAll(".auth-tab").forEach((btn, i) => {
+    btn.classList.toggle("active", (tab === "login" && i === 0) || (tab === "signup" && i === 1));
+  });
+}
+
+function showAuth() {
+  document.getElementById("auth-screen").style.display = "flex";
+  document.getElementById("app").style.display = "none";
+}
+
+function showApp() {
+  document.getElementById("auth-screen").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  showPage("feed");
+  loadSuggestions();
+  subscribeToMessages();
+}
+
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+
+  const pageEl = document.getElementById("page-" + page);
+  if (pageEl) pageEl.classList.add("active");
+
+  const navEl = document.getElementById("nav-" + page);
+  if (navEl) navEl.classList.add("active");
+
+  if (page === "feed") loadFeed();
+  if (page === "explore") {
+    loadExplorePosts();
+    document.getElementById("search-input").value = "";
+    document.getElementById("search-results").innerHTML = "";
+  }
+  if (page === "messages") loadConversations();
+  if (page === "notifications") loadNotifications();
+  if (page === "profile") loadMyProfile();
+}
+
+async function init() {
+  try {
+    const { data } = await supabase.auth.getSession();
+    const session = data?.session || null;
+
+    if (session?.user) {
+      currentUser = session.user;
+      await ensureProfile();
+      showApp();
+    } else {
+      showAuth();
     }
 
-    function test2() {
-      alert("Bouton 2 OK");
+    supabase.auth.onAuthStateChange(async (event, sessionNow) => {
+      if (event === "SIGNED_IN" && sessionNow?.user) {
+        currentUser = sessionNow.user;
+        await ensureProfile();
+        showApp();
+      }
+
+      if (event === "SIGNED_OUT") {
+        currentUser = null;
+        currentProfile = null;
+        currentChatUserId = null;
+
+        if (realtimeSub) {
+          await supabase.removeChannel(realtimeSub);
+          realtimeSub = null;
+        }
+        if (inboxSub) {
+          await supabase.removeChannel(inboxSub);
+          inboxSub = null;
+        }
+
+        showAuth();
+      }
+    });
+  } catch (e) {
+    toast("Erreur d'initialisation", "error");
+    showAuth();
+  }
+}
+
+async function ensureProfile() {
+  if (!currentUser) return;
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", currentUser.id)
+    .maybeSingle();
+
+  if (error) {
+    toast(error.message || "Erreur profil", "error");
+    return;
+  }
+
+  if (!data) {
+    const base = (currentUser.email || "user")
+      .split("@")[0]
+      .replace(/[^a-zA-Z0-9_]/g, "")
+      .slice(0, 20) || "user";
+
+    const username = base + Math.floor(Math.random() * 1000);
+
+    const { data: inserted, error: insertError } = await supabase
+      .from("profiles")
+      .insert({
+        id: currentUser.id,
+        username,
+        bio: "",
+        avatar_url: ""
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      toast(insertError.message || "Impossible de créer le profil", "error");
+      return;
     }
-  </script>
+    currentProfile = inserted;
+  } else {
+    currentProfile = data;
+  }
+
+  updateSidebarUI();
+}
+
+function updateSidebarUI() {
+  if (!currentProfile) return;
+
+  const initial = (currentProfile.username || "?")[0].toUpperCase();
+
+  document.getElementById("sidebar-name").textContent = currentProfile.username || "";
+  document.getElementById("sidebar-uname").textContent = "@" + (currentProfile.username || "");
+  document.getElementById("settings-name-display").textContent = currentProfile.username || "";
+  document.getElementById("settings-uname-display").textContent = "@" + (currentProfile.username || "");
+  document.getElementById("settings-username").value = currentProfile.username || "";
+  document.getElementById("settings-bio").value = currentProfile.bio || "";
+  document.getElementById("profile-name").textContent = currentProfile.username || "";
+  document.getElementById("profile-username").textContent = "@" + (currentProfile.username || "");
+  document.getElementById("profile-bio").textContent = currentProfile.bio || "";
+
+  setAvatar("sidebar-avatar-wrap", initial, currentProfile.avatar_url);
+  setAvatar("composer-avatar-wrap", initial, currentProfile.avatar_url);
+  setAvatar("settings-avatar-wrap", initial, currentProfile.avatar_url);
+  setAvatar("profile-avatar-wrap", initial, currentProfile.avatar_url);
+}
+
+async function login() {
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+
+  if (!email || !password) {
+    toast("Veuillez remplir tous les champs", "error");
+    return;
+  }
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) toast(error.message, "error");
+}
+
+async function signup() {
+  const username = document.getElementById("signup-username").value.trim();
+  const email = document.getElementById("signup-email").value.trim();
+  const password = document.getElementById("signup-password").value;
+
+  if (!username || !email || !password) {
+    toast("Veuillez remplir tous les champs", "error");
+    return;
+  }
+
+  if (password.length < 6) {
+    toast("Mot de passe : 6 caractères minimum", "error");
+    return;
+  }
+
+  const { data, error } = await supabase.auth.signUp({ email, password });
+
+  if (error) {
+    toast(error.message, "error");
+    return;
+  }
+
+  if (data?.user) {
+    await supabase.from("profiles").upsert({
+      id: data.user.id,
+      username,
+      bio: "",
+      avatar_url: ""
+    });
+  }
+
+  toast("Compte créé !", "success");
+}
+
+async function logout() {
+  await supabase.auth.signOut();
+  toast("À bientôt !", "success");
+}
+
+function handlePostImage(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  postImageFile = file;
+  const url = URL.createObjectURL(file);
+  document.getElementById("post-preview-img").src = url;
+  document.getElementById("post-image-preview").style.display = "inline-block";
+}
+
+function removePostImage() {
+  postImageFile = null;
+  document.getElementById("post-preview-img").src = "";
+  document.getElementById("post-image-preview").style.display = "none";
+}
+
+async function uploadImageToBucket(file, folder) {
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const path = folder + "/" + currentUser.id + "/" + Date.now() + "." + ext;
+
+  const { error: uploadError } = await supabase.storage
+    .from("images")
+    .upload(path, file, { upsert: true });
+
+  if (uploadError) throw uploadError;
+
+  const { data } = supabase.storage.from("images").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+async function createPost() {
+  const content = document.getElementById("post-text").value.trim();
+
+  if (!content && !postImageFile) {
+    toast("Écrivez quelque chose...", "error");
+    return;
+  }
+
+  let imageUrl = "";
+
+  try {
+    if (postImageFile) {
+      imageUrl = await uploadImageToBucket(postImageFile, "posts");
+    }
+
+    const { error } = await supabase.from("posts").insert({
+      user_id: currentUser.id,
+      content: content || "",
+      image_url: imageUrl
+    });
+
+    if (error) {
+      toast(error.message || "Erreur de publication", "error");
+      return;
+    }
+
+    document.getElementById("post-text").value = "";
+    removePostImage();
+    toast("Post publié ! ✨", "success");
+    loadFeed();
+  } catch (e) {
+    toast("Erreur upload image", "error");
+  }
+}
+
+async function loadFeed() {
+  const container = document.getElementById("feed-posts");
+  container.innerHTML = '<div class="loading">Chargement</div>';
+
+  const { data: posts, error } = await supabase
+    .from("posts")
+    .select("*, profiles(username, avatar_url)")
+    .order("created_at", { ascending: false })
+    .limit(30);
+
+  if (error) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Erreur de chargement</p></div>';
+    return;
+  }
+
+  if (!posts || posts.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🌟</div><p>Aucun post. Soyez le premier !</p></div>';
+    return;
+  }
+
+  container.innerHTML = "";
+  for (const post of posts) {
+    container.appendChild(await buildPostCard(post));
+  }
+}
+
+async function loadExplorePosts() {
+  const container = document.getElementById("explore-posts");
+  container.innerHTML = '<div class="loading">Chargement</div>';
+
+  const { data: posts, error } = await supabase
+    .from("posts")
+    .select("*, profiles(username, avatar_url)")
+    .order("created_at", { ascending: false })
+    .limit(30);
+
+  if (error) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Erreur</p></div>';
+    return;
+  }
+
+  container.innerHTML = "";
+  if (!posts || posts.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>Aucun post</p></div>';
+    return;
+  }
+
+  for (const post of posts) {
+    container.appendChild(await buildPostCard(post));
+  }
+}
+
+async function buildPostCard(post) {
+  const card = document.createElement("div");
+  card.className = "post-card";
+  card.id = "post-" + post.id;
+
+  const profile = post.profiles || {};
+  const initial = (profile.username || "?")[0].toUpperCase();
+  const avatarHtml = profile.avatar_url
+    ? '<img src="' + profile.avatar_url + '" alt="">'
+    : "<span>" + initial + "</span>";
+
+  const { count: likeCount } = await supabase
+    .from("likes")
+    .select("*", { count: "exact", head: true })
+    .eq("post_id", post.id);
+
+  const { data: myLike } = await supabase
+    .from("likes")
+    .select("id")
+    .eq("post_id", post.id)
+    .eq("user_id", currentUser.id)
+    .maybeSingle();
+
+  const liked = !!myLike;
+
+  const { count: commentCount } = await supabase
+    .from("comments")
+    .select("*", { count: "exact", head: true })
+    .eq("post_id", post.id);
+
+  card.innerHTML = `
+    <div class="post-header">
+      <div class="avatar avatar-sm">${avatarHtml}</div>
+      <div class="post-author">
+        <div class="name" onclick="openUserProfile('${post.user_id}')">${escapeHtml(profile.username || "Utilisateur")}</div>
+        <div class="username">@${escapeHtml(profile.username || "?")} · ${getTimeAgo(post.created_at)}</div>
+      </div>
+      ${post.user_id === currentUser.id ? `<button class="action-btn" onclick="deletePost(${post.id})">🗑️</button>` : ""}
+    </div>
+
+    ${post.content ? `<div class="post-content">${escapeHtml(post.content)}</div>` : ""}
+    ${post.image_url ? `<img class="post-image" src="${post.image_url}" alt="" onclick="openLightbox('${post.image_url}')">` : ""}
+
+    <div class="post-actions">
+      <button class="action-btn ${liked ? "liked" : ""}" id="like-btn-${post.id}" onclick="toggleLike(${post.id}, ${liked})">
+        ${liked ? "❤️" : "🤍"} <span>${likeCount || 0}</span>
+      </button>
+      <button class="action-btn" onclick="toggleComments(${post.id})">💬 ${commentCount || 0}</button>
+    </div>
+
+    <div class="comments-section" id="comments-${post.id}" style="display:none"></div>
+  `;
+
+  return card;
+}
+
+async function toggleLike(postId, currentlyLiked) {
+  if (currentlyLiked) {
+    await supabase.from("likes").delete().eq("post_id", postId).eq("user_id", currentUser.id);
+  } else {
+    await supabase.from("likes").insert({ post_id: postId, user_id: currentUser.id });
+
+    try {
+      const { data: post } = await supabase.from("posts").select("user_id").eq("id", postId).single();
+      if (post && post.user_id !== currentUser.id) {
+        await supabase.from("notifications").insert({
+          user_id: post.user_id,
+          actor_id: currentUser.id,
+          type: "like",
+          post_id: postId
+        });
+      }
+    } catch (_) {}
+  }
+
+  loadFeed();
+}
+
+async function toggleComments(postId) {
+  const section = document.getElementById("comments-" + postId);
+  if (!section) return;
+
+  if (section.style.display === "none") {
+    section.style.display = "block";
+    await loadComments(postId);
+  } else {
+    section.style.display = "none";
+  }
+}
+
+async function loadComments(postId) {
+  const section = document.getElementById("comments-" + postId);
+
+  const { data: comments } = await supabase
+    .from("comments")
+    .select("*, profiles(username, avatar_url)")
+    .eq("post_id", postId)
+    .order("created_at", { ascending: true });
+
+  let html = "";
+
+  if (comments && comments.length > 0) {
+    for (const c of comments) {
+      const initial = (c.profiles?.username || "?")[0].toUpperCase();
+      const avatarHtml = c.profiles?.avatar_url
+        ? '<img src="' + c.profiles.avatar_url + '" alt="">'
+        : "<span>" + initial + "</span>";
+
+      html += `
+        <div class="comment">
+          <div class="avatar avatar-sm">${avatarHtml}</div>
+          <div class="comment-body">
+            <div class="comment-author">${escapeHtml(c.profiles?.username || "Utilisateur")}</div>
+            <div class="comment-text">${escapeHtml(c.content)}</div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  const myInitial = (currentProfile?.username || "?")[0].toUpperCase();
+  const myAvatarHtml = currentProfile?.avatar_url
+    ? '<img src="' + currentProfile.avatar_url + '" alt="">'
+    : "<span>" + myInitial + "</span>";
+
+  html += `
+    <div class="comment-input-wrap">
+      <div class="avatar avatar-sm">${myAvatarHtml}</div>
+      <input class="comment-input" id="comment-input-${postId}" type="text" placeholder="Écrire un commentaire..." onkeydown="if(event.key==='Enter') addComment(${postId})">
+      <button class="btn-send" onclick="addComment(${postId})" style="width:36px;height:36px;font-size:14px;">➤</button>
+    </div>
+  `;
+
+  section.innerHTML = html;
+}
+
+async function addComment(postId) {
+  const input = document.getElementById("comment-input-" + postId);
+  const content = input.value.trim();
+  if (!content) return;
+
+  const { error } = await supabase.from("comments").insert({
+    post_id: postId,
+    user_id: currentUser.id,
+    content
+  });
+
+  if (error) {
+    toast("Erreur commentaire", "error");
+    return;
+  }
+
+  try {
+    const { data: post } = await supabase.from("posts").select("user_id").eq("id", postId).single();
+    if (post && post.user_id !== currentUser.id) {
+      await supabase.from("notifications").insert({
+        user_id: post.user_id,
+        actor_id: currentUser.id,
+        type: "comment",
+        post_id: postId
+      });
+    }
+  } catch (_) {}
+
+  input.value = "";
+  await loadComments(postId);
+}
+
+async function deletePost(postId) {
+  if (!confirm("Supprimer ce post ?")) return;
+
+  await supabase.from("likes").delete().eq("post_id", postId);
+  await supabase.from("comments").delete().eq("post_id", postId);
+  await supabase.from("posts").delete().eq("id", postId);
+
+  document.getElementById("post-" + postId)?.remove();
+  toast("Post supprimé", "success");
+}
+
+async function loadMyProfile() {
+  if (!currentProfile) return;
+
+  const initial = (currentProfile.username || "?")[0].toUpperCase();
+  setAvatar("profile-avatar-wrap", initial, currentProfile.avatar_url);
+
+  document.getElementById("profile-name").textContent = currentProfile.username || "";
+  document.getElementById("profile-username").textContent = "@" + (currentProfile.username || "");
+  document.getElementById("profile-bio").textContent = currentProfile.bio || "";
+
+  const { data: posts } = await supabase
+    .from("posts")
+    .select("*, profiles(username, avatar_url)")
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending: false });
+
+  document.getElementById("profile-posts-count").textContent = posts?.length || 0;
+
+  const container = document.getElementById("profile-posts");
+  container.innerHTML = "";
+
+  if (!posts || posts.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>Aucun post encore</p></div>';
+    return;
+  }
+
+  for (const post of posts) {
+    container.appendChild(await buildPostCard(post));
+  }
+}
+
+async function openUserProfile(userId) {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (!profile) return;
+
+  const { data: posts } = await supabase
+    .from("posts")
+    .select("*, profiles(username, avatar_url)")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  const modal = document.getElementById("user-modal");
+  const content = document.getElementById("user-modal-content");
+
+  const initial = (profile.username || "?")[0].toUpperCase();
+  const avatarHtml = profile.avatar_url
+    ? `<img src="${profile.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;">`
+    : initial;
+
+  let postsHtml = "";
+  if (posts && posts.length > 0) {
+    for (const p of posts) {
+      postsHtml += `
+        <div style="padding:12px 0; border-bottom:1px solid var(--border);">
+          ${p.content ? `<div style="font-size:14px; margin-bottom:8px;">${escapeHtml(p.content)}</div>` : ""}
+          ${p.image_url ? `<img src="${p.image_url}" style="max-width:100%; border-radius:8px; cursor:pointer;" onclick="openLightbox('${p.image_url}')">` : ""}
+          <div style="font-size:12px; color:var(--text3); margin-top:6px;">${getTimeAgo(p.created_at)}</div>
+        </div>
+      `;
+    }
+  } else {
+    postsHtml = '<div style="color:var(--text3); text-align:center; padding:20px;">Aucun post</div>';
+  }
+
+  content.innerHTML = `
+    <div style="display:flex; gap:16px; align-items:center; margin-bottom:20px;">
+      <div class="avatar avatar-lg">${avatarHtml}</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800;">${escapeHtml(profile.username)}</div>
+        <div style="color:var(--text2);">@${escapeHtml(profile.username)}</div>
+        ${profile.bio ? `<div style="font-size:14px; margin-top:8px;">${escapeHtml(profile.bio)}</div>` : ""}
+      </div>
+    </div>
+    ${userId !== currentUser.id ? `<button class="btn btn-ghost" style="width:100%; margin-bottom:16px;" onclick="startChat('${userId}', '${escapeHtml(profile.username)}')">💬 Envoyer un message</button>` : ""}
+    <div style="font-family:'Syne',sans-serif; font-weight:800; margin-bottom:12px;">Posts récents</div>
+    ${postsHtml}
+  `;
+
+  modal.style.display = "flex";
+}
+
+function closeUserModal() {
+  document.getElementById("user-modal").style.display = "none";
+}
+
+async function saveProfile() {
+  const username = document.getElementById("settings-username").value.trim();
+  const bio = document.getElementById("settings-bio").value.trim();
+
+  if (!username) {
+    toast("Le nom d'utilisateur est requis", "error");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ username, bio })
+    .eq("id", currentUser.id);
+
+  if (error) {
+    toast(error.message || "Erreur sauvegarde", "error");
+    return;
+  }
+
+  currentProfile = { ...currentProfile, username, bio };
+  updateSidebarUI();
+  toast("Profil mis à jour ✅", "success");
+}
+
+async function uploadAvatar(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const path = "avatars/" + currentUser.id + "." + ext;
+
+    const { error: uploadError } = await supabase.storage
+      .from("images")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      toast("Erreur upload avatar", "error");
+      return;
+    }
+
+    const { data } = supabase.storage.from("images").getPublicUrl(path);
+    const avatarUrl = data.publicUrl + "?t=" + Date.now();
+
+    await supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", currentUser.id);
+
+    currentProfile = { ...currentProfile, avatar_url: avatarUrl };
+    updateSidebarUI();
+    toast("Photo mise à jour ✅", "success");
+  } catch (e2) {
+    toast("Erreur avatar", "error");
+  }
+}
+
+async function loadConversations() {
+  const container = document.getElementById("conv-list");
+  container.innerHTML = '<div class="loading">Chargement</div>';
+
+  const { data: msgs, error } = await supabase
+    .from("messages")
+    .select("*")
+    .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Erreur messages</p></div>';
+    return;
+  }
+
+  if (!msgs || msgs.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>Aucun message</p></div>';
+    return;
+  }
+
+  const seen = new Set();
+  const latest = {};
+
+  for (const m of msgs) {
+    const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+    if (!seen.has(partnerId)) {
+      seen.add(partnerId);
+      latest[partnerId] = m;
+    }
+  }
+
+  container.innerHTML = "";
+
+  for (const partnerId of seen) {
+    const { data: partner } = await supabase
+      .from("profiles")
+      .select("username, avatar_url")
+      .eq("id", partnerId)
+      .maybeSingle();
+
+    if (!partner) continue;
+
+    const initial = (partner.username || "?")[0].toUpperCase();
+    const avatarHtml = partner.avatar_url
+      ? '<img src="' + partner.avatar_url + '" alt="">'
+      : "<span>" + initial + "</span>";
+
+    const lastMsg = latest[partnerId];
+
+    const div = document.createElement("div");
+    div.className = "conv-item" + (currentChatUserId === partnerId ? " active" : "");
+    div.innerHTML = `
+      <div class="avatar avatar-sm">${avatarHtml}</div>
+      <div class="conv-info">
+        <div class="conv-name">${escapeHtml(partner.username)}</div>
+        <div class="conv-preview">${escapeHtml(lastMsg.content || "")}</div>
+      </div>
+    `;
+    div.onclick = () => openChat(partnerId, partner.username);
+    container.appendChild(div);
+  }
+}
+
+function startChat(userId, username) {
+  closeUserModal();
+  showPage("messages");
+  setTimeout(() => openChat(userId, username), 100);
+}
+
+async function openChat(userId, username) {
+  currentChatUserId = userId;
+
+  const chatArea = document.getElementById("chat-area");
+  chatArea.innerHTML = `
+    <div class="chat-header">
+      <div class="avatar avatar-sm"><span>${escapeHtml((username || "?")[0].toUpperCase())}</span></div>
+      <div>${escapeHtml(username)}</div>
+    </div>
+    <div class="messages-list" id="messages-list"></div>
+    <div class="chat-input-area">
+      <input class="chat-input" id="chat-input-field" type="text" placeholder="Écrire un message..." onkeydown="if(event.key==='Enter') sendMessage()">
+      <button class="btn-send" onclick="sendMessage()">➤</button>
+    </div>
+  `;
+
+  await loadMessages(userId);
+
+  if (realtimeSub) {
+    await supabase.removeChannel(realtimeSub);
+    realtimeSub = null;
+  }
+
+  realtimeSub = supabase
+    .channel("chat-" + userId)
+    .on("postgres_changes", {
+      event: "INSERT",
+      schema: "public",
+      table: "messages"
+    }, payload => {
+      const m = payload.new;
+      if (
+        (m.sender_id === currentUser.id && m.receiver_id === userId) ||
+        (m.sender_id === userId && m.receiver_id === currentUser.id)
+      ) {
+        appendMessage(m);
+      }
+    })
+    .subscribe();
+}
+
+async function loadMessages(userId) {
+  const container = document.getElementById("messages-list");
+  if (!container) return;
+
+  const { data: msgs, error } = await supabase
+    .from("messages")
+    .select("*")
+    .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    container.innerHTML = '<div style="text-align:center; color:var(--text3); padding:20px;">Erreur chargement messages</div>';
+    return;
+  }
+
+  container.innerHTML = "";
+
+  if (!msgs || msgs.length === 0) {
+    container.innerHTML = '<div style="text-align:center; color:var(--text3); padding:20px;">Commencez la conversation !</div>';
+    return;
+  }
+
+  msgs.forEach(m => appendMessage(m, true));
+  container.scrollTop = container.scrollHeight;
+}
+
+function appendMessage(m, skipScroll = false) {
+  const container = document.getElementById("messages-list");
+  if (!container) return;
+
+  const sent = m.sender_id === currentUser.id;
+  const wrap = document.createElement("div");
+  wrap.style.display = "flex";
+  wrap.style.flexDirection = "column";
+  wrap.style.alignItems = sent ? "flex-end" : "flex-start";
+
+  wrap.innerHTML = `
+    <div class="message-bubble ${sent ? "sent" : "received"}">${escapeHtml(m.content)}</div>
+    <div class="message-time">${getTimeAgo(m.created_at)}</div>
+  `;
+
+  container.appendChild(wrap);
+  if (!skipScroll) container.scrollTop = container.scrollHeight;
+}
+
+async function sendMessage() {
+  const input = document.getElementById("chat-input-field");
+  if (!input || !currentChatUserId) return;
+
+  const content = input.value.trim();
+  if (!content) return;
+
+  input.value = "";
+
+  const { error } = await supabase.from("messages").insert({
+    sender_id: currentUser.id,
+    receiver_id: currentChatUserId,
+    content
+  });
+
+  if (error) toast("Erreur envoi message", "error");
+}
+
+function subscribeToMessages() {
+  if (!currentUser) return;
+
+  if (inboxSub) {
+    supabase.removeChannel(inboxSub);
+    inboxSub = null;
+  }
+
+  inboxSub = supabase
+    .channel("new-messages")
+    .on("postgres_changes", {
+      event: "INSERT",
+      schema: "public",
+      table: "messages",
+      filter: `receiver_id=eq.${currentUser.id}`
+    }, () => {
+      const badge = document.getElementById("msg-badge");
+      const current = parseInt(badge.textContent || "0", 10) || 0;
+      badge.textContent = String(current + 1);
+      badge.style.display = "inline-flex";
+    })
+    .subscribe();
+}
+
+async function loadNotifications() {
+  const container = document.getElementById("notif-list");
+  container.innerHTML = '<div class="loading">Chargement</div>';
+
+  try {
+    const { data: notifs, error } = await supabase
+      .from("notifications")
+      .select("*, actor:profiles!notifications_actor_id_fkey(username, avatar_url)")
+      .eq("user_id", currentUser.id)
+      .order("created_at", { ascending: false })
+      .limit(30);
+
+    if (error || !notifs || notifs.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="icon">🔔</div><p>Aucune notification</p></div>';
+      return;
+    }
+
+    container.innerHTML = "";
+
+    for (const n of notifs) {
+      const icon = n.type === "like" ? "❤️" : n.type === "comment" ? "💬" : "📨";
+      const msg = n.type === "like"
+        ? "a aimé votre post"
+        : n.type === "comment"
+        ? "a commenté votre post"
+        : "vous a envoyé un message";
+
+      const iconClass = n.type === "like" ? "like" : n.type === "comment" ? "comment" : "message";
+
+      container.innerHTML += `
+        <div class="notif-item">
+          <div class="notif-icon ${iconClass}">${icon}</div>
+          <div>
+            <div class="notif-text"><strong>${escapeHtml(n.actor?.username || "Quelqu'un")}</strong> ${msg}</div>
+            <div class="notif-time">${getTimeAgo(n.created_at)}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById("notif-badge").style.display = "none";
+  } catch (e) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🔔</div><p>Aucune notification</p></div>';
+  }
+}
+
+async function searchUsers(query) {
+  const container = document.getElementById("search-results");
+
+  if (!query || query.length < 2) {
+    container.innerHTML = "";
+    return;
+  }
+
+  const { data: users } = await supabase
+    .from("profiles")
+    .select("*")
+    .ilike("username", "%" + query + "%")
+    .neq("id", currentUser.id)
+    .limit(5);
+
+  container.innerHTML = "";
+
+  if (!users || users.length === 0) {
+    container.innerHTML = '<div style="padding:16px 24px; color:var(--text3); font-size:14px;">Aucun résultat</div>';
+    return;
+  }
+
+  for (const u of users) {
+    const initial = (u.username || "?")[0].toUpperCase();
+    const avatarHtml = u.avatar_url
+      ? '<img src="' + u.avatar_url + '" alt="">'
+      : "<span>" + initial + "</span>";
+
+    const div = document.createElement("div");
+    div.className = "suggestion";
+    div.style.padding = "14px 24px";
+    div.innerHTML = `
+      <div class="avatar">${avatarHtml}</div>
+      <div class="suggestion-info">
+        <div class="sname">${escapeHtml(u.username)}</div>
+        <div class="sbio">${escapeHtml(u.bio || "")}</div>
+      </div>
+      <button class="btn-follow" onclick="openUserProfile('${u.id}')">Voir</button>
+    `;
+    container.appendChild(div);
+  }
+}
+
+async function searchUsersRight(query) {
+  const container = document.getElementById("right-search-results");
+
+  if (!query || query.length < 2) {
+    container.innerHTML = "";
+    return;
+  }
+
+  const { data: users } = await supabase
+    .from("profiles")
+    .select("*")
+    .ilike("username", "%" + query + "%")
+    .neq("id", currentUser.id)
+    .limit(4);
+
+  container.innerHTML = "";
+  if (!users || users.length === 0) return;
+
+  for (const u of users) {
+    const initial = (u.username || "?")[0].toUpperCase();
+    const avatarHtml = u.avatar_url
+      ? '<img src="' + u.avatar_url + '" alt="">'
+      : "<span>" + initial + "</span>";
+
+    const div = document.createElement("div");
+    div.className = "suggestion";
+    div.style.marginBottom = "10px";
+    div.innerHTML = `
+      <div class="avatar avatar-sm">${avatarHtml}</div>
+      <div class="suggestion-info">
+        <div class="sname" style="font-size:13px;">${escapeHtml(u.username)}</div>
+      </div>
+      <button class="btn-follow" onclick="openUserProfile('${u.id}')" style="font-size:12px; padding:4px 10px;">Voir</button>
+    `;
+    container.appendChild(div);
+  }
+}
+
+async function loadSuggestions() {
+  const container = document.getElementById("suggestions-list");
+
+  const { data: users } = await supabase
+    .from("profiles")
+    .select("*")
+    .neq("id", currentUser.id)
+    .limit(4);
+
+  if (!users || users.length === 0) {
+    container.innerHTML = '<div style="color:var(--text3); font-size:13px;">Aucune suggestion</div>';
+    return;
+  }
+
+  container.innerHTML = "";
+
+  for (const u of users) {
+    const initial = (u.username || "?")[0].toUpperCase();
+    const avatarHtml = u.avatar_url
+      ? '<img src="' + u.avatar_url + '" alt="">'
+      : "<span>" + initial + "</span>";
+
+    const div = document.createElement("div");
+    div.className = "suggestion";
+    div.innerHTML = `
+      <div class="avatar avatar-sm">${avatarHtml}</div>
+      <div class="suggestion-info">
+        <div class="sname">${escapeHtml(u.username)}</div>
+        <div class="sbio">${escapeHtml(u.bio || "Nouvel utilisateur")}</div>
+      </div>
+      <button class="btn-follow" onclick="openUserProfile('${u.id}')">Voir</button>
+    `;
+    container.appendChild(div);
+  }
+}
+
+function openLightbox(url) {
+  document.getElementById("lightbox-img").src = url;
+  document.getElementById("lightbox").style.display = "flex";
+}
+
+init();
+</script>
 </body>
 </html>
