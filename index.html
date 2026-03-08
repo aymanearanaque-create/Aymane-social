@@ -3,27 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dar Moha | Chef Moha | Expérience gastronomique et culturelle à Marrakech</title>
-  <meta name="description" content="Découvrez Dar Moha à Marrakech : l’univers de Chef Moha, ambassadeur de la cuisine marocaine moderne, dans un riad historique au cœur de la médina." />
+  <title>Dar Moha | Final Premium Model</title>
+  <meta name="description" content="Dar Moha Marrakech - Restaurant gastronomique, cuisine marocaine par Chef Moha, expérience culturelle et culinaire d’exception." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root{
       --bg:#0b0908;
       --bg-soft:#15110d;
-      --bg-card:rgba(255,255,255,.05);
-      --gold:#c9a56b;
-      --gold-2:#e7ca97;
-      --text:#f3ede4;
-      --muted:#c9bfb2;
+      --gold:#c8a66b;
+      --gold-light:#e6c992;
+      --white:#ffffff;
+      --text:#f3ece3;
+      --muted:#c8bcae;
       --line:rgba(255,255,255,.10);
-      --shadow:0 20px 60px rgba(0,0,0,.35);
-      --radius:26px;
+      --card:rgba(255,255,255,.05);
+      --shadow:0 20px 60px rgba(0,0,0,.34);
+      --radius:24px;
       --max:1240px;
-      --grad:linear-gradient(135deg, var(--gold), var(--gold-2));
+      --grad:linear-gradient(135deg,var(--gold),var(--gold-light));
     }
 
     *{
@@ -37,12 +38,12 @@
     }
 
     body{
-      font-family:'Inter',sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(201,165,107,.10), transparent 25%),
-        radial-gradient(circle at bottom right, rgba(201,165,107,.08), transparent 20%),
-        linear-gradient(180deg, #0b0908 0%, #15110d 100%);
+      font-family:'Montserrat',sans-serif;
       color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(200,166,107,.10), transparent 25%),
+        radial-gradient(circle at bottom right, rgba(200,166,107,.08), transparent 20%),
+        linear-gradient(180deg,#0b0908 0%,#15110d 100%);
       overflow-x:hidden;
     }
 
@@ -52,8 +53,9 @@
     }
 
     img{
-      max-width:100%;
       display:block;
+      width:100%;
+      max-width:100%;
     }
 
     .container{
@@ -67,73 +69,71 @@
       justify-content:center;
       gap:10px;
       padding:14px 24px;
-      border:none;
       border-radius:999px;
+      border:none;
       font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.04em;
       cursor:pointer;
       transition:.3s ease;
-      letter-spacing:.01em;
     }
 
     .btn-primary{
       background:var(--grad);
-      color:#1e1408;
-      box-shadow:0 14px 32px rgba(201,165,107,.28);
+      color:#201408;
+      box-shadow:0 14px 34px rgba(200,166,107,.22);
     }
 
     .btn-primary:hover{
       transform:translateY(-2px);
-      box-shadow:0 18px 40px rgba(201,165,107,.34);
     }
 
-    .btn-glass{
-      background:rgba(255,255,255,.07);
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.14);
-      backdrop-filter:blur(10px);
+    .btn-outline{
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.16);
+      backdrop-filter:blur(8px);
     }
 
-    .btn-glass:hover{
+    .btn-outline:hover{
       border-color:var(--gold);
-      color:var(--gold-2);
+      color:var(--gold-light);
       transform:translateY(-2px);
     }
 
     .section{
-      padding:96px 0;
-      position:relative;
+      padding:92px 0;
     }
 
     .section-head{
       text-align:center;
-      margin-bottom:50px;
+      margin-bottom:48px;
     }
 
     .section-head .mini{
       display:block;
       margin-bottom:10px;
-      color:var(--gold-2);
+      color:var(--gold-light);
       text-transform:uppercase;
       letter-spacing:.18em;
-      font-size:.82rem;
+      font-size:.8rem;
     }
 
     .section-head h2{
       font-family:'Cormorant Garamond',serif;
-      font-size:clamp(2.2rem, 4vw, 4.4rem);
+      font-size:clamp(2.3rem,4vw,4.4rem);
       line-height:.98;
       margin-bottom:12px;
     }
 
     .section-head p{
-      max-width:820px;
+      max-width:840px;
       margin:auto;
       color:var(--muted);
       line-height:1.9;
-      font-size:1rem;
     }
 
-    /* NAV */
+    /* NAVBAR */
     .navbar{
       position:fixed;
       top:0;
@@ -145,7 +145,7 @@
     }
 
     .navbar.scrolled{
-      background:rgba(10,9,8,.82);
+      background:rgba(10,9,8,.86);
       backdrop-filter:blur(12px);
       border-bottom:1px solid rgba(255,255,255,.08);
       padding:12px 0;
@@ -154,36 +154,109 @@
     .nav-wrap{
       display:flex;
       justify-content:space-between;
-      align-items:center;
+      align-items:flex-start;
       gap:18px;
     }
 
-    .logo{
-      font-family:'Cormorant Garamond',serif;
-      font-size:2rem;
-      font-weight:700;
-      color:#fff;
-      letter-spacing:.02em;
+    .brand-side{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      flex-wrap:wrap;
     }
 
-    .logo span{
-      color:var(--gold-2);
+    .logo{
+      line-height:1;
+      text-transform:uppercase;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.08em;
+      color:#fff;
+    }
+
+    .logo .big{
+      font-family:'Cormorant Garamond',serif;
+      font-size:2rem;
+      margin:2px 0;
+      letter-spacing:.04em;
+    }
+
+    .logo .small{
+      font-size:.68rem;
+      letter-spacing:.18em;
+    }
+
+    .top-actions{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .reserve-top{
+      padding:12px 20px;
+      border:2px solid rgba(255,255,255,.80);
+      background:transparent;
+      color:#fff;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      cursor:pointer;
+      transition:.3s ease;
+    }
+
+    .reserve-top:hover{
+      background:#fff;
+      color:#111;
+    }
+
+    .lang-switch{
+      display:flex;
+      gap:8px;
+    }
+
+    .lang-btn{
+      border:none;
+      background:rgba(255,255,255,.10);
+      color:#fff;
+      padding:7px 10px;
+      border-radius:8px;
+      font-size:1.1rem;
+      cursor:pointer;
+      transition:.25s ease;
+    }
+
+    .lang-btn.active,
+    .lang-btn:hover{
+      background:#fff;
+      color:#111;
+      transform:scale(1.04);
+    }
+
+    .nav-right{
+      display:flex;
+      align-items:flex-start;
+      gap:18px;
     }
 
     .nav-links{
       display:flex;
       align-items:center;
-      gap:24px;
+      gap:22px;
+      margin-top:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
 
     .nav-links a{
-      color:var(--text);
-      font-size:.98rem;
+      color:#fff;
+      font-size:.93rem;
+      text-transform:uppercase;
+      letter-spacing:.05em;
       transition:.25s ease;
     }
 
     .nav-links a:hover{
-      color:var(--gold-2);
+      color:var(--gold-light);
     }
 
     .menu-btn{
@@ -191,8 +264,34 @@
       background:none;
       border:none;
       color:#fff;
-      font-size:1.9rem;
+      font-size:2rem;
       cursor:pointer;
+      margin-top:2px;
+    }
+
+    .mobile-menu{
+      display:none;
+      position:absolute;
+      top:100%;
+      right:4%;
+      width:min(320px,92%);
+      background:rgba(10,9,8,.96);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .mobile-menu.show{
+      display:flex;
+    }
+
+    .mobile-menu a{
+      color:#fff;
+      text-transform:uppercase;
+      font-size:.94rem;
     }
 
     /* HERO */
@@ -202,8 +301,8 @@
       align-items:center;
       position:relative;
       background:
-        linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.68)),
-        url("https://darmoha.ma/wp-content/uploads/2024/10/Dar_Moha_Jardin_jour.webp") center/cover no-repeat;
+        linear-gradient(rgba(0,0,0,.40), rgba(0,0,0,.64)),
+        url("https://darmoha.ma/wp-content/uploads/2024/10/Restaurant_Dar_Moha_Soir.webp") center/cover no-repeat;
     }
 
     .hero::before{
@@ -211,82 +310,89 @@
       position:absolute;
       inset:0;
       background:
-        radial-gradient(circle at 20% 20%, rgba(201,165,107,.18), transparent 28%),
-        radial-gradient(circle at 80% 70%, rgba(201,165,107,.08), transparent 25%);
+        radial-gradient(circle at 20% 20%, rgba(200,166,107,.16), transparent 28%),
+        radial-gradient(circle at 80% 70%, rgba(200,166,107,.08), transparent 24%);
     }
 
     .hero-content{
       position:relative;
       z-index:2;
-      max-width:840px;
-      padding-top:86px;
+      width:100%;
+      text-align:center;
+      padding-top:120px;
     }
 
-    .eyebrow{
-      display:inline-block;
-      padding:8px 16px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(255,255,255,.06);
-      color:var(--gold-2);
+    .welcome{
+      font-size:1rem;
+      letter-spacing:.36em;
+      margin-bottom:20px;
       text-transform:uppercase;
-      letter-spacing:.16em;
-      font-size:.82rem;
-      margin-bottom:18px;
+      color:#f5ede4;
     }
 
-    .hero h1{
-      font-family:'Cormorant Garamond',serif;
-      font-size:clamp(3.2rem, 7vw, 6.6rem);
-      line-height:.93;
-      margin-bottom:18px;
+    .hero-title{
+      font-size:clamp(3rem,8vw,7rem);
+      line-height:.92;
+      text-transform:uppercase;
+      font-weight:800;
+      margin-bottom:22px;
     }
 
-    .hero p{
-      max-width:740px;
-      line-height:1.95;
-      font-size:1.06rem;
-      color:#f7efe4;
-      margin-bottom:28px;
+    .hero-subtitle{
+      font-size:clamp(1rem,2vw,1.8rem);
+      text-transform:uppercase;
+      font-weight:700;
+      line-height:1.3;
+      max-width:920px;
+      margin:0 auto 10px;
+    }
+
+    .hero-subline{
+      font-size:clamp(.9rem,1.4vw,1.15rem);
+      text-transform:uppercase;
+      margin-bottom:30px;
+      color:#f3ebdf;
     }
 
     .hero-actions{
       display:flex;
-      flex-wrap:wrap;
+      justify-content:center;
       gap:14px;
-      margin-bottom:34px;
+      flex-wrap:wrap;
+      margin-bottom:36px;
     }
 
     .hero-highlights{
+      max-width:980px;
+      margin:0 auto;
       display:grid;
       grid-template-columns:repeat(3,1fr);
       gap:16px;
-      max-width:820px;
     }
 
     .highlight{
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      padding:18px;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.12);
       border-radius:20px;
+      padding:18px;
+      backdrop-filter:blur(10px);
       box-shadow:var(--shadow);
-      backdrop-filter:blur(8px);
     }
 
     .highlight strong{
       display:block;
-      font-size:1.35rem;
-      color:var(--gold-2);
+      color:var(--gold-light);
+      font-size:1.2rem;
       margin-bottom:6px;
     }
 
     .highlight span{
-      color:var(--muted);
-      line-height:1.6;
-      font-size:.95rem;
+      color:#f2eadf;
+      line-height:1.7;
+      font-size:.94rem;
     }
 
-    /* GRID + CARDS */
+    /* LAYOUT */
     .grid-2{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -304,8 +410,8 @@
       background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border:1px solid var(--line);
       border-radius:var(--radius);
-      overflow:hidden;
       box-shadow:var(--shadow);
+      overflow:hidden;
     }
 
     .card-body{
@@ -314,7 +420,7 @@
 
     .card-body h3{
       font-family:'Cormorant Garamond',serif;
-      font-size:2rem;
+      font-size:2.05rem;
       margin-bottom:12px;
     }
 
@@ -324,16 +430,15 @@
     }
 
     .image-box{
+      min-height:520px;
       overflow:hidden;
       border-radius:var(--radius);
       border:1px solid var(--line);
       box-shadow:var(--shadow);
-      min-height:520px;
-      background:#120f0c;
+      background:#130f0d;
     }
 
     .image-box img{
-      width:100%;
       height:100%;
       object-fit:cover;
       transition:transform .8s ease;
@@ -345,55 +450,55 @@
 
     /* TIMELINE */
     .timeline{
+      max-width:1000px;
+      margin:auto;
       display:grid;
       gap:18px;
-      max-width:980px;
-      margin:auto;
     }
 
     .timeline-item{
       display:grid;
-      grid-template-columns:110px 1fr;
+      grid-template-columns:120px 1fr;
       gap:18px;
       align-items:start;
       padding:22px;
-      border-radius:22px;
-      background:var(--bg-card);
+      background:var(--card);
       border:1px solid var(--line);
+      border-radius:22px;
       box-shadow:var(--shadow);
     }
 
     .timeline-year{
-      color:var(--gold-2);
+      color:var(--gold-light);
       font-weight:800;
-      font-size:1.1rem;
-      letter-spacing:.04em;
+      text-transform:uppercase;
+      letter-spacing:.05em;
     }
 
     .timeline-text h4{
-      font-size:1.08rem;
-      margin-bottom:8px;
       color:#fff;
+      margin-bottom:8px;
+      font-size:1.05rem;
     }
 
     .timeline-text p{
       color:var(--muted);
-      line-height:1.8;
+      line-height:1.85;
     }
 
     /* REASONS */
     .reason{
       padding:26px;
-      border-radius:24px;
-      background:var(--bg-card);
+      background:var(--card);
       border:1px solid var(--line);
+      border-radius:24px;
       box-shadow:var(--shadow);
       transition:.3s ease;
     }
 
     .reason:hover{
       transform:translateY(-6px);
-      border-color:rgba(201,165,107,.35);
+      border-color:rgba(200,166,107,.35);
     }
 
     .reason .num{
@@ -402,15 +507,15 @@
       border-radius:50%;
       display:grid;
       place-items:center;
+      background:var(--grad);
+      color:#211608;
       font-weight:800;
       margin-bottom:14px;
-      background:var(--grad);
-      color:#1c1308;
     }
 
     .reason h3{
       font-family:'Cormorant Garamond',serif;
-      font-size:1.9rem;
+      font-size:1.85rem;
       margin-bottom:10px;
     }
 
@@ -433,7 +538,7 @@
       border-radius:24px;
       border:1px solid var(--line);
       box-shadow:var(--shadow);
-      min-height:230px;
+      background:#16120f;
     }
 
     .gallery-item:first-child{
@@ -441,7 +546,6 @@
     }
 
     .gallery-item img{
-      width:100%;
       height:100%;
       object-fit:cover;
       transition:transform .8s ease;
@@ -457,7 +561,7 @@
       display:flex;
       align-items:flex-end;
       padding:18px;
-      background:linear-gradient(to top, rgba(0,0,0,.75), transparent 55%);
+      background:linear-gradient(to top, rgba(0,0,0,.74), transparent 55%);
       color:#fff;
       font-weight:700;
     }
@@ -471,15 +575,15 @@
 
     .media-card{
       padding:24px;
-      border-radius:24px;
-      background:var(--bg-card);
+      background:var(--card);
       border:1px solid var(--line);
+      border-radius:24px;
       box-shadow:var(--shadow);
     }
 
     .media-card h3{
-      font-size:1.12rem;
       margin-bottom:10px;
+      font-size:1.08rem;
     }
 
     .media-card p{
@@ -488,15 +592,20 @@
       margin-bottom:16px;
     }
 
-    .video-frame{
-      width:100%;
-      height:260px;
-      border:none;
-      border-radius:20px;
-      background:#0f0d0b;
+    .video-wrap{
+      margin-top:28px;
     }
 
-    /* MAP / INFO */
+    .video-frame{
+      width:100%;
+      height:420px;
+      border:none;
+      border-radius:24px;
+      background:#120f0c;
+      box-shadow:var(--shadow);
+    }
+
+    /* INFO / MAP */
     .info-list{
       display:grid;
       gap:14px;
@@ -504,11 +613,12 @@
     }
 
     .info-item{
-      padding:16px 18px;
-      border-radius:18px;
       background:rgba(255,255,255,.04);
       border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px 18px;
       color:var(--text);
+      line-height:1.7;
     }
 
     .map-box{
@@ -516,39 +626,38 @@
       border-radius:24px;
       border:1px solid var(--line);
       box-shadow:var(--shadow);
-      min-height:480px;
+      min-height:500px;
     }
 
     .map-box iframe{
       width:100%;
-      height:100%;
-      min-height:480px;
+      min-height:500px;
       border:0;
     }
 
     /* CTA */
     .cta{
       text-align:center;
-      padding:90px 22px;
-      border-radius:34px;
+      padding:90px 24px;
+      border-radius:32px;
       border:1px solid rgba(255,255,255,.08);
-      box-shadow:var(--shadow);
       background:
-        linear-gradient(rgba(0,0,0,.50), rgba(0,0,0,.62)),
-        url("https://darmoha.ma/wp-content/uploads/2024/10/Restaurant_Dar_Moha_Soir.webp") center/cover no-repeat;
+        linear-gradient(rgba(0,0,0,.52), rgba(0,0,0,.64)),
+        url("https://darmoha.ma/wp-content/uploads/2024/10/Dar_Moha_Jardin_jour.webp") center/cover no-repeat;
+      box-shadow:var(--shadow);
     }
 
     .cta h2{
       font-family:'Cormorant Garamond',serif;
-      font-size:clamp(2.4rem, 4vw, 4.6rem);
+      font-size:clamp(2.4rem,4vw,4.6rem);
       margin-bottom:14px;
     }
 
     .cta p{
-      max-width:820px;
+      max-width:860px;
       margin:0 auto 26px;
-      line-height:1.95;
-      color:#f7eee2;
+      color:#f5ede2;
+      line-height:1.9;
     }
 
     .floating-book{
@@ -559,7 +668,7 @@
       padding:14px 20px;
       border-radius:999px;
       background:var(--grad);
-      color:#1f1408;
+      color:#211608;
       font-weight:800;
       box-shadow:0 18px 40px rgba(0,0,0,.26);
       animation:pulse 2.2s infinite;
@@ -608,12 +717,11 @@
       flex-wrap:wrap;
     }
 
-    /* RESPONSIVE */
-    @media (max-width: 1040px){
+    @media (max-width: 1080px){
       .grid-2,
       .grid-3,
-      .media-grid,
       .gallery,
+      .media-grid,
       .hero-highlights{
         grid-template-columns:1fr;
       }
@@ -630,7 +738,8 @@
         min-height:360px;
       }
 
-      .map-box{
+      .map-box,
+      .map-box iframe{
         min-height:380px;
       }
     }
@@ -638,35 +747,59 @@
     @media (max-width: 920px){
       .nav-links{
         display:none;
-        position:absolute;
-        right:4%;
-        top:100%;
-        width:min(320px, 92%);
-        flex-direction:column;
-        align-items:flex-start;
-        gap:16px;
-        padding:20px;
-        background:rgba(10,9,8,.95);
-        border:1px solid rgba(255,255,255,.08);
-        border-radius:22px;
-      }
-
-      .nav-links.show{
-        display:flex;
       }
 
       .menu-btn{
         display:block;
       }
+
+      .nav-wrap{
+        align-items:center;
+      }
     }
 
     @media (max-width: 640px){
-      .hero{
-        background-position:center;
+      .navbar{
+        padding:14px 0;
       }
 
-      .hero h1{
+      .logo .big{
+        font-size:1.45rem;
+      }
+
+      .logo{
+        font-size:10px;
+      }
+
+      .reserve-top{
+        padding:10px 14px;
+        font-size:.75rem;
+      }
+
+      .lang-btn{
+        font-size:1rem;
+        padding:6px 8px;
+      }
+
+      .hero-content{
+        padding-top:120px;
+      }
+
+      .welcome{
+        font-size:.84rem;
+        letter-spacing:.24em;
+      }
+
+      .hero-title{
         font-size:3.2rem;
+      }
+
+      .hero-subtitle{
+        font-size:1.02rem;
+      }
+
+      .hero-subline{
+        font-size:.92rem;
       }
 
       .section{
@@ -685,49 +818,72 @@
 
   <header class="navbar" id="navbar">
     <div class="container nav-wrap">
-      <a href="#top" class="logo">Dar <span>Moha</span></a>
+      <div class="brand-side">
+        <a href="#top" class="logo">
+          <div>دار موها</div>
+          <div class="big">DAR MOHA</div>
+          <div class="small">SINCE 1998</div>
+        </a>
 
-      <nav class="nav-links" id="navLinks">
-        <a href="#chef">Chef Moha</a>
-        <a href="#biographie">Biographie</a>
-        <a href="#pourquoi">Pourquoi venir</a>
-        <a href="#galerie">Galerie</a>
-        <a href="#medias">Médias</a>
-        <a href="#localisation">Localisation</a>
-        <a href="https://darmoha.ma/" target="_blank" class="btn btn-primary">Réserver</a>
-      </nav>
+        <div class="top-actions">
+          <button class="reserve-top" id="topReserveBtn">RÉSERVATION</button>
 
-      <button class="menu-btn" id="menuBtn">☰</button>
+          <div class="lang-switch">
+            <button class="lang-btn active" data-lang="fr">🇫🇷</button>
+            <button class="lang-btn" data-lang="en">🇬🇧</button>
+            <button class="lang-btn" data-lang="es">🇪🇸</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <nav class="nav-links">
+          <a href="#chef" data-i18n="navChef">Chef Moha</a>
+          <a href="#biographie" data-i18n="navBio">Biographie</a>
+          <a href="#pourquoi" data-i18n="navWhy">Pourquoi venir</a>
+          <a href="#galerie" data-i18n="navGallery">Galerie</a>
+          <a href="#medias" data-i18n="navMedia">Médias</a>
+          <a href="#localisation" data-i18n="navLocation">Localisation</a>
+        </nav>
+
+        <button class="menu-btn" id="menuBtn">☰</button>
+      </div>
+
+      <div class="mobile-menu" id="mobileMenu">
+        <a href="#chef" data-i18n="navChef">Chef Moha</a>
+        <a href="#biographie" data-i18n="navBio">Biographie</a>
+        <a href="#pourquoi" data-i18n="navWhy">Pourquoi venir</a>
+        <a href="#galerie" data-i18n="navGallery">Galerie</a>
+        <a href="#medias" data-i18n="navMedia">Médias</a>
+        <a href="#localisation" data-i18n="navLocation">Localisation</a>
+      </div>
     </div>
   </header>
 
   <section class="hero" id="top">
     <div class="container hero-content reveal">
-      <span class="eyebrow">Marrakech • gastronomie • patrimoine</span>
-      <h1>Un site qui donne envie de découvrir, comprendre et vivre Dar Moha</h1>
-      <p>
-        Entrez dans l’univers de Chef Moha, l’une des grandes figures de la cuisine marocaine contemporaine,
-        et découvrez Dar Moha, un riad historique de Marrakech où la gastronomie devient une expérience culturelle,
-        artistique et émotionnelle.
-      </p>
+      <div class="welcome" id="welcome">BIENVENUE AU</div>
+      <h1 class="hero-title" id="heroTitle">RESTAURANT<br>DAR MOHA</h1>
+      <div class="hero-subtitle" id="heroSubtitle">RESTAURANT GASTRONOMIQUE À MARRAKECH</div>
+      <div class="hero-subline" id="heroSubline">CUISINE MAROCAINE PAR CHEF MOHA</div>
 
       <div class="hero-actions">
-        <a href="https://darmoha.ma/" target="_blank" class="btn btn-primary">Site officiel</a>
-        <a href="#pourquoi" class="btn btn-glass">Pourquoi visiter Dar Moha</a>
+        <a href="https://bookings.zenchef.com/results?rid=364692&pid=1001" target="_blank" class="btn btn-primary" id="mainReserveBtn">RÉSERVER</a>
+        <a href="#pourquoi" class="btn btn-outline" id="discoverBtn">DÉCOUVRIR</a>
       </div>
 
       <div class="hero-highlights">
         <div class="highlight">
-          <strong>Chef Moha</strong>
-          <span>Ambassadeur de la cuisine marocaine moderne.</span>
+          <strong id="highlight1Title">Chef Moha</strong>
+          <span id="highlight1Text">Ambassadeur de la cuisine marocaine moderne.</span>
         </div>
         <div class="highlight">
-          <strong>Dar El Bacha</strong>
-          <span>Au cœur historique de la médina de Marrakech.</span>
+          <strong id="highlight2Title">Marrakech</strong>
+          <span id="highlight2Text">Une adresse emblématique au cœur de la médina.</span>
         </div>
         <div class="highlight">
-          <strong>Riad d’exception</strong>
-          <span>Ancienne demeure de Pierre Balmain, transformée en expérience gastronomique.</span>
+          <strong id="highlight3Title">Dar Moha</strong>
+          <span id="highlight3Text">Un lieu où la gastronomie devient culture, émotion et souvenir.</span>
         </div>
       </div>
     </div>
@@ -736,30 +892,24 @@
   <section class="section" id="chef">
     <div class="container">
       <div class="section-head reveal">
-        <span class="mini">Le chef</span>
-        <h2>Chef Moha, une figure marocaine à portée internationale</h2>
-        <p>
-          Cette section présente Chef Moha comme un chef, un passeur de culture et un visage fort de la gastronomie marocaine à l’international.
+        <span class="mini" id="chefMini">LE CHEF</span>
+        <h2 id="chefTitle">Chef Moha, une figure de la gastronomie marocaine</h2>
+        <p id="chefDesc">
+          Découvrez l’univers du chef qui incarne une cuisine marocaine raffinée, contemporaine et enracinée dans le patrimoine.
         </p>
       </div>
 
       <div class="grid-2">
         <div class="image-box reveal">
-          <img src="https://darmoha.ma/wp-content/uploads/2024/10/Chef_Moha_Restaurant_Marrakech.webp" alt="Chef Moha au restaurant Dar Moha à Marrakech">
+          <img src="https://darmoha.ma/wp-content/uploads/2024/10/Chef_Moha_Restaurant_Marrakech.webp" alt="Chef Moha à Dar Moha">
         </div>
 
         <div class="card reveal">
           <div class="card-body">
-            <h3>L’ambassadeur de la cuisine marocaine moderne</h3>
-            <p>
-              Chef Moha, présenté par Dar Moha comme une figure emblématique de la gastronomie marocaine, a bâti une réputation fondée sur l’alliance entre tradition culinaire marocaine et techniques modernes. Le site officiel indique aussi qu’il a étudié en Suisse, qu’il compte plus de trente ans d’expérience et qu’il a obtenu une reconnaissance mondiale. Son nom civil, Mohamed Fedal, et sa distinction au DC Embassy Chef Challenge 2017 à Washington sont confirmés par la presse. 
+            <h3 id="chefCardTitle">Une signature culinaire forte</h3>
+            <p id="chefCardText">
+              Chef Moha représente une vision élégante de la cuisine marocaine. À Dar Moha, sa démarche associe tradition, créativité et excellence du service pour offrir une expérience mémorable aux visiteurs du monde entier.
             </p>
-            <br>
-            <p>
-              Dans un site touristique, ce positionnement est très fort : il ne s’agit plus seulement d’un restaurant, mais d’un lieu où l’on vient découvrir une personnalité, une vision et une lecture contemporaine du patrimoine culinaire marocain.
-            </p>
-            <br>
-            <a href="#biographie" class="btn btn-primary">Lire la biographie</a>
           </div>
         </div>
       </div>
@@ -769,71 +919,35 @@
   <section class="section" id="biographie">
     <div class="container">
       <div class="section-head reveal">
-        <span class="mini">Biographie</span>
-        <h2>Une trajectoire qui transforme la cuisine en culture</h2>
-        <p>
-          Voici une biographie narrative que tu peux garder telle quelle sur le site pour “cultiver” les visiteurs.
+        <span class="mini" id="bioMini">BIOGRAPHIE</span>
+        <h2 id="bioTitle">Une trajectoire qui transforme la cuisine en culture</h2>
+        <p id="bioDesc">
+          Cette section donne de la profondeur au site et valorise l’identité de la marque.
         </p>
       </div>
 
       <div class="timeline">
         <div class="timeline-item reveal">
-          <div class="timeline-year">Origines</div>
+          <div class="timeline-year" id="bioYear1">Origines</div>
           <div class="timeline-text">
-            <h4>Né à Marrakech, enraciné dans la tradition marocaine</h4>
-            <p>
-              Chef Moha, de son vrai nom Mohamed Fedal, est originaire de Marrakech. Son identité culinaire s’inscrit dans les goûts, les gestes et les mémoires de la cuisine marocaine, qu’il a contribué à faire rayonner au-delà du Maroc.
-            </p>
+            <h4 id="bioHead1">Un enracinement marocain</h4>
+            <p id="bioText1">Chef Moha est associé à Marrakech et à l’héritage culinaire marocain. Sa cuisine valorise les goûts, les gestes et les traditions qui font la richesse du Maroc.</p>
           </div>
         </div>
 
         <div class="timeline-item reveal">
-          <div class="timeline-year">Formation</div>
+          <div class="timeline-year" id="bioYear2">Vision</div>
           <div class="timeline-text">
-            <h4>Formation culinaire en Suisse</h4>
-            <p>
-              Les sources officielles et biographiques disponibles indiquent qu’il a été formé dans des écoles culinaires en Suisse, puis a développé son expérience en Europe avant de revenir au Maroc avec une vision plus large de la gastronomie.
-            </p>
+            <h4 id="bioHead2">Moderniser sans effacer la tradition</h4>
+            <p id="bioText2">Sa démarche sublime la cuisine marocaine, la présente avec élégance et la rend lisible pour une clientèle internationale.</p>
           </div>
         </div>
 
         <div class="timeline-item reveal">
-          <div class="timeline-year">Europe</div>
+          <div class="timeline-year" id="bioYear3">Dar Moha</div>
           <div class="timeline-text">
-            <h4>Une carrière européenne avant le retour à Marrakech</h4>
-            <p>
-              La presse rappelle qu’il a passé environ quatorze ans en Europe. Cette étape a nourri sa maîtrise des techniques modernes, sans le détacher de la cuisine marocaine, qu’il a choisie de réinterpréter plutôt que de remplacer.
-            </p>
-          </div>
-        </div>
-
-        <div class="timeline-item reveal">
-          <div class="timeline-year">Dar Moha</div>
-          <div class="timeline-text">
-            <h4>Un restaurant-manifeste au cœur de la médina</h4>
-            <p>
-              Avec Dar Moha, installé dans un riad historique du quartier Dar El Bacha, il propose une cuisine marocaine revisitée dans un cadre très singulier. Le lieu associe patrimoine architectural, jardin, piscine, art de la table et narration culinaire.
-            </p>
-          </div>
-        </div>
-
-        <div class="timeline-item reveal">
-          <div class="timeline-year">2017</div>
-          <div class="timeline-text">
-            <h4>Reconnaissance internationale à Washington</h4>
-            <p>
-              En 2017, Chef Moha a remporté le prix du jury au DC Embassy Chef Challenge à Washington, une distinction qui a renforcé son image de représentant de la gastronomie marocaine à l’international.
-            </p>
-          </div>
-        </div>
-
-        <div class="timeline-item reveal">
-          <div class="timeline-year">Aujourd’hui</div>
-          <div class="timeline-text">
-            <h4>Un chef, mais aussi un transmetteur</h4>
-            <p>
-              Dar Moha présente également Chef Moha comme un acteur de la transmission : collaborations, livres, partage d’expertise et valorisation du patrimoine culinaire marocain. Cette dimension éducative est très puissante pour rassurer et impressionner les touristes.
-            </p>
+            <h4 id="bioHead3">Un lieu emblématique à Marrakech</h4>
+            <p id="bioText3">Dar Moha réunit patrimoine, jardin, architecture, art de la table et émotion gastronomique dans une expérience complète.</p>
           </div>
         </div>
       </div>
@@ -843,60 +957,48 @@
   <section class="section" id="pourquoi">
     <div class="container">
       <div class="section-head reveal">
-        <span class="mini">Pourquoi venir</span>
-        <h2>Pourquoi les touristes doivent absolument vivre Dar Moha</h2>
-        <p>
-          Cette partie est écrite comme un argumentaire émotionnel et culturel pour convaincre un visiteur international.
+        <span class="mini" id="whyMini">POURQUOI VENIR</span>
+        <h2 id="whyTitle">Pourquoi les touristes doivent vivre Dar Moha</h2>
+        <p id="whyDesc">
+          Cette partie transforme l’intérêt du visiteur en envie réelle de réservation.
         </p>
       </div>
 
       <div class="grid-3">
         <article class="reason reveal">
           <div class="num">1</div>
-          <h3>Pour découvrir le Maroc autrement</h3>
-          <p>
-            Dar Moha ne vend pas seulement un repas. Il propose une lecture raffinée du Maroc à travers les saveurs, les produits, l’hospitalité, le décor et le rythme du service. Le touriste ne mange pas seulement marocain : il comprend mieux le Maroc.
-          </p>
+          <h3 id="reason1Title">Découvrir le Maroc autrement</h3>
+          <p id="reason1Text">Dar Moha propose une lecture raffinée du Maroc à travers la cuisine, l’hospitalité, le décor et l’émotion.</p>
         </article>
 
         <article class="reason reveal">
           <div class="num">2</div>
-          <h3>Pour vivre un lieu chargé d’histoire</h3>
-          <p>
-            Le restaurant est installé dans un riad du XVIIIe siècle, présenté comme l’ancienne demeure de Pierre Balmain. Cette couche patrimoniale donne au dîner une profondeur historique et esthétique qu’un restaurant ordinaire ne peut pas offrir.
-          </p>
+          <h3 id="reason2Title">Vivre un lieu plein de charme</h3>
+          <p id="reason2Text">Le cadre, le jardin et l’ambiance rendent chaque moment photogénique et mémorable.</p>
         </article>
 
         <article class="reason reveal">
           <div class="num">3</div>
-          <h3>Pour goûter une cuisine marocaine modernisée avec respect</h3>
-          <p>
-            Le site officiel insiste sur la rencontre entre traditions marocaines et techniques contemporaines. Cela plaît beaucoup aux visiteurs internationaux : la cuisine reste marocaine, mais sa présentation et son rythme deviennent plus universels.
-          </p>
+          <h3 id="reason3Title">Goûter une cuisine signature</h3>
+          <p id="reason3Text">La cuisine marocaine y est présentée avec élégance, finesse et ouverture vers une clientèle internationale.</p>
         </article>
 
         <article class="reason reveal">
           <div class="num">4</div>
-          <h3>Pour l’atmosphère visuelle</h3>
-          <p>
-            Jardin, piscine en zellige, salons, lumière du soir, mise en scène des tables : Dar Moha possède une forte qualité photographique. C’est un lieu qui se vit, se partage et se mémorise.
-          </p>
+          <h3 id="reason4Title">Vivre une expérience complète</h3>
+          <p id="reason4Text">Dar Moha combine gastronomie, culture, design, accueil et ambiance dans un seul lieu.</p>
         </article>
 
         <article class="reason reveal">
           <div class="num">5</div>
-          <h3>Pour la signature Chef Moha</h3>
-          <p>
-            Le nom du chef agit comme une garantie culturelle et culinaire. Pour un visiteur, cela transforme l’adresse en destination gastronomique, pas seulement en bon restaurant.
-          </p>
+          <h3 id="reason5Title">Profiter de la signature Chef Moha</h3>
+          <p id="reason5Text">Le nom du chef rassure les visiteurs et valorise fortement l’adresse.</p>
         </article>
 
         <article class="reason reveal">
           <div class="num">6</div>
-          <h3>Pour une expérience complète de Marrakech</h3>
-          <p>
-            Situé dans la médina, Dar Moha s’insère naturellement dans un parcours touristique de qualité : patrimoine, promenade, artisanat, culture et gastronomie dans une seule journée.
-          </p>
+          <h3 id="reason6Title">Enrichir sa visite de Marrakech</h3>
+          <p id="reason6Text">C’est une étape idéale dans un parcours mêlant médina, patrimoine, artisanat et gastronomie.</p>
         </article>
       </div>
     </div>
@@ -905,37 +1007,37 @@
   <section class="section" id="galerie">
     <div class="container">
       <div class="section-head reveal">
-        <span class="mini">Galerie</span>
-        <h2>Un univers visuel qui attire dès les premières secondes</h2>
-        <p>
-          Cette galerie utilise des images publiques hébergées sur le site Dar Moha pour renforcer l’identité du lieu.
+        <span class="mini" id="galleryMini">GALERIE</span>
+        <h2 id="galleryTitle">Un univers visuel qui séduit immédiatement</h2>
+        <p id="galleryDesc">
+          Les images renforcent le désir de visite et permettent au voyageur de se projeter.
         </p>
       </div>
 
       <div class="gallery">
         <div class="gallery-item reveal">
-          <img src="https://darmoha.ma/wp-content/uploads/2024/10/Dar_Moha_Jardin_jour.webp" alt="Jardin de Dar Moha de jour">
-          <div class="gallery-overlay">Le jardin emblématique</div>
+          <img src="https://darmoha.ma/wp-content/uploads/2024/10/Dar_Moha_Jardin_jour.webp" alt="Jardin Dar Moha">
+          <div class="gallery-overlay" id="galleryLabel1">Le jardin emblématique</div>
         </div>
 
         <div class="gallery-item reveal">
-          <img src="https://darmoha.ma/wp-content/uploads/2024/10/Table_Dar_Moha_Jardin_jour.webp" alt="Table dressée dans le jardin de Dar Moha">
-          <div class="gallery-overlay">L’élégance de la table</div>
+          <img src="https://darmoha.ma/wp-content/uploads/2024/10/Table_Dar_Moha_Jardin_jour.webp" alt="Table Dar Moha">
+          <div class="gallery-overlay" id="galleryLabel2">L’art de la table</div>
         </div>
 
         <div class="gallery-item reveal">
-          <img src="https://darmoha.ma/wp-content/uploads/2024/10/Restaurant_Dar_Moha_Soir.webp" alt="Dar Moha le soir">
-          <div class="gallery-overlay">L’atmosphère du soir</div>
+          <img src="https://darmoha.ma/wp-content/uploads/2024/10/Restaurant_Dar_Moha_Soir.webp" alt="Restaurant Dar Moha soir">
+          <div class="gallery-overlay" id="galleryLabel3">L’ambiance du soir</div>
         </div>
 
         <div class="gallery-item reveal">
           <img src="https://darmoha.ma/wp-content/uploads/2024/10/Ambiance_Diner_Dar_Moha.webp" alt="Ambiance dîner Dar Moha">
-          <div class="gallery-overlay">Le dîner comme expérience</div>
+          <div class="gallery-overlay" id="galleryLabel4">Le dîner comme expérience</div>
         </div>
 
         <div class="gallery-item reveal">
-          <img src="https://darmoha.ma/wp-content/uploads/2024/10/Riad_Dar_Moha_Patio.webp" alt="Patio du riad Dar Moha">
-          <div class="gallery-overlay">Le riad historique</div>
+          <img src="https://darmoha.ma/wp-content/uploads/2024/10/Riad_Dar_Moha_Patio.webp" alt="Patio Dar Moha">
+          <div class="gallery-overlay" id="galleryLabel5">Le patio raffiné</div>
         </div>
       </div>
     </div>
@@ -944,44 +1046,38 @@
   <section class="section" id="medias">
     <div class="container">
       <div class="section-head reveal">
-        <span class="mini">Médias</span>
-        <h2>Photos, vidéos et présence digitale</h2>
-        <p>
-          Cette zone aide le visiteur à prolonger la découverte avant même la réservation.
+        <span class="mini" id="mediaMini">MÉDIAS</span>
+        <h2 id="mediaTitle">Réseaux sociaux et vidéos</h2>
+        <p id="mediaDesc">
+          Le visiteur peut prolonger sa découverte grâce aux contenus visuels et sociaux.
         </p>
       </div>
 
       <div class="media-grid">
         <div class="media-card reveal">
-          <h3>Instagram Dar Moha</h3>
-          <p>
-            Redirige les visiteurs vers le contenu social du restaurant pour voir les mises en scène récentes, l’ambiance et les plats.
-          </p>
-          <a class="btn btn-primary" href="https://www.instagram.com/dar_moha/" target="_blank">Ouvrir Instagram</a>
+          <h3 id="mediaCard1Title">Instagram Dar Moha</h3>
+          <p id="mediaCard1Text">Découvrez l’univers visuel du restaurant, ses plats et son ambiance.</p>
+          <a class="btn btn-primary" href="https://www.instagram.com/dar_moha/" target="_blank" id="mediaBtn1">Voir Instagram</a>
         </div>
 
         <div class="media-card reveal">
-          <h3>Instagram Chef Moha</h3>
-          <p>
-            Permet de connecter le visiteur à la figure du chef et d’humaniser l’expérience gastronomique.
-          </p>
-          <a class="btn btn-primary" href="https://www.instagram.com/chef.moha/" target="_blank">Ouvrir Instagram</a>
+          <h3 id="mediaCard2Title">Instagram Chef Moha</h3>
+          <p id="mediaCard2Text">Approchez la personnalité du chef et l’identité culinaire du lieu.</p>
+          <a class="btn btn-primary" href="https://www.instagram.com/chef.moha/" target="_blank" id="mediaBtn2">Voir Instagram</a>
         </div>
 
         <div class="media-card reveal">
-          <h3>Vidéo</h3>
-          <p>
-            Tu peux remplacer l’iframe ci-dessous par une vidéo officielle YouTube ou Vimeo de Chef Moha, de Dar Moha ou d’un reportage TV.
-          </p>
-          <a class="btn btn-glass" href="https://darmoha.ma/en/home-en/" target="_blank">Voir le site officiel</a>
+          <h3 id="mediaCard3Title">Vidéo</h3>
+          <p id="mediaCard3Text">Ajoute ici une vidéo immersive pour rendre la visite encore plus vivante.</p>
+          <a class="btn btn-outline" href="https://darmoha.ma/" target="_blank" id="mediaBtn3">Voir le site</a>
         </div>
       </div>
 
-      <div style="margin-top:28px" class="reveal">
+      <div class="video-wrap reveal">
         <iframe
           class="video-frame"
-          src="https://www.youtube.com/embed?listType=search&list=Chef%20Moha%20Marrakech%20Dar%20Moha"
-          title="Recherche vidéo Chef Moha Dar Moha"
+          src="https://www.youtube.com/embed?listType=search&list=Dar%20Moha%20Marrakech%20Chef%20Moha"
+          title="Vidéo Dar Moha Chef Moha"
           allowfullscreen>
         </iframe>
       </div>
@@ -991,30 +1087,28 @@
   <section class="section" id="localisation">
     <div class="container">
       <div class="section-head reveal">
-        <span class="mini">Localisation</span>
-        <h2>Où se situe Dar Moha ?</h2>
-        <p>
-          Placé dans le quartier historique de Dar El Bacha, au cœur de la médina de Marrakech, Dar Moha bénéficie d’une adresse très attractive pour les visiteurs.
+        <span class="mini" id="locationMini">LOCALISATION</span>
+        <h2 id="locationTitle">Où se situe Dar Moha ?</h2>
+        <p id="locationDesc">
+          Dar Moha se situe dans le quartier historique de Dar El Bacha, au cœur de Marrakech.  [oai_citation:1‡DAR MOHA](https://darmoha.ma/)
         </p>
       </div>
 
       <div class="grid-2">
         <div class="card reveal">
           <div class="card-body">
-            <h3>Informations pratiques</h3>
+            <h3 id="infoTitle">Informations pratiques</h3>
 
             <div class="info-list">
-              <div class="info-item"><strong>Adresse :</strong> 81, Rue Dar El Bacha, Marrakech Médina</div>
-              <div class="info-item"><strong>Téléphone :</strong> +212 5 24 38 64 00</div>
-              <div class="info-item"><strong>Email :</strong> restaurant@darmoha.ma</div>
-              <div class="info-item"><strong>Déjeuner :</strong> 12h à 16h</div>
-              <div class="info-item"><strong>Dîner :</strong> 19h à 23h</div>
-              <div class="info-item"><strong>Réservation :</strong> via le site officiel Dar Moha</div>
+              <div class="info-item" id="info1"><strong>Adresse :</strong> 81, Rue Dar El Bacha, Marrakech Médina</div>
+              <div class="info-item" id="info2"><strong>Téléphone :</strong> +212 5 24 38 64 00</div>
+              <div class="info-item" id="info3"><strong>Réservation :</strong> en ligne</div>
+              <div class="info-item" id="info4"><strong>Rubriques officielles :</strong> Our Story, The Chef, Our Cuisine, Cooking Classes, Gallery, Contact</div>
             </div>
 
             <div style="margin-top:22px; display:flex; gap:12px; flex-wrap:wrap;">
-              <a href="https://darmoha.ma/" target="_blank" class="btn btn-primary">Réserver</a>
-              <a href="https://www.google.com/maps/search/?api=1&query=Dar+Moha+Marrakech" target="_blank" class="btn btn-glass">Ouvrir Google Maps</a>
+              <a href="https://bookings.zenchef.com/results?rid=364692&pid=1001" target="_blank" class="btn btn-primary" id="locationBtn1">Réserver</a>
+              <a href="https://www.google.com/maps/search/?api=1&query=Dar+Moha+Marrakech" target="_blank" class="btn btn-outline" id="locationBtn2">Ouvrir Maps</a>
             </div>
           </div>
         </div>
@@ -1034,48 +1128,367 @@
   <section class="section">
     <div class="container">
       <div class="cta reveal">
-        <h2>Dar Moha n’est pas seulement un restaurant. C’est une adresse à comprendre, admirer et vivre.</h2>
-        <p>
-          Ce site a été pensé pour transformer un simple visiteur en futur client : il informe, rassure, élève la perception de la marque
-          et donne envie de réserver une véritable expérience marocaine contemporaine dans l’un des lieux les plus singuliers de Marrakech.
+        <h2 id="ctaTitle">Dar Moha, une expérience à comprendre, admirer et vivre</h2>
+        <p id="ctaText">
+          Ce modèle final a été pensé pour séduire, rassurer et cultiver le visiteur. Il transforme la curiosité en envie, puis l’envie en réservation.
         </p>
-        <a href="https://darmoha.ma/" target="_blank" class="btn btn-primary">Réserver maintenant</a>
+        <a href="https://bookings.zenchef.com/results?rid=364692&pid=1001" target="_blank" class="btn btn-primary" id="ctaBtn">Réserver maintenant</a>
       </div>
     </div>
   </section>
 
   <footer>
     <div class="container footer-wrap">
-      <p>© 2026 — Site d’inspiration premium pour Dar Moha</p>
+      <p id="footerText">© 2026 — Dar Moha premium model</p>
       <div class="footer-links">
-        <a href="#chef">Chef</a>
-        <a href="#biographie">Biographie</a>
-        <a href="#pourquoi">Pourquoi venir</a>
-        <a href="#galerie">Galerie</a>
-        <a href="#localisation">Localisation</a>
+        <a href="#chef" data-i18n="navChef">Chef Moha</a>
+        <a href="#biographie" data-i18n="navBio">Biographie</a>
+        <a href="#pourquoi" data-i18n="navWhy">Pourquoi venir</a>
+        <a href="#galerie" data-i18n="navGallery">Galerie</a>
+        <a href="#localisation" data-i18n="navLocation">Localisation</a>
       </div>
     </div>
   </footer>
 
-  <a class="floating-book" href="https://darmoha.ma/" target="_blank">Réserver</a>
+  <a class="floating-book" href="https://bookings.zenchef.com/results?rid=364692&pid=1001" target="_blank" id="floatingBtn">Réserver</a>
 
   <script>
-    const navbar = document.getElementById("navbar");
-    const menuBtn = document.getElementById("menuBtn");
-    const navLinks = document.getElementById("navLinks");
+    const translations = {
+      fr: {
+        navChef: "Chef Moha",
+        navBio: "Biographie",
+        navWhy: "Pourquoi venir",
+        navGallery: "Galerie",
+        navMedia: "Médias",
+        navLocation: "Localisation",
+        topReserveBtn: "RÉSERVATION",
+        welcome: "BIENVENUE AU",
+        heroTitle: "RESTAURANT<br>DAR MOHA",
+        heroSubtitle: "RESTAURANT GASTRONOMIQUE À MARRAKECH",
+        heroSubline: "CUISINE MAROCAINE PAR CHEF MOHA",
+        mainReserveBtn: "RÉSERVER",
+        discoverBtn: "DÉCOUVRIR",
+        highlight1Title: "Chef Moha",
+        highlight1Text: "Ambassadeur de la cuisine marocaine moderne.",
+        highlight2Title: "Marrakech",
+        highlight2Text: "Une adresse emblématique au cœur de la médina.",
+        highlight3Title: "Dar Moha",
+        highlight3Text: "Un lieu où la gastronomie devient culture, émotion et souvenir.",
+        chefMini: "LE CHEF",
+        chefTitle: "Chef Moha, une figure de la gastronomie marocaine",
+        chefDesc: "Découvrez l’univers du chef qui incarne une cuisine marocaine raffinée, contemporaine et enracinée dans le patrimoine.",
+        chefCardTitle: "Une signature culinaire forte",
+        chefCardText: "Chef Moha représente une vision élégante de la cuisine marocaine. À Dar Moha, sa démarche associe tradition, créativité et excellence du service pour offrir une expérience mémorable aux visiteurs du monde entier.",
+        bioMini: "BIOGRAPHIE",
+        bioTitle: "Une trajectoire qui transforme la cuisine en culture",
+        bioDesc: "Cette section donne de la profondeur au site et valorise l’identité de la marque.",
+        bioYear1: "Origines",
+        bioHead1: "Un enracinement marocain",
+        bioText1: "Chef Moha est associé à Marrakech et à l’héritage culinaire marocain. Sa cuisine valorise les goûts, les gestes et les traditions qui font la richesse du Maroc.",
+        bioYear2: "Vision",
+        bioHead2: "Moderniser sans effacer la tradition",
+        bioText2: "Sa démarche sublime la cuisine marocaine, la présente avec élégance et la rend lisible pour une clientèle internationale.",
+        bioYear3: "Dar Moha",
+        bioHead3: "Un lieu emblématique à Marrakech",
+        bioText3: "Dar Moha réunit patrimoine, jardin, architecture, art de la table et émotion gastronomique dans une expérience complète.",
+        whyMini: "POURQUOI VENIR",
+        whyTitle: "Pourquoi les touristes doivent vivre Dar Moha",
+        whyDesc: "Cette partie transforme l’intérêt du visiteur en envie réelle de réservation.",
+        reason1Title: "Découvrir le Maroc autrement",
+        reason1Text: "Dar Moha propose une lecture raffinée du Maroc à travers la cuisine, l’hospitalité, le décor et l’émotion.",
+        reason2Title: "Vivre un lieu plein de charme",
+        reason2Text: "Le cadre, le jardin et l’ambiance rendent chaque moment photogénique et mémorable.",
+        reason3Title: "Goûter une cuisine signature",
+        reason3Text: "La cuisine marocaine y est présentée avec élégance, finesse et ouverture vers une clientèle internationale.",
+        reason4Title: "Vivre une expérience complète",
+        reason4Text: "Dar Moha combine gastronomie, culture, design, accueil et ambiance dans un seul lieu.",
+        reason5Title: "Profiter de la signature Chef Moha",
+        reason5Text: "Le nom du chef rassure les visiteurs et valorise fortement l’adresse.",
+        reason6Title: "Enrichir sa visite de Marrakech",
+        reason6Text: "C’est une étape idéale dans un parcours mêlant médina, patrimoine, artisanat et gastronomie.",
+        galleryMini: "GALERIE",
+        galleryTitle: "Un univers visuel qui séduit immédiatement",
+        galleryDesc: "Les images renforcent le désir de visite et permettent au voyageur de se projeter.",
+        galleryLabel1: "Le jardin emblématique",
+        galleryLabel2: "L’art de la table",
+        galleryLabel3: "L’ambiance du soir",
+        galleryLabel4: "Le dîner comme expérience",
+        galleryLabel5: "Le patio raffiné",
+        mediaMini: "MÉDIAS",
+        mediaTitle: "Réseaux sociaux et vidéos",
+        mediaDesc: "Le visiteur peut prolonger sa découverte grâce aux contenus visuels et sociaux.",
+        mediaCard1Title: "Instagram Dar Moha",
+        mediaCard1Text: "Découvrez l’univers visuel du restaurant, ses plats et son ambiance.",
+        mediaBtn1: "Voir Instagram",
+        mediaCard2Title: "Instagram Chef Moha",
+        mediaCard2Text: "Approchez la personnalité du chef et l’identité culinaire du lieu.",
+        mediaBtn2: "Voir Instagram",
+        mediaCard3Title: "Vidéo",
+        mediaCard3Text: "Ajoute ici une vidéo immersive pour rendre la visite encore plus vivante.",
+        mediaBtn3: "Voir le site",
+        locationMini: "LOCALISATION",
+        locationTitle: "Où se situe Dar Moha ?",
+        locationDesc: "Dar Moha se situe dans le quartier historique de Dar El Bacha, au cœur de Marrakech.",
+        infoTitle: "Informations pratiques",
+        info1: "<strong>Adresse :</strong> 81, Rue Dar El Bacha, Marrakech Médina",
+        info2: "<strong>Téléphone :</strong> +212 5 24 38 64 00",
+        info3: "<strong>Réservation :</strong> en ligne",
+        info4: "<strong>Rubriques officielles :</strong> Our Story, The Chef, Our Cuisine, Cooking Classes, Gallery, Contact",
+        locationBtn1: "Réserver",
+        locationBtn2: "Ouvrir Maps",
+        ctaTitle: "Dar Moha, une expérience à comprendre, admirer et vivre",
+        ctaText: "Ce modèle final a été pensé pour séduire, rassurer et cultiver le visiteur. Il transforme la curiosité en envie, puis l’envie en réservation.",
+        ctaBtn: "Réserver maintenant",
+        footerText: "© 2026 — Dar Moha premium model",
+        floatingBtn: "Réserver"
+      },
+      en: {
+        navChef: "Chef Moha",
+        navBio: "Biography",
+        navWhy: "Why visit",
+        navGallery: "Gallery",
+        navMedia: "Media",
+        navLocation: "Location",
+        topReserveBtn: "BOOKING",
+        welcome: "WELCOME TO",
+        heroTitle: "DAR MOHA<br>RESTAURANT",
+        heroSubtitle: "GOURMET RESTAURANT IN MARRAKECH",
+        heroSubline: "MOROCCAN CUISINE BY CHEF MOHA",
+        mainReserveBtn: "BOOK NOW",
+        discoverBtn: "DISCOVER",
+        highlight1Title: "Chef Moha",
+        highlight1Text: "An ambassador of modern Moroccan cuisine.",
+        highlight2Title: "Marrakech",
+        highlight2Text: "An iconic address in the heart of the medina.",
+        highlight3Title: "Dar Moha",
+        highlight3Text: "A place where gastronomy becomes culture, emotion and memory.",
+        chefMini: "THE CHEF",
+        chefTitle: "Chef Moha, a major figure in Moroccan gastronomy",
+        chefDesc: "Discover the world of the chef who embodies refined and contemporary Moroccan cuisine.",
+        chefCardTitle: "A strong culinary signature",
+        chefCardText: "Chef Moha represents an elegant vision of Moroccan cuisine. At Dar Moha, his approach blends tradition, creativity and service excellence to offer a memorable experience to visitors from around the world.",
+        bioMini: "BIOGRAPHY",
+        bioTitle: "A journey that turns cuisine into culture",
+        bioDesc: "This section gives depth to the site and strengthens the brand identity.",
+        bioYear1: "Origins",
+        bioHead1: "A Moroccan foundation",
+        bioText1: "Chef Moha is linked to Marrakech and Moroccan culinary heritage. His cuisine highlights the tastes, gestures and traditions that make Morocco rich.",
+        bioYear2: "Vision",
+        bioHead2: "Modernizing without erasing tradition",
+        bioText2: "His work elevates Moroccan cuisine, presents it elegantly and makes it accessible to international guests.",
+        bioYear3: "Dar Moha",
+        bioHead3: "An iconic place in Marrakech",
+        bioText3: "Dar Moha brings together heritage, gardens, architecture, table art and gastronomic emotion in one complete experience.",
+        whyMini: "WHY VISIT",
+        whyTitle: "Why tourists should experience Dar Moha",
+        whyDesc: "This section turns curiosity into a real desire to book.",
+        reason1Title: "Discover Morocco differently",
+        reason1Text: "Dar Moha offers a refined reading of Morocco through cuisine, hospitality, décor and emotion.",
+        reason2Title: "Enjoy a charming place",
+        reason2Text: "The setting, garden and atmosphere make every moment photogenic and memorable.",
+        reason3Title: "Taste signature cuisine",
+        reason3Text: "Moroccan cuisine is presented here with elegance, finesse and openness to an international clientele.",
+        reason4Title: "Enjoy a complete experience",
+        reason4Text: "Dar Moha combines gastronomy, culture, design, hospitality and atmosphere in one place.",
+        reason5Title: "Benefit from the Chef Moha signature",
+        reason5Text: "The chef’s name reassures guests and strongly elevates the address.",
+        reason6Title: "Enrich your visit to Marrakech",
+        reason6Text: "It is an ideal stop in a journey combining medina, heritage, craftsmanship and gastronomy.",
+        galleryMini: "GALLERY",
+        galleryTitle: "A visual world that instantly attracts",
+        galleryDesc: "Images strengthen the desire to visit and help travelers imagine the experience.",
+        galleryLabel1: "The iconic garden",
+        galleryLabel2: "The art of the table",
+        galleryLabel3: "Evening atmosphere",
+        galleryLabel4: "Dinner as an experience",
+        galleryLabel5: "The refined patio",
+        mediaMini: "MEDIA",
+        mediaTitle: "Social media and videos",
+        mediaDesc: "Visitors can extend their discovery through visual and social content.",
+        mediaCard1Title: "Dar Moha Instagram",
+        mediaCard1Text: "Discover the restaurant’s visual universe, dishes and atmosphere.",
+        mediaBtn1: "View Instagram",
+        mediaCard2Title: "Chef Moha Instagram",
+        mediaCard2Text: "Get closer to the chef’s personality and the culinary identity of the place.",
+        mediaBtn2: "View Instagram",
+        mediaCard3Title: "Video",
+        mediaCard3Text: "Add an immersive video here to make the visit more lively.",
+        mediaBtn3: "View website",
+        locationMini: "LOCATION",
+        locationTitle: "Where is Dar Moha located?",
+        locationDesc: "Dar Moha is located in the historic Dar El Bacha district, in the heart of Marrakech.",
+        infoTitle: "Practical information",
+        info1: "<strong>Address:</strong> 81, Rue Dar El Bacha, Marrakech Medina",
+        info2: "<strong>Phone:</strong> +212 5 24 38 64 00",
+        info3: "<strong>Booking:</strong> online",
+        info4: "<strong>Official sections:</strong> Our Story, The Chef, Our Cuisine, Cooking Classes, Gallery, Contact",
+        locationBtn1: "Book now",
+        locationBtn2: "Open Maps",
+        ctaTitle: "Dar Moha, an experience to understand, admire and live",
+        ctaText: "This final model is designed to attract, reassure and educate the visitor. It turns curiosity into desire, and desire into reservation.",
+        ctaBtn: "Book now",
+        footerText: "© 2026 — Dar Moha premium model",
+        floatingBtn: "Book"
+      },
+      es: {
+        navChef: "Chef Moha",
+        navBio: "Biografía",
+        navWhy: "Por qué venir",
+        navGallery: "Galería",
+        navMedia: "Medios",
+        navLocation: "Ubicación",
+        topReserveBtn: "RESERVA",
+        welcome: "BIENVENIDOS A",
+        heroTitle: "RESTAURANTE<br>DAR MOHA",
+        heroSubtitle: "RESTAURANTE GASTRONÓMICO EN MARRAKECH",
+        heroSubline: "COCINA MARROQUÍ POR CHEF MOHA",
+        mainReserveBtn: "RESERVAR",
+        discoverBtn: "DESCUBRIR",
+        highlight1Title: "Chef Moha",
+        highlight1Text: "Embajador de la cocina marroquí moderna.",
+        highlight2Title: "Marrakech",
+        highlight2Text: "Una dirección emblemática en el corazón de la medina.",
+        highlight3Title: "Dar Moha",
+        highlight3Text: "Un lugar donde la gastronomía se convierte en cultura, emoción y recuerdo.",
+        chefMini: "EL CHEF",
+        chefTitle: "Chef Moha, una figura de la gastronomía marroquí",
+        chefDesc: "Descubra el universo del chef que encarna una cocina marroquí refinada y contemporánea.",
+        chefCardTitle: "Una firma culinaria fuerte",
+        chefCardText: "Chef Moha representa una visión elegante de la cocina marroquí. En Dar Moha, su enfoque combina tradición, creatividad y excelencia en el servicio para ofrecer una experiencia memorable a visitantes de todo el mundo.",
+        bioMini: "BIOGRAFÍA",
+        bioTitle: "Una trayectoria que transforma la cocina en cultura",
+        bioDesc: "Esta sección aporta profundidad al sitio y refuerza la identidad de la marca.",
+        bioYear1: "Orígenes",
+        bioHead1: "Una raíz marroquí",
+        bioText1: "Chef Moha está vinculado a Marrakech y al patrimonio culinario marroquí. Su cocina resalta los sabores, los gestos y las tradiciones que enriquecen Marruecos.",
+        bioYear2: "Visión",
+        bioHead2: "Modernizar sin borrar la tradición",
+        bioText2: "Su trabajo realza la cocina marroquí, la presenta con elegancia y la hace accesible a una clientela internacional.",
+        bioYear3: "Dar Moha",
+        bioHead3: "Un lugar emblemático en Marrakech",
+        bioText3: "Dar Moha reúne patrimonio, jardín, arquitectura, arte de la mesa y emoción gastronómica en una experiencia completa.",
+        whyMini: "POR QUÉ VENIR",
+        whyTitle: "Por qué los turistas deben vivir Dar Moha",
+        whyDesc: "Esta parte transforma el interés del visitante en un deseo real de reservar.",
+        reason1Title: "Descubrir Marruecos de otra manera",
+        reason1Text: "Dar Moha ofrece una lectura refinada de Marruecos a través de la cocina, la hospitalidad, la decoración y la emoción.",
+        reason2Title: "Vivir un lugar lleno de encanto",
+        reason2Text: "El entorno, el jardín y la atmósfera hacen que cada momento sea fotogénico y memorable.",
+        reason3Title: "Probar una cocina de autor",
+        reason3Text: "La cocina marroquí se presenta aquí con elegancia, finura y apertura a una clientela internacional.",
+        reason4Title: "Vivir una experiencia completa",
+        reason4Text: "Dar Moha combina gastronomía, cultura, diseño, acogida y ambiente en un solo lugar.",
+        reason5Title: "Disfrutar de la firma Chef Moha",
+        reason5Text: "El nombre del chef tranquiliza a los visitantes y valoriza fuertemente la dirección.",
+        reason6Title: "Enriquecer la visita a Marrakech",
+        reason6Text: "Es una parada ideal en un recorrido que mezcla medina, patrimonio, artesanía y gastronomía.",
+        galleryMini: "GALERÍA",
+        galleryTitle: "Un universo visual que seduce de inmediato",
+        galleryDesc: "Las imágenes refuerzan el deseo de visitar y permiten al viajero proyectarse.",
+        galleryLabel1: "El jardín emblemático",
+        galleryLabel2: "El arte de la mesa",
+        galleryLabel3: "La atmósfera nocturna",
+        galleryLabel4: "La cena como experiencia",
+        galleryLabel5: "El patio refinado",
+        mediaMini: "MEDIOS",
+        mediaTitle: "Redes sociales y videos",
+        mediaDesc: "El visitante puede prolongar su descubrimiento gracias a contenidos visuales y sociales.",
+        mediaCard1Title: "Instagram Dar Moha",
+        mediaCard1Text: "Descubra el universo visual del restaurante, sus platos y su ambiente.",
+        mediaBtn1: "Ver Instagram",
+        mediaCard2Title: "Instagram Chef Moha",
+        mediaCard2Text: "Acérquese a la personalidad del chef y a la identidad culinaria del lugar.",
+        mediaBtn2: "Ver Instagram",
+        mediaCard3Title: "Video",
+        mediaCard3Text: "Añada aquí un video inmersivo para hacer la visita aún más viva.",
+        mediaBtn3: "Ver sitio",
+        locationMini: "UBICACIÓN",
+        locationTitle: "¿Dónde se encuentra Dar Moha?",
+        locationDesc: "Dar Moha se encuentra en el histórico barrio de Dar El Bacha, en el corazón de Marrakech.",
+        infoTitle: "Información práctica",
+        info1: "<strong>Dirección:</strong> 81, Rue Dar El Bacha, Marrakech Medina",
+        info2: "<strong>Teléfono:</strong> +212 5 24 38 64 00",
+        info3: "<strong>Reserva:</strong> en línea",
+        info4: "<strong>Secciones oficiales:</strong> Our Story, The Chef, Our Cuisine, Cooking Classes, Gallery, Contact",
+        locationBtn1: "Reservar",
+        locationBtn2: "Abrir Maps",
+        ctaTitle: "Dar Moha, una experiencia para comprender, admirar y vivir",
+        ctaText: "Este modelo final está pensado para atraer, tranquilizar y cultivar al visitante. Convierte la curiosidad en deseo, y el deseo en reserva.",
+        ctaBtn: "Reservar ahora",
+        footerText: "© 2026 — Dar Moha premium model",
+        floatingBtn: "Reservar"
+      }
+    };
 
-    window.addEventListener("scroll", () => {
-      navbar.classList.toggle("scrolled", window.scrollY > 30);
+    function applyLanguage(lang){
+      const dict = translations[lang];
+      if(!dict) return;
+
+      document.documentElement.lang = lang;
+
+      Object.keys(dict).forEach(key => {
+        const el = document.getElementById(key);
+        if(el){
+          if(
+            key.includes("Title") ||
+            key.includes("Text") ||
+            key.includes("Desc") ||
+            key.includes("Btn") ||
+            key.includes("Mini") ||
+            key.includes("Label") ||
+            key.includes("Year") ||
+            key.includes("Head") ||
+            key.includes("info") ||
+            key === "welcome" ||
+            key === "heroTitle" ||
+            key === "heroSubtitle" ||
+            key === "heroSubline" ||
+            key === "ctaTitle" ||
+            key === "ctaText" ||
+            key === "footerText" ||
+            key === "floatingBtn"
+          ){
+            if(dict[key].includes("<br>") || dict[key].includes("<strong>")){
+              el.innerHTML = dict[key];
+            } else {
+              el.textContent = dict[key];
+            }
+          }
+        }
+      });
+
+      document.querySelectorAll("[data-i18n]").forEach(node => {
+        const key = node.getAttribute("data-i18n");
+        if(dict[key]) node.textContent = dict[key];
+      });
+
+      document.querySelectorAll(".lang-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.lang === lang);
+      });
+    }
+
+    document.querySelectorAll(".lang-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        applyLanguage(btn.dataset.lang);
+      });
     });
+
+    const menuBtn = document.getElementById("menuBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
 
     menuBtn.addEventListener("click", () => {
-      navLinks.classList.toggle("show");
+      mobileMenu.classList.toggle("show");
     });
 
-    document.querySelectorAll(".nav-links a").forEach(link => {
+    document.querySelectorAll(".mobile-menu a").forEach(link => {
       link.addEventListener("click", () => {
-        navLinks.classList.remove("show");
+        mobileMenu.classList.remove("show");
       });
+    });
+
+    const navbar = document.getElementById("navbar");
+    window.addEventListener("scroll", () => {
+      navbar.classList.toggle("scrolled", window.scrollY > 30);
     });
 
     const reveals = document.querySelectorAll(".reveal");
@@ -1089,22 +1502,10 @@
 
     reveals.forEach(el => observer.observe(el));
 
-    // Effet de surbrillance doux sur les cartes au mouvement
-    document.querySelectorAll(".reason, .media-card, .card").forEach(card => {
-      card.addEventListener("mousemove", (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.style.background = `
-          radial-gradient(circle at ${x}px ${y}px, rgba(201,165,107,.12), transparent 28%),
-          linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03))
-        `;
-      });
+    const bookingUrl = "https://bookings.zenchef.com/results?rid=364692&pid=1001";
+    document.getElementById("topReserveBtn").addEventListener("click", () => window.open(bookingUrl, "_blank"));
 
-      card.addEventListener("mouseleave", () => {
-        card.style.background = "linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03))";
-      });
-    });
+    applyLanguage("fr");
   </script>
 </body>
 </html>
