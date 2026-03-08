@@ -6,206 +6,324 @@
   <title>Aymane Social</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f0f2f5;
       color: #1c1e21;
     }
-    .container {
-      max-width: 760px;
-      margin: 24px auto;
-      padding: 14px;
+
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
     }
-    .header {
-      text-align: center;
-      margin-bottom: 18px;
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
-    .header h1 {
+
+    .topbar h1 {
       margin: 0;
       color: #1877f2;
-      font-size: 34px;
     }
-    .header p {
-      margin: 8px 0 0;
-      color: #666;
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
+
     .card {
-      background: #fff;
+      background: white;
       border-radius: 16px;
-      padding: 18px;
+      padding: 16px;
       margin-bottom: 16px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
     }
+
     h2 {
-      margin: 0 0 12px;
-      font-size: 20px;
+      margin-top: 0;
     }
-    input, textarea {
+
+    input,
+    textarea,
+    button {
+      font: inherit;
+    }
+
+    input,
+    textarea {
       width: 100%;
       padding: 12px;
-      margin: 8px 0;
-      border: 1px solid #d8dee4;
+      border: 1px solid #d6dbe1;
       border-radius: 10px;
-      font-size: 15px;
-      outline: none;
+      margin: 8px 0;
+      background: white;
     }
+
     textarea {
       min-height: 100px;
       resize: vertical;
     }
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 8px;
-    }
+
     button {
       border: none;
       border-radius: 10px;
       padding: 12px 16px;
-      cursor: pointer;
       background: #1877f2;
       color: white;
-      font-size: 15px;
+      cursor: pointer;
     }
-    button.green { background: #42b72a; }
-    button.dark { background: #444; }
-    button.red { background: #e53935; }
-    .status {
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: #f7f7f7;
-      font-size: 14px;
-      color: #333;
+
+    button.secondary {
+      background: #444;
     }
-    .profile-box {
+
+    button.danger {
+      background: #d93025;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .grid-2 {
       display: grid;
-      grid-template-columns: 72px 1fr;
-      gap: 14px;
-      align-items: start;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
-    .avatar {
-      width: 72px;
-      height: 72px;
+
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 14px;
+    }
+
+    .avatar-preview {
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       background: #1877f2;
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
+      font-size: 34px;
       font-weight: bold;
       overflow: hidden;
     }
-    .feed-empty {
-      text-align: center;
-      color: #666;
-      padding: 20px;
-    }
+
     .post {
-      border: 1px solid #e5e7eb;
-      background: #fafbfc;
+      border: 1px solid #e3e7ed;
       border-radius: 14px;
       padding: 14px;
-      margin-bottom: 12px;
+      background: #fafbfc;
+      margin-bottom: 14px;
     }
-    .post-top {
+
+    .post-header {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 8px;
+      align-items: center;
+      margin-bottom: 10px;
     }
+
     .post-user {
       font-weight: bold;
       color: #1877f2;
     }
+
     .post-date {
-      color: #666;
       font-size: 12px;
+      color: #666;
     }
-    .post-content {
-      white-space: pre-wrap;
-      line-height: 1.5;
-      margin: 8px 0 10px;
+
+    .post-image {
+      width: 100%;
+      max-height: 360px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-top: 10px;
+      border: 1px solid #e3e7ed;
     }
+
+    .post-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .comment-box {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .comment {
+      background: white;
+      border: 1px solid #e6e6e6;
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-top: 8px;
+    }
+
+    .message {
+      background: #fafbfc;
+      border: 1px solid #e3e7ed;
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    .empty {
+      color: #666;
+      text-align: center;
+      padding: 12px;
+    }
+
     .small {
       font-size: 12px;
-      color: #777;
+      color: #666;
     }
-    @media (max-width: 640px) {
-      .row { grid-template-columns: 1fr; }
-      .actions { flex-direction: column; }
-      button { width: 100%; }
-      .profile-box { grid-template-columns: 1fr; }
-      .avatar { margin: 0 auto; }
+
+    @media (max-width: 700px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .avatar-preview {
+        margin: 0 auto;
+      }
+
+      .actions button {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
+  <div class="app">
+    <header class="topbar">
       <h1>Aymane Social</h1>
-      <p>Créer un compte, se connecter et publier</p>
-    </div>
+      <div class="topbar-actions">
+        <span id="authStatus">Non connecté</span>
+        <button id="logoutBtn" class="secondary">Déconnexion</button>
+      </div>
+    </header>
 
-    <div class="card">
-      <h2>Compte</h2>
-      <div class="row">
+    <section class="card">
+      <h2>Connexion / Inscription</h2>
+      <div class="grid-2">
         <input type="email" id="email" placeholder="Email" />
         <input type="password" id="password" placeholder="Mot de passe" />
       </div>
       <div class="actions">
-        <button onclick="signUp()">Créer un compte</button>
-        <button class="green" onclick="signIn()">Se connecter</button>
-        <button class="dark" onclick="signOut()">Se déconnecter</button>
+        <button id="signupBtn">Créer un compte</button>
+        <button id="signinBtn">Se connecter</button>
       </div>
-      <div class="status" id="authStatus">Non connecté</div>
-    </div>
+    </section>
 
-    <div class="card">
+    <section class="card">
       <h2>Mon profil</h2>
-      <div class="profile-box">
-        <div class="avatar" id="avatarPreview">A</div>
+      <div class="profile-layout">
+        <div class="avatar-preview" id="avatarPreview">A</div>
         <div>
           <input type="text" id="username" placeholder="Pseudo" maxlength="30" />
-          <input type="text" id="avatarUrl" placeholder="URL de photo (optionnel)" />
-          <textarea id="bio" placeholder="Petite bio" maxlength="160"></textarea>
+          <input type="text" id="avatarUrl" placeholder="Lien image profil (optionnel)" />
+          <textarea id="bio" placeholder="Bio" maxlength="160"></textarea>
           <div class="actions">
-            <button onclick="saveProfile()">Enregistrer le profil</button>
+            <button id="saveProfileBtn">Enregistrer le profil</button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="card">
-      <h2>Publier</h2>
+    <section class="card">
+      <h2>Nouveau post</h2>
       <textarea id="postContent" placeholder="Écris quelque chose..." maxlength="500"></textarea>
+      <input type="text" id="postImageUrl" placeholder="Lien image (optionnel)" />
       <div class="actions">
-        <button onclick="addPost()">Publier</button>
+        <button id="addPostBtn">Publier</button>
       </div>
-      <div class="small">Maximum 500 caractères</div>
-    </div>
+      <div class="small">Texte obligatoire. Image facultative par lien URL.</div>
+    </section>
 
-    <div class="card">
+    <section class="card">
       <h2>Fil d’actualité</h2>
-      <div id="posts"></div>
-    </div>
+      <div id="feed"></div>
+    </section>
+
+    <section class="card">
+      <h2>Messagerie simple</h2>
+      <input type="text" id="messageReceiver" placeholder="Pseudo du destinataire" />
+      <textarea id="messageContent" placeholder="Ton message..."></textarea>
+      <div class="actions">
+        <button id="sendMessageBtn">Envoyer</button>
+        <button id="loadMessagesBtn" class="secondary">Actualiser les messages</button>
+      </div>
+      <div id="messagesBox"></div>
+    </section>
   </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
     const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
     const SUPABASE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
 
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const authStatus = document.getElementById("authStatus");
+    const feed = document.getElementById("feed");
+    const messagesBox = document.getElementById("messagesBox");
+
+    document.getElementById("signupBtn").addEventListener("click", signUp);
+    document.getElementById("signinBtn").addEventListener("click", signIn);
+    document.getElementById("logoutBtn").addEventListener("click", signOut);
+    document.getElementById("saveProfileBtn").addEventListener("click", saveProfile);
+    document.getElementById("addPostBtn").addEventListener("click", addPost);
+    document.getElementById("sendMessageBtn").addEventListener("click", sendMessage);
+    document.getElementById("loadMessagesBtn").addEventListener("click", loadMessages);
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.innerText = text || "";
+      return div.innerHTML;
+    }
+
+    function renderAvatarPreview(username, avatarUrl) {
+      const avatarPreview = document.getElementById("avatarPreview");
+      if (avatarUrl) {
+        avatarPreview.innerHTML = '<img src="' + escapeHtml(avatarUrl) + '" alt="avatar" style="width:100%;height:100%;object-fit:cover;">';
+      } else {
+        avatarPreview.textContent = (username || "A").charAt(0).toUpperCase();
+      }
+    }
+
+    async function getCurrentUser() {
+      const { data } = await client.auth.getUser();
+      return data.user || null;
+    }
 
     async function signUp() {
       const email = document.getElementById("email").value.trim();
@@ -223,20 +341,24 @@
         return;
       }
 
-      const user = data.user;
-      if (user) {
+      if (data.user) {
         const defaultUsername = email.split("@")[0];
-        await client.from("profiles").upsert({
-          id: user.id,
+
+        const { error: profileError } = await client.from("profiles").upsert({
+          id: data.user.id,
           username: defaultUsername,
           avatar_url: "",
           bio: ""
         });
+
+        if (profileError) {
+          alert(profileError.message);
+          return;
+        }
       }
 
       alert("Compte créé.");
-      await checkUser();
-      await loadFeed();
+      await refreshUI();
     }
 
     async function signIn() {
@@ -248,66 +370,29 @@
         return;
       }
 
-      const { error } = await client.auth.signInWithPassword({ email, password });
+      const { error } = await client.auth.signInWithPassword({
+        email,
+        password
+      });
 
       if (error) {
         alert(error.message);
         return;
       }
 
-      await checkUser();
-      await loadMyProfile();
-      await loadFeed();
       alert("Connexion réussie.");
+      await refreshUI();
     }
 
     async function signOut() {
       const { error } = await client.auth.signOut();
+
       if (error) {
         alert(error.message);
         return;
       }
-      document.getElementById("authStatus").innerText = "Non connecté";
-      document.getElementById("username").value = "";
-      document.getElementById("avatarUrl").value = "";
-      document.getElementById("bio").value = "";
-      document.getElementById("avatarPreview").innerHTML = "A";
-      await loadFeed();
-      alert("Déconnecté.");
-    }
 
-    async function getCurrentUser() {
-      const { data } = await client.auth.getUser();
-      return data.user || null;
-    }
-
-    async function checkUser() {
-      const user = await getCurrentUser();
-
-      if (!user) {
-        document.getElementById("authStatus").innerText = "Non connecté";
-        return;
-      }
-
-      document.getElementById("authStatus").innerText = "Connecté : " + user.email;
-    }
-
-    async function loadMyProfile() {
-      const user = await getCurrentUser();
-      if (!user) return;
-
-      const { data, error } = await client
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (error || !data) return;
-
-      document.getElementById("username").value = data.username || "";
-      document.getElementById("avatarUrl").value = data.avatar_url || "";
-      document.getElementById("bio").value = data.bio || "";
-      renderAvatar(data.username, data.avatar_url);
+      await refreshUI();
     }
 
     async function saveProfile() {
@@ -339,29 +424,49 @@
         return;
       }
 
-      renderAvatar(username, avatar_url);
-      await loadFeed();
+      renderAvatarPreview(username, avatar_url);
       alert("Profil enregistré.");
+      await loadFeed();
+      await loadMessages();
     }
 
-    function renderAvatar(username, avatarUrl) {
-      const box = document.getElementById("avatarPreview");
-      if (avatarUrl) {
-        box.innerHTML = '<img src="' + escapeHtml(avatarUrl) + '" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-      } else {
-        const letter = username ? username.charAt(0).toUpperCase() : "A";
-        box.innerHTML = letter;
+    async function loadMyProfile() {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        document.getElementById("username").value = "";
+        document.getElementById("avatarUrl").value = "";
+        document.getElementById("bio").value = "";
+        renderAvatarPreview("A", "");
+        return;
       }
+
+      const { data, error } = await client
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error || !data) {
+        return;
+      }
+
+      document.getElementById("username").value = data.username || "";
+      document.getElementById("avatarUrl").value = data.avatar_url || "";
+      document.getElementById("bio").value = data.bio || "";
+      renderAvatarPreview(data.username, data.avatar_url);
     }
 
     async function addPost() {
       const user = await getCurrentUser();
-      const content = document.getElementById("postContent").value.trim();
 
       if (!user) {
         alert("Connecte-toi d'abord.");
         return;
       }
+
+      const content = document.getElementById("postContent").value.trim();
+      const image_url = document.getElementById("postImageUrl").value.trim();
 
       if (!content) {
         alert("Écris un message.");
@@ -369,6 +474,79 @@
       }
 
       const { error } = await client.from("posts").insert({
+        user_id: user.id,
+        content,
+        image_url
+      });
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      document.getElementById("postContent").value = "";
+      document.getElementById("postImageUrl").value = "";
+      await loadFeed();
+    }
+
+    async function toggleLike(postId) {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        alert("Connecte-toi d'abord.");
+        return;
+      }
+
+      const { data: existing, error: checkError } = await client
+        .from("likes")
+        .select("id")
+        .eq("post_id", postId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (checkError) {
+        alert(checkError.message);
+        return;
+      }
+
+      if (existing) {
+        const { error } = await client.from("likes").delete().eq("id", existing.id);
+        if (error) {
+          alert(error.message);
+          return;
+        }
+      } else {
+        const { error } = await client.from("likes").insert({
+          post_id: postId,
+          user_id: user.id
+        });
+        if (error) {
+          alert(error.message);
+          return;
+        }
+      }
+
+      await loadFeed();
+    }
+
+    async function addComment(postId) {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        alert("Connecte-toi d'abord.");
+        return;
+      }
+
+      const input = document.getElementById("comment-input-" + postId);
+      const content = input.value.trim();
+
+      if (!content) {
+        alert("Écris un commentaire.");
+        return;
+      }
+
+      const { error } = await client.from("comments").insert({
+        post_id: postId,
         user_id: user.id,
         content
       });
@@ -378,24 +556,21 @@
         return;
       }
 
-      document.getElementById("postContent").value = "";
+      input.value = "";
       await loadFeed();
     }
 
     async function deletePost(postId) {
       const user = await getCurrentUser();
+
       if (!user) {
-        alert("Connecte-toi d'abord.");
         return;
       }
 
       const ok = confirm("Supprimer ce post ?");
       if (!ok) return;
 
-      const { error } = await client
-        .from("posts")
-        .delete()
-        .eq("id", postId);
+      const { error } = await client.from("posts").delete().eq("id", postId);
 
       if (error) {
         alert(error.message);
@@ -406,16 +581,16 @@
     }
 
     async function loadFeed() {
-      const postsDiv = document.getElementById("posts");
-      postsDiv.innerHTML = '<div class="feed-empty">Chargement...</div>';
+      feed.innerHTML = '<div class="empty">Chargement...</div>';
 
       const user = await getCurrentUser();
 
-      const { data, error } = await client
+      const { data: posts, error } = await client
         .from("posts")
         .select(`
           id,
           content,
+          image_url,
           created_at,
           user_id,
           profiles (
@@ -426,33 +601,66 @@
         .order("created_at", { ascending: false });
 
       if (error) {
-        postsDiv.innerHTML = '<div class="feed-empty">Erreur de chargement.</div>';
+        feed.innerHTML = '<div class="empty">Erreur de chargement.</div>';
         return;
       }
 
-      if (!data || data.length === 0) {
-        postsDiv.innerHTML = '<div class="feed-empty">Aucun post pour le moment.</div>';
+      if (!posts || posts.length === 0) {
+        feed.innerHTML = '<div class="empty">Aucun post pour le moment.</div>';
         return;
       }
 
-      postsDiv.innerHTML = "";
+      feed.innerHTML = "";
 
-      data.forEach(post => {
+      for (const post of posts) {
         const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
         const username = profile?.username || "Utilisateur";
         const avatarUrl = profile?.avatar_url || "";
         const date = new Date(post.created_at).toLocaleString("fr-FR");
 
+        const { data: likesData } = await client
+          .from("likes")
+          .select("id, user_id")
+          .eq("post_id", post.id);
+
+        const { data: commentsData } = await client
+          .from("comments")
+          .select(`
+            id,
+            content,
+            created_at,
+            user_id,
+            profiles (
+              username
+            )
+          `)
+          .eq("post_id", post.id)
+          .order("created_at", { ascending: true });
+
+        const likesCount = likesData ? likesData.length : 0;
+        const isLiked = !!likesData?.find(like => like.user_id === user?.id);
         const canDelete = user && user.id === post.user_id;
 
-        const avatarHtml = avatarUrl
-          ? '<img src="' + escapeHtml(avatarUrl) + '" alt="avatar" style="width:38px;height:38px;border-radius:50%;object-fit:cover;">'
-          : '<div style="width:38px;height:38px;border-radius:50%;background:#1877f2;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;">' + escapeHtml(username.charAt(0).toUpperCase()) + '</div>';
+        const postEl = document.createElement("div");
+        postEl.className = "post";
 
-        const div = document.createElement("div");
-        div.className = "post";
-        div.innerHTML = `
-          <div class="post-top">
+        const avatarHtml = avatarUrl
+          ? '<img src="' + escapeHtml(avatarUrl) + '" alt="avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">'
+          : '<div style="width:40px;height:40px;border-radius:50%;background:#1877f2;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;">' + escapeHtml(username.charAt(0).toUpperCase()) + '</div>';
+
+        const commentsHtml = (commentsData || []).map(comment => {
+          const cProfile = Array.isArray(comment.profiles) ? comment.profiles[0] : comment.profiles;
+          const cName = cProfile?.username || "Utilisateur";
+          return `
+            <div class="comment">
+              <strong>${escapeHtml(cName)}</strong><br>
+              ${escapeHtml(comment.content)}
+            </div>
+          `;
+        }).join("");
+
+        postEl.innerHTML = `
+          <div class="post-header">
             <div style="display:flex;align-items:center;gap:10px;">
               ${avatarHtml}
               <div>
@@ -460,31 +668,150 @@
                 <div class="post-date">${date}</div>
               </div>
             </div>
-            ${canDelete ? `<button class="red" onclick="deletePost(${post.id})">Supprimer</button>` : ""}
+            ${canDelete ? `<button class="danger" onclick="deletePost(${post.id})">Supprimer</button>` : ""}
           </div>
-          <div class="post-content">${escapeHtml(post.content)}</div>
+
+          <div>${escapeHtml(post.content)}</div>
+
+          ${post.image_url ? `<img class="post-image" src="${escapeHtml(post.image_url)}" alt="image post">` : ""}
+
+          <div class="post-actions">
+            <button onclick="toggleLike(${post.id})">${isLiked ? "Je n’aime plus" : "J’aime"}</button>
+            <span>${likesCount} j’aime</span>
+          </div>
+
+          <div class="comment-box">
+            <input id="comment-input-${post.id}" type="text" placeholder="Ajouter un commentaire..." />
+            <div class="actions">
+              <button onclick="addComment(${post.id})">Commenter</button>
+            </div>
+            ${commentsHtml || `<div class="empty">Pas encore de commentaires.</div>`}
+          </div>
         `;
-        postsDiv.appendChild(div);
+
+        feed.appendChild(postEl);
+      }
+    }
+
+    async function sendMessage() {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        alert("Connecte-toi d'abord.");
+        return;
+      }
+
+      const receiverUsername = document.getElementById("messageReceiver").value.trim();
+      const content = document.getElementById("messageContent").value.trim();
+
+      if (!receiverUsername || !content) {
+        alert("Entre un destinataire et un message.");
+        return;
+      }
+
+      const { data: receiver, error: receiverError } = await client
+        .from("profiles")
+        .select("id, username")
+        .eq("username", receiverUsername)
+        .maybeSingle();
+
+      if (receiverError || !receiver) {
+        alert("Destinataire introuvable.");
+        return;
+      }
+
+      const { error } = await client.from("messages").insert({
+        sender_id: user.id,
+        receiver_id: receiver.id,
+        content
+      });
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      document.getElementById("messageContent").value = "";
+      await loadMessages();
+    }
+
+    async function loadMessages() {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        messagesBox.innerHTML = '<div class="empty">Connecte-toi pour voir les messages.</div>';
+        return;
+      }
+
+      const { data, error } = await client
+        .from("messages")
+        .select(`
+          id,
+          content,
+          created_at,
+          sender_id,
+          receiver_id
+        `)
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (error) {
+        messagesBox.innerHTML = '<div class="empty">Erreur de chargement des messages.</div>';
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        messagesBox.innerHTML = '<div class="empty">Aucun message.</div>';
+        return;
+      }
+
+      const profileIds = [...new Set(data.flatMap(m => [m.sender_id, m.receiver_id]))];
+
+      const { data: profileList } = await client
+        .from("profiles")
+        .select("id, username")
+        .in("id", profileIds);
+
+      const profileMap = {};
+      (profileList || []).forEach(p => {
+        profileMap[p.id] = p.username;
+      });
+
+      messagesBox.innerHTML = "";
+
+      data.forEach(msg => {
+        const senderName = profileMap[msg.sender_id] || "Utilisateur";
+        const receiverName = profileMap[msg.receiver_id] || "Utilisateur";
+        const date = new Date(msg.created_at).toLocaleString("fr-FR");
+
+        const div = document.createElement("div");
+        div.className = "message";
+        div.innerHTML = `
+          <strong>${escapeHtml(senderName)}</strong> → <strong>${escapeHtml(receiverName)}</strong><br>
+          ${escapeHtml(msg.content)}<br>
+          <small>${date}</small>
+        `;
+        messagesBox.appendChild(div);
       });
     }
 
-    function escapeHtml(text) {
-      const div = document.createElement("div");
-      div.innerText = text || "";
-      return div.innerHTML;
+    async function refreshUI() {
+      const user = await getCurrentUser();
+      authStatus.textContent = user ? "Connecté : " + user.email : "Non connecté";
+      await loadMyProfile();
+      await loadFeed();
+      await loadMessages();
     }
 
     client.auth.onAuthStateChange(async () => {
-      await checkUser();
-      await loadMyProfile();
-      await loadFeed();
+      await refreshUI();
     });
 
-    (async function init() {
-      await checkUser();
-      await loadMyProfile();
-      await loadFeed();
-    })();
+    window.toggleLike = toggleLike;
+    window.addComment = addComment;
+    window.deletePost = deletePost;
+
+    refreshUI();
   </script>
 </body>
 </html>
