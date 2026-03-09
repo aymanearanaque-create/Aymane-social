@@ -27,16 +27,22 @@
       font-family:Arial,sans-serif;
       background:
         radial-gradient(circle at top left, rgba(124,106,247,.18), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(247,106,138,.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(247,106,138,.10), transparent 28%),
         var(--bg);
       color:var(--text);
+    }
+
+    .hidden{display:none!important}
+
+    .auth-wrap{
+      min-height:100vh;
       display:flex;
       justify-content:center;
       align-items:center;
       padding:20px;
     }
 
-    .card{
+    .auth-card{
       width:100%;
       max-width:430px;
       background:rgba(19,19,26,.96);
@@ -46,7 +52,7 @@
       box-shadow:0 20px 60px rgba(0,0,0,.35);
     }
 
-    h1{
+    h1.logo{
       font-size:36px;
       margin-bottom:8px;
       text-align:center;
@@ -63,8 +69,6 @@
       line-height:1.5;
     }
 
-    .hidden{display:none}
-
     label{
       display:block;
       margin:12px 0 6px;
@@ -73,7 +77,7 @@
       font-weight:700;
     }
 
-    input{
+    input, textarea{
       width:100%;
       padding:14px;
       border-radius:14px;
@@ -84,7 +88,12 @@
       font-size:16px;
     }
 
-    input:focus{
+    textarea{
+      resize:none;
+      min-height:92px;
+    }
+
+    input:focus, textarea:focus{
       border-color:var(--accent);
       box-shadow:0 0 0 3px rgba(124,106,247,.15);
     }
@@ -108,17 +117,6 @@
       color:var(--text);
     }
 
-    .status{
-      margin-top:14px;
-      min-height:22px;
-      color:var(--warn);
-      text-align:center;
-      white-space:pre-wrap;
-    }
-
-    .ok{color:var(--ok)}
-    .err{color:var(--err)}
-
     .bottom-link{
       margin-top:16px;
       display:flex;
@@ -138,103 +136,432 @@
       text-decoration:underline;
     }
 
-    .top-right{
+    .status{
+      margin-top:14px;
+      min-height:22px;
+      color:var(--warn);
+      text-align:center;
+      white-space:pre-wrap;
+    }
+
+    .ok{color:var(--ok)}
+    .err{color:var(--err)}
+
+    .app{
+      min-height:100vh;
       display:flex;
-      justify-content:flex-end;
-      margin-bottom:10px;
+      flex-direction:column;
+      max-width:480px;
+      margin:0 auto;
+      background:rgba(10,10,15,.95);
+      border-left:1px solid rgba(255,255,255,.04);
+      border-right:1px solid rgba(255,255,255,.04);
+    }
+
+    .topbar{
+      height:64px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 16px;
+      border-bottom:1px solid var(--border);
+      position:sticky;
+      top:0;
+      background:rgba(10,10,15,.96);
+      z-index:20;
+      backdrop-filter:blur(10px);
+    }
+
+    .brand{
+      font-size:28px;
+      font-weight:900;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    .icon-btn{
+      width:auto;
+      margin:0;
+      padding:8px 10px;
+      background:none;
+      border:none;
+      color:var(--text);
+      font-size:24px;
+      line-height:1;
+    }
+
+    .page{
+      flex:1;
+      overflow:auto;
+      padding-bottom:86px;
+    }
+
+    .section{
+      padding:16px;
+    }
+
+    .story-row{
+      display:flex;
+      gap:14px;
+      overflow:auto;
+      padding:12px 16px 10px;
+      border-bottom:1px solid var(--border);
+    }
+
+    .story{
+      min-width:72px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .story-ring{
+      width:72px;
+      height:72px;
+      border-radius:50%;
+      padding:3px;
+      background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7);
+      margin-bottom:6px;
+    }
+
+    .story-inner{
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      background:var(--card2);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:26px;
+      font-weight:800;
+      border:3px solid #0f0f16;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:16px;
+      margin:16px;
+    }
+
+    .placeholder{
+      text-align:center;
+      color:var(--muted);
+      padding:40px 20px;
+      line-height:1.6;
+    }
+
+    .dm-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:14px;
+      gap:10px;
+    }
+
+    .dm-title{
+      font-size:24px;
+      font-weight:800;
     }
 
     .small-btn{
       width:auto;
       margin:0;
       padding:10px 14px;
-      font-size:14px;
       border-radius:12px;
+      font-size:14px;
+    }
+
+    .me-box{
+      background:var(--card2);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+      margin-bottom:14px;
+      line-height:1.6;
+      color:var(--muted);
+    }
+
+    .messages-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .msg{
+      background:var(--card2);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .msg .meta{
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:6px;
+    }
+
+    .msg .content{
+      white-space:pre-wrap;
+      line-height:1.5;
     }
 
     .profile-box{
       background:var(--card2);
       border:1px solid var(--border);
-      border-radius:16px;
+      border-radius:18px;
       padding:16px;
-      margin-top:16px;
       line-height:1.7;
+      margin-bottom:14px;
+    }
+
+    .bottom-nav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      max-width:480px;
+      margin:0 auto;
+      height:74px;
+      background:rgba(10,10,15,.98);
+      border-top:1px solid var(--border);
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      z-index:30;
+      backdrop-filter:blur(10px);
+    }
+
+    .nav-item{
+      border:none;
+      background:none;
+      color:var(--muted);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
+      font-size:11px;
+      font-weight:700;
+      margin:0;
+      width:100%;
+      border-radius:0;
+      padding:0;
+    }
+
+    .nav-item .nav-ico{
+      font-size:24px;
+      line-height:1;
+    }
+
+    .nav-item.active{
+      color:white;
+    }
+
+    .avatar-nav{
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:13px;
+      font-weight:800;
+      color:white;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div id="loginView">
-      <h1>Aymane Social</h1>
-      <p class="sub">Connexion simple puis choix du pseudo</p>
 
-      <label>Email</label>
-      <input id="loginEmail" type="email" placeholder="vous@exemple.com">
+  <div id="authWrap" class="auth-wrap">
+    <div class="auth-card">
+      <div id="loginView">
+        <h1 class="logo">Aymane Social</h1>
+        <p class="sub">Connexion simple puis choix du pseudo</p>
 
-      <label>Mot de passe</label>
-      <input id="loginPassword" type="password" placeholder="••••••••">
+        <label>Email</label>
+        <input id="loginEmail" type="email" placeholder="vous@exemple.com">
 
-      <button id="loginBtn" type="button">Se connecter</button>
+        <label>Mot de passe</label>
+        <input id="loginPassword" type="password" placeholder="••••••••">
 
-      <div class="bottom-link">
-        <button id="goSignupBtn" class="link-btn" type="button">S’inscrire</button>
+        <button id="loginBtn" type="button">Se connecter</button>
+
+        <div class="bottom-link">
+          <button id="goSignupBtn" class="link-btn" type="button">S’inscrire</button>
+        </div>
+
+        <div id="loginStatus" class="status">Prêt</div>
       </div>
 
-      <div id="loginStatus" class="status">Prêt</div>
+      <div id="signupView" class="hidden">
+        <h1 class="logo">Inscription</h1>
+        <p class="sub">Crée ton compte puis retourne te connecter</p>
+
+        <label>Email</label>
+        <input id="signupEmail" type="email" placeholder="vous@exemple.com">
+
+        <label>Mot de passe</label>
+        <input id="signupPassword" type="password" placeholder="••••••••">
+
+        <button id="signupBtn" type="button">Créer un compte</button>
+
+        <div class="bottom-link">
+          <button id="backLoginBtn" class="link-btn" type="button">Retour connexion</button>
+        </div>
+
+        <div id="signupStatus" class="status">Prêt</div>
+      </div>
+
+      <div id="usernameView" class="hidden">
+        <h1 class="logo">Choisir pseudo</h1>
+        <p class="sub">Choisis un pseudo unique</p>
+
+        <label>Pseudo</label>
+        <input id="usernameInput" type="text" placeholder="ex: lwa3r">
+
+        <button id="saveUsernameBtn" type="button">Enregistrer le pseudo</button>
+        <button id="logoutBtn1" class="secondary" type="button">Déconnexion</button>
+
+        <div id="usernameStatus" class="status">Prêt</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="appWrap" class="app hidden">
+    <div class="topbar">
+      <button class="icon-btn" type="button">＋</button>
+      <div class="brand">Aymane Social</div>
+      <button id="logoutBtnTop" class="icon-btn" type="button">♡</button>
     </div>
 
-    <div id="signupView" class="hidden">
-      <h1>Inscription</h1>
-      <p class="sub">Crée ton compte puis retourne te connecter</p>
-
-      <label>Email</label>
-      <input id="signupEmail" type="email" placeholder="vous@exemple.com">
-
-      <label>Mot de passe</label>
-      <input id="signupPassword" type="password" placeholder="••••••••">
-
-      <button id="signupBtn" type="button">Créer un compte</button>
-
-      <div class="bottom-link">
-        <button id="backLoginBtn" class="link-btn" type="button">Retour connexion</button>
+    <div id="homePage" class="page">
+      <div class="story-row">
+        <div class="story">
+          <div class="story-ring"><div class="story-inner">A</div></div>
+          <div>Votre story</div>
+        </div>
+        <div class="story">
+          <div class="story-ring"><div class="story-inner">L</div></div>
+          <div>lwa3r</div>
+        </div>
+        <div class="story">
+          <div class="story-ring"><div class="story-inner">S</div></div>
+          <div>sami</div>
+        </div>
+        <div class="story">
+          <div class="story-ring"><div class="story-inner">M</div></div>
+          <div>mehdi</div>
+        </div>
+        <div class="story">
+          <div class="story-ring"><div class="story-inner">N</div></div>
+          <div>nora</div>
+        </div>
       </div>
 
-      <div id="signupStatus" class="status">Prêt</div>
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:8px;">Accueil</div>
+        <div class="placeholder">
+          Fil d’actualité style Instagram prêt.<br>
+          La prochaine étape sera d’ajouter les posts ici.
+        </div>
+      </div>
     </div>
 
-    <div id="usernameView" class="hidden">
-      <div class="top-right">
-        <button id="logoutBtn1" class="secondary small-btn" type="button">Déconnexion</button>
+    <div id="searchPage" class="page hidden">
+      <div class="section">
+        <div class="card">
+          <div style="font-weight:800;margin-bottom:10px;">Recherche</div>
+          <div class="placeholder">
+            Onglet recherche prêt.<br>
+            On pourra ensuite chercher des pseudos et des profils ici.
+          </div>
+        </div>
       </div>
-
-      <h1>Choisir pseudo</h1>
-      <p class="sub">Choisis un pseudo unique</p>
-
-      <label>Pseudo</label>
-      <input id="usernameInput" type="text" placeholder="ex: lwa3r">
-
-      <button id="saveUsernameBtn" type="button">Enregistrer le pseudo</button>
-
-      <div id="usernameStatus" class="status">Prêt</div>
     </div>
 
-    <div id="homeView" class="hidden">
-      <div class="top-right">
-        <button id="logoutBtn2" class="secondary small-btn" type="button">Déconnexion</button>
+    <div id="messagesPage" class="page hidden">
+      <div class="section">
+        <div class="dm-header">
+          <div class="dm-title">Messages</div>
+          <button id="logoutBtn2" class="secondary small-btn" type="button">Déconnexion</button>
+        </div>
+
+        <div class="me-box">
+          <div><strong>Email :</strong> <span id="meEmail"></span></div>
+          <div><strong>Pseudo :</strong> @<span id="meUsername"></span></div>
+        </div>
+
+        <div class="card" style="margin:0 0 14px 0;">
+          <label>Pseudo du destinataire</label>
+          <input id="receiverUsername" type="text" placeholder="ex: lwa3r">
+
+          <label>Message</label>
+          <textarea id="messageContent" placeholder="Écris ton message..."></textarea>
+
+          <button id="sendBtn" type="button">Envoyer</button>
+          <button id="refreshBtn" class="secondary" type="button">Actualiser</button>
+
+          <div id="messagesStatus" class="status">Prêt</div>
+        </div>
+
+        <div class="messages-list" id="messagesList"></div>
       </div>
-
-      <h1>Aymane Social</h1>
-      <p class="sub">Compte prêt</p>
-
-      <div class="profile-box">
-        <div><strong>Email :</strong> <span id="homeEmail"></span></div>
-        <div><strong>Pseudo :</strong> @<span id="homeUsername"></span></div>
-      </div>
-
-      <button id="editUsernameBtn" class="secondary" type="button">Modifier le pseudo</button>
-
-      <div id="homeStatus" class="status">Prêt</div>
     </div>
+
+    <div id="reelsPage" class="page hidden">
+      <div class="section">
+        <div class="card">
+          <div style="font-weight:800;margin-bottom:10px;">Reels</div>
+          <div class="placeholder">
+            Onglet reels prêt.<br>
+            On pourra ensuite mettre des vidéos ou des cartes verticales ici.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="profilePage" class="page hidden">
+      <div class="section">
+        <div class="profile-box">
+          <div><strong>Email :</strong> <span id="homeEmail"></span></div>
+          <div><strong>Pseudo :</strong> @<span id="homeUsername"></span></div>
+        </div>
+
+        <button id="editUsernameBtn" class="secondary" type="button">Modifier le pseudo</button>
+        <button id="logoutBtn3" class="secondary" type="button">Déconnexion</button>
+
+        <div id="homeStatus" class="status">Profil chargé</div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button id="navHome" class="nav-item active" type="button">
+        <div class="nav-ico">⌂</div>
+        <div>Accueil</div>
+      </button>
+      <button id="navSearch" class="nav-item" type="button">
+        <div class="nav-ico">⌕</div>
+        <div>Recherche</div>
+      </button>
+      <button id="navMessages" class="nav-item" type="button">
+        <div class="nav-ico">✉</div>
+        <div>Messages</div>
+      </button>
+      <button id="navReels" class="nav-item" type="button">
+        <div class="nav-ico">▣</div>
+        <div>Reels</div>
+      </button>
+      <button id="navProfile" class="nav-item" type="button">
+        <div id="navAvatar" class="avatar-nav">A</div>
+        <div>Profil</div>
+      </button>
+    </nav>
   </div>
 
   <script>
@@ -245,15 +572,25 @@
     let currentUser = null;
     let currentProfile = null;
 
+    const authWrap = document.getElementById("authWrap");
+    const appWrap = document.getElementById("appWrap");
+
     const loginView = document.getElementById("loginView");
     const signupView = document.getElementById("signupView");
     const usernameView = document.getElementById("usernameView");
-    const homeView = document.getElementById("homeView");
+
+    const homePage = document.getElementById("homePage");
+    const searchPage = document.getElementById("searchPage");
+    const messagesPage = document.getElementById("messagesPage");
+    const reelsPage = document.getElementById("reelsPage");
+    const profilePage = document.getElementById("profilePage");
 
     const loginStatus = document.getElementById("loginStatus");
     const signupStatus = document.getElementById("signupStatus");
     const usernameStatus = document.getElementById("usernameStatus");
     const homeStatus = document.getElementById("homeStatus");
+    const messagesStatus = document.getElementById("messagesStatus");
+    const messagesList = document.getElementById("messagesList");
 
     function setStatus(el, text, type = "") {
       el.textContent = text || "";
@@ -262,12 +599,51 @@
       console.log(text);
     }
 
-    function showOnly(view) {
+    function showAuth(view) {
+      authWrap.classList.remove("hidden");
+      appWrap.classList.add("hidden");
       loginView.classList.add("hidden");
       signupView.classList.add("hidden");
       usernameView.classList.add("hidden");
-      homeView.classList.add("hidden");
       view.classList.remove("hidden");
+    }
+
+    function showApp() {
+      authWrap.classList.add("hidden");
+      appWrap.classList.remove("hidden");
+      switchTab("home");
+    }
+
+    function switchTab(tab) {
+      homePage.classList.add("hidden");
+      searchPage.classList.add("hidden");
+      messagesPage.classList.add("hidden");
+      reelsPage.classList.add("hidden");
+      profilePage.classList.add("hidden");
+
+      document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+
+      if (tab === "home") {
+        homePage.classList.remove("hidden");
+        document.getElementById("navHome").classList.add("active");
+      }
+      if (tab === "search") {
+        searchPage.classList.remove("hidden");
+        document.getElementById("navSearch").classList.add("active");
+      }
+      if (tab === "messages") {
+        messagesPage.classList.remove("hidden");
+        document.getElementById("navMessages").classList.add("active");
+        loadMessages();
+      }
+      if (tab === "reels") {
+        reelsPage.classList.remove("hidden");
+        document.getElementById("navReels").classList.add("active");
+      }
+      if (tab === "profile") {
+        profilePage.classList.remove("hidden");
+        document.getElementById("navProfile").classList.add("active");
+      }
     }
 
     async function signup() {
@@ -297,7 +673,7 @@
         setStatus(signupStatus, "Compte créé. Connecte-toi maintenant.", "ok");
         document.getElementById("loginEmail").value = email;
         document.getElementById("loginPassword").value = password;
-        showOnly(loginView);
+        showAuth(loginView);
         setStatus(loginStatus, "Compte créé. Tu peux te connecter.", "ok");
       } catch (e) {
         setStatus(signupStatus, "Erreur JS inscription : " + e.message, "err");
@@ -336,10 +712,9 @@
       } catch (e) {
         console.log(e);
       }
-
       currentUser = null;
       currentProfile = null;
-      showOnly(loginView);
+      showAuth(loginView);
       setStatus(loginStatus, "Déconnecté.", "ok");
     }
 
@@ -351,7 +726,7 @@
           await client.auth.signOut();
           currentUser = null;
           currentProfile = null;
-          showOnly(loginView);
+          showAuth(loginView);
           setStatus(loginStatus, "Session invalide. Reconnecte-toi.", "err");
           return;
         }
@@ -359,19 +734,13 @@
         currentUser = data.user;
         await loadMyProfile();
       } catch (e) {
-        showOnly(loginView);
+        showAuth(loginView);
         setStatus(loginStatus, "Erreur utilisateur : " + e.message, "err");
       }
     }
 
     async function loadMyProfile() {
-      if (!currentUser) {
-        showOnly(loginView);
-        setStatus(loginStatus, "Aucun utilisateur connecté.", "err");
-        return;
-      }
-
-      showOnly(usernameView);
+      showAuth(usernameView);
       setStatus(usernameStatus, "Recherche du profil...");
 
       try {
@@ -394,14 +763,21 @@
         }
 
         currentProfile = data;
-        document.getElementById("homeEmail").textContent = currentUser.email || "";
-        document.getElementById("homeUsername").textContent = currentProfile.username || "";
-        document.getElementById("usernameInput").value = currentProfile.username || "";
-        showOnly(homeView);
-        setStatus(homeStatus, "Profil trouvé.", "ok");
+        fillProfileUI();
+        showApp();
       } catch (e) {
         setStatus(usernameStatus, "Erreur JS profil : " + e.message, "err");
       }
+    }
+
+    function fillProfileUI() {
+      document.getElementById("homeEmail").textContent = currentUser.email || "";
+      document.getElementById("homeUsername").textContent = currentProfile.username || "";
+      document.getElementById("meEmail").textContent = currentUser.email || "";
+      document.getElementById("meUsername").textContent = currentProfile.username || "";
+      document.getElementById("usernameInput").value = currentProfile.username || "";
+      document.getElementById("navAvatar").textContent = (currentProfile.username || "A").charAt(0).toUpperCase();
+      setStatus(homeStatus, "Profil chargé", "ok");
     }
 
     async function saveUsername() {
@@ -444,20 +820,151 @@
           }
         }
 
-        setStatus(usernameStatus, "Pseudo enregistré.", "ok");
-        await loadMyProfile();
+        const { data } = await client
+          .from("profiles")
+          .select("*")
+          .eq("id", currentUser.id)
+          .single();
+
+        currentProfile = data;
+        fillProfileUI();
+        showApp();
       } catch (e) {
         setStatus(usernameStatus, "Erreur JS pseudo : " + e.message, "err");
       }
     }
 
+    async function sendMessage() {
+      const receiverUsername = document.getElementById("receiverUsername").value.trim().toLowerCase();
+      const content = document.getElementById("messageContent").value.trim();
+
+      if (!receiverUsername || !content) {
+        setStatus(messagesStatus, "Entre le pseudo du destinataire et le message.", "err");
+        return;
+      }
+
+      if (!currentProfile) {
+        setStatus(messagesStatus, "Profil non chargé.", "err");
+        return;
+      }
+
+      if (receiverUsername === currentProfile.username) {
+        setStatus(messagesStatus, "Tu ne peux pas t'envoyer un message à toi-même.", "err");
+        return;
+      }
+
+      setStatus(messagesStatus, "Recherche du destinataire...");
+
+      try {
+        const { data: receiver, error: receiverError } = await client
+          .from("profiles")
+          .select("*")
+          .eq("username", receiverUsername)
+          .maybeSingle();
+
+        if (receiverError) {
+          setStatus(messagesStatus, "Erreur destinataire : " + receiverError.message, "err");
+          return;
+        }
+
+        if (!receiver) {
+          setStatus(messagesStatus, "Pseudo introuvable.", "err");
+          return;
+        }
+
+        const { error } = await client
+          .from("messages")
+          .insert({
+            sender_id: currentUser.id,
+            receiver_id: receiver.id,
+            content: content
+          });
+
+        if (error) {
+          setStatus(messagesStatus, "Erreur envoi : " + error.message, "err");
+          return;
+        }
+
+        document.getElementById("messageContent").value = "";
+        setStatus(messagesStatus, "Message envoyé à @" + receiver.username, "ok");
+        await loadMessages();
+      } catch (e) {
+        setStatus(messagesStatus, "Erreur JS envoi : " + e.message, "err");
+      }
+    }
+
+    async function loadMessages() {
+      if (!currentUser) return;
+
+      messagesList.innerHTML = "<div class='msg'><div class='meta'>Chargement...</div></div>";
+
+      try {
+        const { data, error } = await client
+          .from("messages")
+          .select("*")
+          .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          messagesList.innerHTML = "<div class='msg'><div class='meta'>Erreur : " + escapeHtml(error.message) + "</div></div>";
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          messagesList.innerHTML = "<div class='msg'><div class='meta'>Aucun message pour l’instant.</div></div>";
+          return;
+        }
+
+        const ids = [...new Set(data.flatMap(m => [m.sender_id, m.receiver_id]))];
+
+        const { data: profiles } = await client
+          .from("profiles")
+          .select("id, username")
+          .in("id", ids);
+
+        const usernameMap = {};
+        (profiles || []).forEach(p => {
+          usernameMap[p.id] = p.username;
+        });
+
+        messagesList.innerHTML = "";
+
+        data.forEach(msg => {
+          const div = document.createElement("div");
+          div.className = "msg";
+
+          const senderName = usernameMap[msg.sender_id] || "inconnu";
+          const receiverName = usernameMap[msg.receiver_id] || "inconnu";
+
+          div.innerHTML = `
+            <div class="meta">De @${escapeHtml(senderName)} vers @${escapeHtml(receiverName)}</div>
+            <div class="content">${escapeHtml(msg.content)}</div>
+            <div class="meta">${new Date(msg.created_at).toLocaleString()}</div>
+          `;
+
+          messagesList.appendChild(div);
+        });
+      } catch (e) {
+        messagesList.innerHTML = "<div class='msg'><div class='meta'>Erreur JS : " + escapeHtml(e.message) + "</div></div>";
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     document.getElementById("goSignupBtn").addEventListener("click", () => {
-      showOnly(signupView);
+      showAuth(signupView);
       setStatus(signupStatus, "Écran inscription.", "ok");
     });
 
     document.getElementById("backLoginBtn").addEventListener("click", () => {
-      showOnly(loginView);
+      showAuth(loginView);
       setStatus(loginStatus, "Écran connexion.", "ok");
     });
 
@@ -465,11 +972,23 @@
     document.getElementById("loginBtn").addEventListener("click", login);
     document.getElementById("saveUsernameBtn").addEventListener("click", saveUsername);
     document.getElementById("editUsernameBtn").addEventListener("click", () => {
-      showOnly(usernameView);
+      showAuth(usernameView);
       setStatus(usernameStatus, "Modifie ton pseudo.", "ok");
     });
+
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
+    document.getElementById("refreshBtn").addEventListener("click", loadMessages);
+
     document.getElementById("logoutBtn1").addEventListener("click", logout);
     document.getElementById("logoutBtn2").addEventListener("click", logout);
+    document.getElementById("logoutBtn3").addEventListener("click", logout);
+    document.getElementById("logoutBtnTop").addEventListener("click", logout);
+
+    document.getElementById("navHome").addEventListener("click", () => switchTab("home"));
+    document.getElementById("navSearch").addEventListener("click", () => switchTab("search"));
+    document.getElementById("navMessages").addEventListener("click", () => switchTab("messages"));
+    document.getElementById("navReels").addEventListener("click", () => switchTab("reels"));
+    document.getElementById("navProfile").addEventListener("click", () => switchTab("profile"));
 
     async function init() {
       try {
@@ -480,7 +999,7 @@
 
       currentUser = null;
       currentProfile = null;
-      showOnly(loginView);
+      showAuth(loginView);
       setStatus(loginStatus, "Session réinitialisée. Connecte-toi.", "ok");
     }
 
