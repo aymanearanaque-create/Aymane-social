@@ -117,25 +117,25 @@
       const password = document.getElementById("signupPassword").value;
 
       if(!email || !password){
-        setStatus(signupStatus, "remplis les champs");
+        setStatus(signupStatus, "Remplis les champs");
         return;
       }
 
-      setStatus(signupStatus, "étape 1 : début inscription");
+      setStatus(signupStatus, "Début inscription...");
 
       try{
         const { error } = await client.auth.signUp({ email, password });
 
         if(error){
-          setStatus(signupStatus, "erreur inscription : " + error.message);
+          setStatus(signupStatus, "Erreur inscription : " + error.message);
           return;
         }
 
-        setStatus(signupStatus, "étape 2 : compte créé, retourne te connecter");
+        setStatus(signupStatus, "Compte créé. Retourne te connecter.");
         document.getElementById("loginEmail").value = email;
         document.getElementById("loginPassword").value = password;
       }catch(e){
-        setStatus(signupStatus, "erreur JS inscription : " + e.message);
+        setStatus(signupStatus, "Erreur JS inscription : " + e.message);
       }
     }
 
@@ -144,76 +144,75 @@
       const password = document.getElementById("loginPassword").value;
 
       if(!email || !password){
-        setStatus(loginStatus, "entre email et mot de passe");
+        setStatus(loginStatus, "Entre email et mot de passe");
         return;
       }
 
-      setStatus(loginStatus, "étape 1 : début connexion");
+      setStatus(loginStatus, "Début connexion...");
 
       try{
         const { error } = await client.auth.signInWithPassword({ email, password });
 
         if(error){
-          setStatus(loginStatus, "erreur connexion : " + error.message);
+          setStatus(loginStatus, "Erreur connexion : " + error.message);
           return;
         }
 
-        setStatus(loginStatus, "étape 2 : connexion réussie");
+        setStatus(loginStatus, "Connexion réussie");
       }catch(e){
-        setStatus(loginStatus, "erreur JS connexion : " + e.message);
+        setStatus(loginStatus, "Erreur JS connexion : " + e.message);
       }
     }
 
     async function logout(){
-      try{
-        await client.auth.signOut();
-        currentUser = null;
-        currentProfile = null;
-        showOnly(loginView);
-        setStatus(loginStatus, "déconnecté");
-      }catch(e){
-        setStatus(homeStatus, "erreur logout : " + e.message);
-      }
+      await client.auth.signOut();
+      currentUser = null;
+      currentProfile = null;
+      showOnly(loginView);
+      setStatus(loginStatus, "Déconnecté");
     }
 
     async function loadMyProfile(){
-      setStatus(usernameStatus, "étape 3 : recherche profil");
+      showOnly(usernameView);
+      setStatus(usernameStatus, "Recherche du profil...");
 
-      const { data, error } = await client
-        .from("profiles")
-        .select("*")
-        .eq("id", currentUser.id)
-        .maybeSingle();
+      try{
+        const { data, error } = await client
+          .from("profiles")
+          .select("*")
+          .eq("id", currentUser.id)
+          .maybeSingle();
 
-      if(error){
-        setStatus(usernameStatus, "erreur profil : " + error.message);
-        return false;
+        if(error){
+          setStatus(usernameStatus, "Erreur profil : " + error.message);
+          return;
+        }
+
+        if(!data){
+          currentProfile = null;
+          setStatus(usernameStatus, "Profil absent. Choisis un pseudo.");
+          return;
+        }
+
+        currentProfile = data;
+        document.getElementById("homeEmail").textContent = currentUser.email || "";
+        document.getElementById("homeUsername").textContent = currentProfile.username || "";
+        setStatus(homeStatus, "Profil trouvé");
+        showOnly(homeView);
+      }catch(e){
+        setStatus(usernameStatus, "Erreur JS profil : " + e.message);
       }
-
-      if(!data){
-        currentProfile = null;
-        setStatus(usernameStatus, "profil absent");
-        showOnly(usernameView);
-        return false;
-      }
-
-      currentProfile = data;
-      document.getElementById("homeEmail").textContent = currentUser.email || "";
-      document.getElementById("homeUsername").textContent = currentProfile.username || "";
-      setStatus(homeStatus, "profil trouvé");
-      showOnly(homeView);
-      return true;
     }
 
     async function saveUsername(){
       const username = document.getElementById("usernameInput").value.trim().toLowerCase();
 
       if(!username){
-        setStatus(usernameStatus, "entre un pseudo");
+        setStatus(usernameStatus, "Entre un pseudo");
         return;
       }
 
-      setStatus(usernameStatus, "étape 4 : enregistrement pseudo");
+      setStatus(usernameStatus, "Enregistrement du pseudo...");
 
       try{
         if(!currentProfile){
@@ -225,7 +224,7 @@
             });
 
           if(error){
-            setStatus(usernameStatus, "erreur insert pseudo : " + error.message);
+            setStatus(usernameStatus, "Erreur insert pseudo : " + error.message);
             return;
           }
         }else{
@@ -235,22 +234,21 @@
             .eq("id", currentUser.id);
 
           if(error){
-            setStatus(usernameStatus, "erreur update pseudo : " + error.message);
+            setStatus(usernameStatus, "Erreur update pseudo : " + error.message);
             return;
           }
         }
 
-        setStatus(usernameStatus, "pseudo enregistré");
+        setStatus(usernameStatus, "Pseudo enregistré");
         await loadMyProfile();
       }catch(e){
-        setStatus(usernameStatus, "erreur JS pseudo : " + e.message);
+        setStatus(usernameStatus, "Erreur JS pseudo : " + e.message);
       }
     }
 
     client.auth.onAuthStateChange(async (_event, session) => {
       if(session && session.user){
         currentUser = session.user;
-        setStatus(loginStatus, "connexion détectée par session");
         await loadMyProfile();
       }else{
         showOnly(loginView);
@@ -258,31 +256,29 @@
     });
 
     async function init(){
-      setStatus(loginStatus, "init...");
       try{
         const { data } = await client.auth.getSession();
 
         if(data.session && data.session.user){
           currentUser = data.session.user;
-          setStatus(loginStatus, "session déjà active");
           await loadMyProfile();
         }else{
-          setStatus(loginStatus, "aucune session");
           showOnly(loginView);
+          setStatus(loginStatus, "Aucune session");
         }
       }catch(e){
-        setStatus(loginStatus, "erreur init : " + e.message);
+        setStatus(loginStatus, "Erreur init : " + e.message);
       }
     }
 
     document.getElementById("goSignupBtn").addEventListener("click", () => {
       showOnly(signupView);
-      setStatus(signupStatus, "écran inscription");
+      setStatus(signupStatus, "Écran inscription");
     });
 
     document.getElementById("backLoginBtn").addEventListener("click", () => {
       showOnly(loginView);
-      setStatus(loginStatus, "écran connexion");
+      setStatus(loginStatus, "Écran connexion");
     });
 
     document.getElementById("signupBtn").addEventListener("click", signup);
@@ -290,7 +286,7 @@
     document.getElementById("saveUsernameBtn").addEventListener("click", saveUsername);
     document.getElementById("editUsernameBtn").addEventListener("click", () => {
       showOnly(usernameView);
-      setStatus(usernameStatus, "modifie ton pseudo");
+      setStatus(usernameStatus, "Modifie ton pseudo");
     });
     document.getElementById("logoutBtn1").addEventListener("click", logout);
     document.getElementById("logoutBtn2").addEventListener("click", logout);
