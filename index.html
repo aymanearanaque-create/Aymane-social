@@ -174,7 +174,7 @@
       <label>Mot de passe</label>
       <input id="loginPassword" type="password" placeholder="••••••••">
 
-      <button id="loginBtn">Se connecter</button>
+      <button id="loginBtn" type="button">Se connecter</button>
 
       <div class="bottom-link">
         <button id="goSignupBtn" class="link-btn" type="button">S’inscrire</button>
@@ -185,7 +185,7 @@
 
     <div id="signupView" class="hidden">
       <h1>Inscription</h1>
-      <p class="sub">Crée ton compte puis connecte-toi</p>
+      <p class="sub">Crée ton compte puis retourne te connecter</p>
 
       <label>Email</label>
       <input id="signupEmail" type="email" placeholder="vous@exemple.com">
@@ -193,7 +193,7 @@
       <label>Mot de passe</label>
       <input id="signupPassword" type="password" placeholder="••••••••">
 
-      <button id="signupBtn">Créer un compte</button>
+      <button id="signupBtn" type="button">Créer un compte</button>
 
       <div class="bottom-link">
         <button id="backLoginBtn" class="link-btn" type="button">Retour connexion</button>
@@ -213,7 +213,7 @@
       <label>Pseudo</label>
       <input id="usernameInput" type="text" placeholder="ex: lwa3r">
 
-      <button id="saveUsernameBtn">Enregistrer le pseudo</button>
+      <button id="saveUsernameBtn" type="button">Enregistrer le pseudo</button>
 
       <div id="usernameStatus" class="status">Prêt</div>
     </div>
@@ -297,6 +297,8 @@
         setStatus(signupStatus, "Compte créé. Connecte-toi maintenant.", "ok");
         document.getElementById("loginEmail").value = email;
         document.getElementById("loginPassword").value = password;
+        showOnly(loginView);
+        setStatus(loginStatus, "Compte créé. Tu peux te connecter.", "ok");
       } catch (e) {
         setStatus(signupStatus, "Erreur JS inscription : " + e.message, "err");
       }
@@ -322,6 +324,7 @@
         }
 
         setStatus(loginStatus, "Connexion réussie.", "ok");
+        await refreshRealUser();
       } catch (e) {
         setStatus(loginStatus, "Erreur JS connexion : " + e.message, "err");
       }
@@ -330,16 +333,44 @@
     async function logout() {
       try {
         await client.auth.signOut();
-        currentUser = null;
-        currentProfile = null;
-        showOnly(loginView);
-        setStatus(loginStatus, "Déconnecté.", "ok");
       } catch (e) {
-        setStatus(homeStatus, "Erreur déconnexion : " + e.message, "err");
+        console.log(e);
+      }
+
+      currentUser = null;
+      currentProfile = null;
+      showOnly(loginView);
+      setStatus(loginStatus, "Déconnecté.", "ok");
+    }
+
+    async function refreshRealUser() {
+      try {
+        const { data, error } = await client.auth.getUser();
+
+        if (error || !data.user) {
+          await client.auth.signOut();
+          currentUser = null;
+          currentProfile = null;
+          showOnly(loginView);
+          setStatus(loginStatus, "Session invalide. Reconnecte-toi.", "err");
+          return;
+        }
+
+        currentUser = data.user;
+        await loadMyProfile();
+      } catch (e) {
+        showOnly(loginView);
+        setStatus(loginStatus, "Erreur utilisateur : " + e.message, "err");
       }
     }
 
     async function loadMyProfile() {
+      if (!currentUser) {
+        showOnly(loginView);
+        setStatus(loginStatus, "Aucun utilisateur connecté.", "err");
+        return;
+      }
+
       showOnly(usernameView);
       setStatus(usernameStatus, "Recherche du profil...");
 
@@ -420,31 +451,6 @@
       }
     }
 
-    client.auth.onAuthStateChange(async (_event, session) => {
-      if (session && session.user) {
-        currentUser = session.user;
-        await loadMyProfile();
-      } else {
-        showOnly(loginView);
-      }
-    });
-
-    async function init() {
-      try {
-        const { data } = await client.auth.getSession();
-
-        if (data.session && data.session.user) {
-          currentUser = data.session.user;
-          await loadMyProfile();
-        } else {
-          showOnly(loginView);
-          setStatus(loginStatus, "Aucune session.", "ok");
-        }
-      } catch (e) {
-        setStatus(loginStatus, "Erreur init : " + e.message, "err");
-      }
-    }
-
     document.getElementById("goSignupBtn").addEventListener("click", () => {
       showOnly(signupView);
       setStatus(signupStatus, "Écran inscription.", "ok");
@@ -464,6 +470,19 @@
     });
     document.getElementById("logoutBtn1").addEventListener("click", logout);
     document.getElementById("logoutBtn2").addEventListener("click", logout);
+
+    async function init() {
+      try {
+        await client.auth.signOut();
+      } catch (e) {
+        console.log(e);
+      }
+
+      currentUser = null;
+      currentProfile = null;
+      showOnly(loginView);
+      setStatus(loginStatus, "Session réinitialisée. Connecte-toi.", "ok");
+    }
 
     init();
   </script>
