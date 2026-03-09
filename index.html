@@ -3,241 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aymane Social</title>
+  <title>Aymane Social Debug</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root{
-      --bg:#0a0a0f;
-      --card:#13131a;
-      --card2:#1c1c28;
-      --border:#2a2a3d;
-      --accent:#7c6af7;
-      --accent2:#f76a8a;
-      --text:#f0eeff;
-      --muted:#9896b8;
-      --ok:#6af7c4;
-      --err:#ff7b9c;
-      --warn:#ffd166;
-    }
-
-    *{box-sizing:border-box;margin:0;padding:0}
-
     body{
-      min-height:100vh;
       font-family:Arial,sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(124,106,247,.18), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(247,106,138,.12), transparent 28%),
-        var(--bg);
-      color:var(--text);
-      display:flex;
-      justify-content:center;
-      align-items:center;
+      background:#111;
+      color:#fff;
+      margin:0;
       padding:20px;
     }
-
-    .card{
+    .box{
+      max-width:600px;
+      margin:0 auto;
+      background:#1b1b1b;
+      padding:20px;
+      border-radius:16px;
+    }
+    input,button{
       width:100%;
-      max-width:430px;
-      background:rgba(19,19,26,.96);
-      border:1px solid var(--border);
-      border-radius:24px;
-      padding:26px 22px;
-      box-shadow:0 20px 60px rgba(0,0,0,.35);
-    }
-
-    h1{
-      font-size:36px;
-      margin-bottom:8px;
-      text-align:center;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
-    }
-
-    .sub{
-      text-align:center;
-      color:var(--muted);
-      margin-bottom:22px;
-      line-height:1.5;
-    }
-
-    .hidden{display:none}
-
-    label{
-      display:block;
-      margin:12px 0 6px;
-      color:var(--muted);
-      font-size:13px;
-      font-weight:700;
-    }
-
-    input{
-      width:100%;
-      padding:14px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background:var(--card2);
-      color:var(--text);
-      outline:none;
+      padding:12px;
+      margin-top:10px;
+      border-radius:10px;
+      border:1px solid #333;
+      box-sizing:border-box;
       font-size:16px;
     }
-
-    input:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 3px rgba(124,106,247,.15);
-    }
-
     button{
-      width:100%;
-      margin-top:14px;
-      padding:14px;
+      background:#6c5ce7;
+      color:white;
       border:none;
-      border-radius:14px;
-      background:linear-gradient(135deg,var(--accent),#6552f0);
-      color:#fff;
-      font-size:16px;
-      font-weight:800;
       cursor:pointer;
     }
-
-    button.secondary{
-      background:var(--card2);
-      border:1px solid var(--border);
-      color:var(--text);
-    }
-
+    .hidden{display:none}
     .status{
       margin-top:14px;
-      min-height:22px;
-      color:var(--warn);
-      text-align:center;
       white-space:pre-wrap;
-    }
-
-    .ok{color:var(--ok)}
-    .err{color:var(--err)}
-
-    .bottom-link{
-      margin-top:16px;
-      display:flex;
-      justify-content:flex-start;
-    }
-
-    .link-btn{
-      background:none;
-      border:none;
-      color:var(--muted);
-      padding:0;
-      margin:0;
-      width:auto;
-      font-size:14px;
-      font-weight:700;
-      cursor:pointer;
-      text-decoration:underline;
-    }
-
-    .top-right{
-      display:flex;
-      justify-content:flex-end;
-      margin-bottom:10px;
-    }
-
-    .small-btn{
-      width:auto;
-      margin:0;
-      padding:10px 14px;
-      font-size:14px;
-      border-radius:12px;
-    }
-
-    .profile-box{
-      background:var(--card2);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:16px;
-      margin-top:16px;
-      line-height:1.7;
+      color:#ffd166;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <!-- LOGIN VIEW -->
+  <div class="box">
     <div id="loginView">
-      <h1>Aymane Social</h1>
-      <p class="sub">Connexion simple puis choix du pseudo</p>
-
-      <label>Email</label>
-      <input id="loginEmail" type="email" placeholder="vous@exemple.com">
-
-      <label>Mot de passe</label>
-      <input id="loginPassword" type="password" placeholder="••••••••">
-
+      <h1>Connexion</h1>
+      <input id="loginEmail" type="email" placeholder="Email">
+      <input id="loginPassword" type="password" placeholder="Mot de passe">
       <button id="loginBtn">Se connecter</button>
-
-      <div class="bottom-link">
-        <button id="goSignupBtn" class="link-btn" type="button">S’inscrire</button>
-      </div>
-
+      <button id="goSignupBtn">S'inscrire</button>
       <div id="loginStatus" class="status">Prêt</div>
     </div>
 
-    <!-- SIGNUP VIEW -->
     <div id="signupView" class="hidden">
       <h1>Inscription</h1>
-      <p class="sub">Crée ton compte puis connecte-toi</p>
-
-      <label>Email</label>
-      <input id="signupEmail" type="email" placeholder="vous@exemple.com">
-
-      <label>Mot de passe</label>
-      <input id="signupPassword" type="password" placeholder="••••••••">
-
-      <button id="signupBtn">Créer un compte</button>
-
-      <div class="bottom-link">
-        <button id="backLoginBtn" class="link-btn" type="button">Retour connexion</button>
-      </div>
-
+      <input id="signupEmail" type="email" placeholder="Email">
+      <input id="signupPassword" type="password" placeholder="Mot de passe">
+      <button id="signupBtn">Créer le compte</button>
+      <button id="backLoginBtn">Retour connexion</button>
       <div id="signupStatus" class="status">Prêt</div>
     </div>
 
-    <!-- USERNAME VIEW -->
     <div id="usernameView" class="hidden">
-      <div class="top-right">
-        <button id="logoutBtn1" class="secondary small-btn" type="button">Déconnexion</button>
-      </div>
-
-      <h1>Ton pseudo</h1>
-      <p class="sub">Choisis un pseudo unique</p>
-
-      <label>Pseudo</label>
-      <input id="usernameInput" type="text" placeholder="ex: lwa3r">
-
-      <button id="saveUsernameBtn">Enregistrer le pseudo</button>
-
-      <div id="usernameStatus" class="status"></div>
+      <h1>Choisir pseudo</h1>
+      <input id="usernameInput" placeholder="Pseudo">
+      <button id="saveUsernameBtn">Enregistrer pseudo</button>
+      <button id="logoutBtn1">Déconnexion</button>
+      <div id="usernameStatus" class="status">Prêt</div>
     </div>
 
-    <!-- HOME VIEW -->
     <div id="homeView" class="hidden">
-      <div class="top-right">
-        <button id="logoutBtn2" class="secondary small-btn" type="button">Déconnexion</button>
-      </div>
-
-      <h1>Aymane Social</h1>
-      <p class="sub">Compte prêt</p>
-
-      <div class="profile-box">
-        <div><strong>Email :</strong> <span id="homeEmail"></span></div>
-        <div><strong>Pseudo :</strong> @<span id="homeUsername"></span></div>
-      </div>
-
-      <button id="editUsernameBtn" class="secondary" type="button">Modifier le pseudo</button>
-
-      <div id="homeStatus" class="status"></div>
+      <h1>Accueil</h1>
+      <p>Email : <span id="homeEmail"></span></p>
+      <p>Pseudo : <span id="homeUsername"></span></p>
+      <button id="editUsernameBtn">Modifier pseudo</button>
+      <button id="logoutBtn2">Déconnexion</button>
+      <div id="homeStatus" class="status">Prêt</div>
     </div>
   </div>
 
@@ -259,13 +99,12 @@
     const usernameStatus = document.getElementById("usernameStatus");
     const homeStatus = document.getElementById("homeStatus");
 
-    function setStatus(el, text, type = "") {
-      el.textContent = text || "";
-      el.className = "status";
-      if (type) el.classList.add(type);
+    function setStatus(el, text){
+      el.textContent = text;
+      console.log(text);
     }
 
-    function showOnly(view) {
+    function showOnly(view){
       loginView.classList.add("hidden");
       signupView.classList.add("hidden");
       usernameView.classList.add("hidden");
@@ -273,119 +112,111 @@
       view.classList.remove("hidden");
     }
 
-    async function signup() {
+    async function signup(){
       const email = document.getElementById("signupEmail").value.trim();
       const password = document.getElementById("signupPassword").value;
 
-      if (!email || !password) {
-        setStatus(signupStatus, "Remplis tous les champs.", "err");
+      if(!email || !password){
+        setStatus(signupStatus, "remplis les champs");
         return;
       }
 
-      if (password.length < 6) {
-        setStatus(signupStatus, "Le mot de passe doit contenir au moins 6 caractères.", "err");
-        return;
-      }
+      setStatus(signupStatus, "étape 1 : début inscription");
 
-      setStatus(signupStatus, "Création du compte...");
-
-      try {
+      try{
         const { error } = await client.auth.signUp({ email, password });
 
-        if (error) {
-          setStatus(signupStatus, "Erreur inscription : " + error.message, "err");
+        if(error){
+          setStatus(signupStatus, "erreur inscription : " + error.message);
           return;
         }
 
-        setStatus(signupStatus, "Compte créé. Connecte-toi maintenant.", "ok");
+        setStatus(signupStatus, "étape 2 : compte créé, retourne te connecter");
         document.getElementById("loginEmail").value = email;
         document.getElementById("loginPassword").value = password;
-      } catch (e) {
-        setStatus(signupStatus, "Erreur JS inscription : " + e.message, "err");
+      }catch(e){
+        setStatus(signupStatus, "erreur JS inscription : " + e.message);
       }
     }
 
-    async function login() {
+    async function login(){
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
 
-      if (!email || !password) {
-        setStatus(loginStatus, "Entre email et mot de passe.", "err");
+      if(!email || !password){
+        setStatus(loginStatus, "entre email et mot de passe");
         return;
       }
 
-      setStatus(loginStatus, "Connexion...");
+      setStatus(loginStatus, "étape 1 : début connexion");
 
-      try {
+      try{
         const { error } = await client.auth.signInWithPassword({ email, password });
 
-        if (error) {
-          setStatus(loginStatus, "Erreur connexion : " + error.message, "err");
+        if(error){
+          setStatus(loginStatus, "erreur connexion : " + error.message);
           return;
         }
 
-        setStatus(loginStatus, "Connecté.", "ok");
-      } catch (e) {
-        setStatus(loginStatus, "Erreur JS connexion : " + e.message, "err");
+        setStatus(loginStatus, "étape 2 : connexion réussie");
+      }catch(e){
+        setStatus(loginStatus, "erreur JS connexion : " + e.message);
       }
     }
 
-    async function logout() {
-      try {
+    async function logout(){
+      try{
         await client.auth.signOut();
         currentUser = null;
         currentProfile = null;
         showOnly(loginView);
-        setStatus(loginStatus, "Déconnecté.", "ok");
-      } catch (e) {
-        setStatus(homeStatus, "Erreur déconnexion : " + e.message, "err");
+        setStatus(loginStatus, "déconnecté");
+      }catch(e){
+        setStatus(homeStatus, "erreur logout : " + e.message);
       }
     }
 
-    async function loadMyProfile() {
+    async function loadMyProfile(){
+      setStatus(usernameStatus, "étape 3 : recherche profil");
+
       const { data, error } = await client
         .from("profiles")
         .select("*")
         .eq("id", currentUser.id)
         .maybeSingle();
 
-      if (error) {
-        setStatus(usernameStatus, "Erreur profil : " + error.message, "err");
+      if(error){
+        setStatus(usernameStatus, "erreur profil : " + error.message);
         return false;
       }
 
-      currentProfile = data || null;
-
-      if (!currentProfile) {
-        document.getElementById("usernameInput").value = "";
+      if(!data){
+        currentProfile = null;
+        setStatus(usernameStatus, "profil absent");
         showOnly(usernameView);
         return false;
       }
 
+      currentProfile = data;
       document.getElementById("homeEmail").textContent = currentUser.email || "";
       document.getElementById("homeUsername").textContent = currentProfile.username || "";
-      document.getElementById("usernameInput").value = currentProfile.username || "";
+      setStatus(homeStatus, "profil trouvé");
       showOnly(homeView);
       return true;
     }
 
-    async function saveUsername() {
+    async function saveUsername(){
       const username = document.getElementById("usernameInput").value.trim().toLowerCase();
 
-      if (!username) {
-        setStatus(usernameStatus, "Entre un pseudo.", "err");
+      if(!username){
+        setStatus(usernameStatus, "entre un pseudo");
         return;
       }
 
-      if (username.length < 3) {
-        setStatus(usernameStatus, "Le pseudo doit contenir au moins 3 caractères.", "err");
-        return;
-      }
+      setStatus(usernameStatus, "étape 4 : enregistrement pseudo");
 
-      setStatus(usernameStatus, "Enregistrement du pseudo...");
-
-      try {
-        if (!currentProfile) {
+      try{
+        if(!currentProfile){
           const { error } = await client
             .from("profiles")
             .insert({
@@ -393,61 +224,65 @@
               username: username
             });
 
-          if (error) {
-            setStatus(usernameStatus, "Erreur pseudo : " + error.message, "err");
+          if(error){
+            setStatus(usernameStatus, "erreur insert pseudo : " + error.message);
             return;
           }
-        } else {
+        }else{
           const { error } = await client
             .from("profiles")
             .update({ username: username })
             .eq("id", currentUser.id);
 
-          if (error) {
-            setStatus(usernameStatus, "Erreur pseudo : " + error.message, "err");
+          if(error){
+            setStatus(usernameStatus, "erreur update pseudo : " + error.message);
             return;
           }
         }
 
-        setStatus(usernameStatus, "Pseudo enregistré.", "ok");
+        setStatus(usernameStatus, "pseudo enregistré");
         await loadMyProfile();
-      } catch (e) {
-        setStatus(usernameStatus, "Erreur JS pseudo : " + e.message, "err");
+      }catch(e){
+        setStatus(usernameStatus, "erreur JS pseudo : " + e.message);
       }
     }
 
     client.auth.onAuthStateChange(async (_event, session) => {
-      if (session && session.user) {
+      if(session && session.user){
         currentUser = session.user;
+        setStatus(loginStatus, "connexion détectée par session");
         await loadMyProfile();
-      } else {
+      }else{
         showOnly(loginView);
       }
     });
 
-    async function init() {
-      try {
+    async function init(){
+      setStatus(loginStatus, "init...");
+      try{
         const { data } = await client.auth.getSession();
 
-        if (data.session && data.session.user) {
+        if(data.session && data.session.user){
           currentUser = data.session.user;
+          setStatus(loginStatus, "session déjà active");
           await loadMyProfile();
-        } else {
+        }else{
+          setStatus(loginStatus, "aucune session");
           showOnly(loginView);
         }
-      } catch (e) {
-        setStatus(loginStatus, "Erreur init : " + e.message, "err");
+      }catch(e){
+        setStatus(loginStatus, "erreur init : " + e.message);
       }
     }
 
     document.getElementById("goSignupBtn").addEventListener("click", () => {
       showOnly(signupView);
-      setStatus(signupStatus, "Prêt");
+      setStatus(signupStatus, "écran inscription");
     });
 
     document.getElementById("backLoginBtn").addEventListener("click", () => {
       showOnly(loginView);
-      setStatus(loginStatus, "Prêt");
+      setStatus(loginStatus, "écran connexion");
     });
 
     document.getElementById("signupBtn").addEventListener("click", signup);
@@ -455,7 +290,7 @@
     document.getElementById("saveUsernameBtn").addEventListener("click", saveUsername);
     document.getElementById("editUsernameBtn").addEventListener("click", () => {
       showOnly(usernameView);
-      setStatus(usernameStatus, "Modifie ton pseudo si tu veux.");
+      setStatus(usernameStatus, "modifie ton pseudo");
     });
     document.getElementById("logoutBtn1").addEventListener("click", logout);
     document.getElementById("logoutBtn2").addEventListener("click", logout);
