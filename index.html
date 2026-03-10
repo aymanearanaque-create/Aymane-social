@@ -7,27 +7,27 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{
-      --bg:#0a0a0f;
-      --card:#13131a;
-      --card2:#1c1c28;
-      --border:#2a2a3d;
-      --accent:#7c6af7;
-      --accent2:#f76a8a;
-      --text:#f0eeff;
-      --muted:#9896b8;
-      --ok:#6af7c4;
-      --err:#ff7b9c;
-      --warn:#ffd166;
+      --olive: rgb(128,128,0);
+      --olive-dark: rgb(98,98,0);
+      --olive-soft: rgb(170,170,90);
+      --bg: #f5f4e8;
+      --card: #fffef4;
+      --card2: #f0edd2;
+      --border: #d6d1a8;
+      --text: #2f2f1c;
+      --muted: #6f6f4a;
+      --ok: #2f7a2f;
+      --err: #b13a3a;
+      --warn: #8a6d1f;
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
-
     body{
       min-height:100vh;
       font-family:Arial,sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(124,106,247,.18), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(247,106,138,.10), transparent 28%),
+        radial-gradient(circle at top left, rgba(128,128,0,.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(128,128,0,.08), transparent 24%),
         var(--bg);
       color:var(--text);
     }
@@ -45,21 +45,19 @@
     .auth-card{
       width:100%;
       max-width:430px;
-      background:rgba(19,19,26,.96);
+      background:var(--card);
       border:1px solid var(--border);
       border-radius:24px;
       padding:26px 22px;
-      box-shadow:0 20px 60px rgba(0,0,0,.35);
+      box-shadow:0 12px 30px rgba(0,0,0,.08);
     }
 
     h1.logo{
       font-size:36px;
       margin-bottom:8px;
       text-align:center;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
+      color:var(--olive);
+      font-weight:900;
     }
 
     .sub{
@@ -94,8 +92,8 @@
     }
 
     input:focus, textarea:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 3px rgba(124,106,247,.15);
+      border-color:var(--olive);
+      box-shadow:0 0 0 3px rgba(128,128,0,.12);
     }
 
     button{
@@ -104,7 +102,7 @@
       padding:14px;
       border:none;
       border-radius:14px;
-      background:linear-gradient(135deg,var(--accent),#6552f0);
+      background:linear-gradient(135deg,var(--olive),var(--olive-dark));
       color:#fff;
       font-size:16px;
       font-weight:800;
@@ -126,7 +124,7 @@
     .link-btn{
       background:none;
       border:none;
-      color:var(--muted);
+      color:var(--olive-dark);
       padding:0;
       margin:0;
       width:auto;
@@ -153,9 +151,9 @@
       flex-direction:column;
       max-width:480px;
       margin:0 auto;
-      background:rgba(10,10,15,.95);
-      border-left:1px solid rgba(255,255,255,.04);
-      border-right:1px solid rgba(255,255,255,.04);
+      background:var(--bg);
+      border-left:1px solid rgba(0,0,0,.04);
+      border-right:1px solid rgba(0,0,0,.04);
     }
 
     .topbar{
@@ -167,7 +165,7 @@
       border-bottom:1px solid var(--border);
       position:sticky;
       top:0;
-      background:rgba(10,10,15,.96);
+      background:rgba(245,244,232,.96);
       z-index:20;
       backdrop-filter:blur(10px);
     }
@@ -175,10 +173,7 @@
     .brand{
       font-size:28px;
       font-weight:900;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
+      color:var(--olive);
     }
 
     .icon-btn{
@@ -198,9 +193,7 @@
       padding-bottom:86px;
     }
 
-    .section{
-      padding:16px;
-    }
+    .section{padding:16px}
 
     .story-row{
       display:flex;
@@ -222,7 +215,7 @@
       height:72px;
       border-radius:50%;
       padding:3px;
-      background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7);
+      background:linear-gradient(135deg,var(--olive-soft),var(--olive),var(--olive-dark));
       margin-bottom:6px;
     }
 
@@ -234,10 +227,20 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      color:white;
+      color:var(--olive-dark);
       font-size:26px;
       font-weight:800;
-      border:3px solid #0f0f16;
+      border:3px solid var(--bg);
+      overflow:hidden;
+    }
+
+    .story-inner img,
+    .avatar-big img,
+    .avatar-nav img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius:50%;
     }
 
     .card{
@@ -255,17 +258,52 @@
       line-height:1.6;
     }
 
-    .dm-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+    .profile-box{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:16px;
       margin-bottom:14px;
-      gap:10px;
     }
 
-    .dm-title{
-      font-size:24px;
+    .profile-top{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      margin-bottom:14px;
+    }
+
+    .avatar-big{
+      width:84px;
+      height:84px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--olive),var(--olive-dark));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:28px;
+      font-weight:900;
+      overflow:hidden;
+      flex-shrink:0;
+    }
+
+    .profile-name{
+      font-size:22px;
       font-weight:800;
+      color:var(--text);
+    }
+
+    .profile-username{
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .bio{
+      color:var(--text);
+      line-height:1.6;
+      margin-top:10px;
+      white-space:pre-wrap;
     }
 
     .small-btn{
@@ -276,50 +314,6 @@
       font-size:14px;
     }
 
-    .me-box{
-      background:var(--card2);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:14px;
-      margin-bottom:14px;
-      line-height:1.6;
-      color:var(--muted);
-    }
-
-    .messages-list{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      margin-top:14px;
-    }
-
-    .msg{
-      background:var(--card2);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:14px;
-    }
-
-    .msg .meta{
-      color:var(--muted);
-      font-size:12px;
-      margin-bottom:6px;
-    }
-
-    .msg .content{
-      white-space:pre-wrap;
-      line-height:1.5;
-    }
-
-    .profile-box{
-      background:var(--card2);
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:16px;
-      line-height:1.7;
-      margin-bottom:14px;
-    }
-
     .bottom-nav{
       position:fixed;
       left:0;
@@ -328,7 +322,7 @@
       max-width:480px;
       margin:0 auto;
       height:74px;
-      background:rgba(10,10,15,.98);
+      background:rgba(245,244,232,.98);
       border-top:1px solid var(--border);
       display:grid;
       grid-template-columns:repeat(5,1fr);
@@ -358,21 +352,26 @@
       line-height:1;
     }
 
-    .nav-item.active{
-      color:white;
-    }
+    .nav-item.active{color:var(--olive-dark)}
 
     .avatar-nav{
       width:28px;
       height:28px;
       border-radius:50%;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      background:linear-gradient(135deg,var(--olive),var(--olive-dark));
       display:flex;
       align-items:center;
       justify-content:center;
       font-size:13px;
       font-weight:800;
       color:white;
+      overflow:hidden;
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
     }
   </style>
 </head>
@@ -443,7 +442,7 @@
     <div id="homePage" class="page">
       <div class="story-row">
         <div class="story">
-          <div class="story-ring"><div class="story-inner">A</div></div>
+          <div class="story-ring"><div id="storyMe" class="story-inner">A</div></div>
           <div>Votre story</div>
         </div>
         <div class="story">
@@ -467,8 +466,8 @@
       <div class="card">
         <div style="font-weight:800;margin-bottom:8px;">Accueil</div>
         <div class="placeholder">
-          Fil d’actualité style Instagram prêt.<br>
-          La prochaine étape sera d’ajouter les posts ici.
+          Thème olive appliqué.<br>
+          Le profil est enrichi avec photo, prénom, nom et bio.
         </div>
       </div>
     </div>
@@ -477,40 +476,17 @@
       <div class="section">
         <div class="card">
           <div style="font-weight:800;margin-bottom:10px;">Recherche</div>
-          <div class="placeholder">
-            Onglet recherche prêt.<br>
-            On pourra ensuite chercher des pseudos et des profils ici.
-          </div>
+          <div class="placeholder">Onglet recherche prêt.</div>
         </div>
       </div>
     </div>
 
     <div id="messagesPage" class="page hidden">
       <div class="section">
-        <div class="dm-header">
-          <div class="dm-title">Messages</div>
-          <button id="logoutBtn2" class="secondary small-btn" type="button">Déconnexion</button>
+        <div class="card">
+          <div style="font-weight:800;margin-bottom:10px;">Messages</div>
+          <div class="placeholder">On garde cet onglet pour la suite.</div>
         </div>
-
-        <div class="me-box">
-          <div><strong>Email :</strong> <span id="meEmail"></span></div>
-          <div><strong>Pseudo :</strong> @<span id="meUsername"></span></div>
-        </div>
-
-        <div class="card" style="margin:0 0 14px 0;">
-          <label>Pseudo du destinataire</label>
-          <input id="receiverUsername" type="text" placeholder="ex: lwa3r">
-
-          <label>Message</label>
-          <textarea id="messageContent" placeholder="Écris ton message..."></textarea>
-
-          <button id="sendBtn" type="button">Envoyer</button>
-          <button id="refreshBtn" class="secondary" type="button">Actualiser</button>
-
-          <div id="messagesStatus" class="status">Prêt</div>
-        </div>
-
-        <div class="messages-list" id="messagesList"></div>
       </div>
     </div>
 
@@ -518,10 +494,7 @@
       <div class="section">
         <div class="card">
           <div style="font-weight:800;margin-bottom:10px;">Reels</div>
-          <div class="placeholder">
-            Onglet reels prêt.<br>
-            On pourra ensuite mettre des vidéos ou des cartes verticales ici.
-          </div>
+          <div class="placeholder">Onglet reels prêt.</div>
         </div>
       </div>
     </div>
@@ -529,14 +502,42 @@
     <div id="profilePage" class="page hidden">
       <div class="section">
         <div class="profile-box">
-          <div><strong>Email :</strong> <span id="homeEmail"></span></div>
-          <div><strong>Pseudo :</strong> @<span id="homeUsername"></span></div>
+          <div class="profile-top">
+            <div id="profileAvatarBig" class="avatar-big">A</div>
+            <div>
+              <div id="profileFullName" class="profile-name">Ton nom</div>
+              <div id="profileUsernameText" class="profile-username">@pseudo</div>
+            </div>
+          </div>
+          <div id="profileBioText" class="bio">Aucune bio pour le moment.</div>
         </div>
 
-        <button id="editUsernameBtn" class="secondary" type="button">Modifier le pseudo</button>
-        <button id="logoutBtn3" class="secondary" type="button">Déconnexion</button>
+        <div class="card" style="margin:0 0 14px 0;">
+          <div class="grid2">
+            <div>
+              <label>Prénom</label>
+              <input id="firstNameInput" type="text" placeholder="Prénom">
+            </div>
+            <div>
+              <label>Nom</label>
+              <input id="lastNameInput" type="text" placeholder="Nom">
+            </div>
+          </div>
 
-        <div id="homeStatus" class="status">Profil chargé</div>
+          <label>Pseudo</label>
+          <input id="editUsernameInput" type="text" placeholder="Pseudo">
+
+          <label>Photo de profil (URL image)</label>
+          <input id="avatarInput" type="text" placeholder="https://...">
+
+          <label>Bio</label>
+          <textarea id="bioInput" placeholder="Ta bio..."></textarea>
+
+          <button id="saveProfileBtn" type="button">Enregistrer le profil</button>
+          <button id="logoutBtn3" class="secondary" type="button">Déconnexion</button>
+
+          <div id="homeStatus" class="status">Profil chargé</div>
+        </div>
       </div>
     </div>
 
@@ -589,14 +590,11 @@
     const signupStatus = document.getElementById("signupStatus");
     const usernameStatus = document.getElementById("usernameStatus");
     const homeStatus = document.getElementById("homeStatus");
-    const messagesStatus = document.getElementById("messagesStatus");
-    const messagesList = document.getElementById("messagesList");
 
     function setStatus(el, text, type = "") {
       el.textContent = text || "";
       el.className = "status";
       if (type) el.classList.add(type);
-      console.log(text);
     }
 
     function showAuth(view) {
@@ -634,7 +632,6 @@
       if (tab === "messages") {
         messagesPage.classList.remove("hidden");
         document.getElementById("navMessages").classList.add("active");
-        loadMessages();
       }
       if (tab === "reels") {
         reelsPage.classList.remove("hidden");
@@ -644,6 +641,39 @@
         profilePage.classList.remove("hidden");
         document.getElementById("navProfile").classList.add("active");
       }
+    }
+
+    function renderAvatar(el, text, url) {
+      if (!el) return;
+      if (url && url.trim()) {
+        el.innerHTML = `<img src="${url}" alt="avatar">`;
+      } else {
+        el.textContent = (text || "A").charAt(0).toUpperCase();
+      }
+    }
+
+    function fullNameOf(profile) {
+      const first = (profile.first_name || "").trim();
+      const last = (profile.last_name || "").trim();
+      const full = `${first} ${last}`.trim();
+      return full || "Nom non renseigné";
+    }
+
+    function fillProfileUI() {
+      document.getElementById("profileFullName").textContent = fullNameOf(currentProfile);
+      document.getElementById("profileUsernameText").textContent = "@" + (currentProfile.username || "");
+      document.getElementById("profileBioText").textContent = currentProfile.bio || "Aucune bio pour le moment.";
+
+      document.getElementById("firstNameInput").value = currentProfile.first_name || "";
+      document.getElementById("lastNameInput").value = currentProfile.last_name || "";
+      document.getElementById("editUsernameInput").value = currentProfile.username || "";
+      document.getElementById("avatarInput").value = currentProfile.avatar_url || "";
+      document.getElementById("bioInput").value = currentProfile.bio || "";
+
+      const fallback = currentProfile.username || "A";
+      renderAvatar(document.getElementById("profileAvatarBig"), fallback, currentProfile.avatar_url || "");
+      renderAvatar(document.getElementById("navAvatar"), fallback, currentProfile.avatar_url || "");
+      renderAvatar(document.getElementById("storyMe"), fallback, currentProfile.avatar_url || "");
     }
 
     async function signup() {
@@ -709,9 +739,7 @@
     async function logout() {
       try {
         await client.auth.signOut();
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) {}
       currentUser = null;
       currentProfile = null;
       showAuth(loginView);
@@ -719,24 +747,19 @@
     }
 
     async function refreshRealUser() {
-      try {
-        const { data, error } = await client.auth.getUser();
+      const { data, error } = await client.auth.getUser();
 
-        if (error || !data.user) {
-          await client.auth.signOut();
-          currentUser = null;
-          currentProfile = null;
-          showAuth(loginView);
-          setStatus(loginStatus, "Session invalide. Reconnecte-toi.", "err");
-          return;
-        }
-
-        currentUser = data.user;
-        await loadMyProfile();
-      } catch (e) {
+      if (error || !data.user) {
+        await client.auth.signOut();
+        currentUser = null;
+        currentProfile = null;
         showAuth(loginView);
-        setStatus(loginStatus, "Erreur utilisateur : " + e.message, "err");
+        setStatus(loginStatus, "Session invalide. Reconnecte-toi.", "err");
+        return;
       }
+
+      currentUser = data.user;
+      await loadMyProfile();
     }
 
     async function loadMyProfile() {
@@ -770,16 +793,6 @@
       }
     }
 
-    function fillProfileUI() {
-      document.getElementById("homeEmail").textContent = currentUser.email || "";
-      document.getElementById("homeUsername").textContent = currentProfile.username || "";
-      document.getElementById("meEmail").textContent = currentUser.email || "";
-      document.getElementById("meUsername").textContent = currentProfile.username || "";
-      document.getElementById("usernameInput").value = currentProfile.username || "";
-      document.getElementById("navAvatar").textContent = (currentProfile.username || "A").charAt(0).toUpperCase();
-      setStatus(homeStatus, "Profil chargé", "ok");
-    }
-
     async function saveUsername() {
       const username = document.getElementById("usernameInput").value.trim().toLowerCase();
 
@@ -801,7 +814,11 @@
             .from("profiles")
             .insert({
               id: currentUser.id,
-              username: username
+              username: username,
+              first_name: "",
+              last_name: "",
+              bio: "",
+              avatar_url: ""
             });
 
           if (error) {
@@ -834,128 +851,49 @@
       }
     }
 
-    async function sendMessage() {
-      const receiverUsername = document.getElementById("receiverUsername").value.trim().toLowerCase();
-      const content = document.getElementById("messageContent").value.trim();
+    async function saveFullProfile() {
+      const first_name = document.getElementById("firstNameInput").value.trim();
+      const last_name = document.getElementById("lastNameInput").value.trim();
+      const username = document.getElementById("editUsernameInput").value.trim().toLowerCase();
+      const avatar_url = document.getElementById("avatarInput").value.trim();
+      const bio = document.getElementById("bioInput").value.trim();
 
-      if (!receiverUsername || !content) {
-        setStatus(messagesStatus, "Entre le pseudo du destinataire et le message.", "err");
+      if (!username) {
+        setStatus(homeStatus, "Le pseudo est obligatoire.", "err");
         return;
       }
 
-      if (!currentProfile) {
-        setStatus(messagesStatus, "Profil non chargé.", "err");
-        return;
-      }
-
-      if (receiverUsername === currentProfile.username) {
-        setStatus(messagesStatus, "Tu ne peux pas t'envoyer un message à toi-même.", "err");
-        return;
-      }
-
-      setStatus(messagesStatus, "Recherche du destinataire...");
+      setStatus(homeStatus, "Enregistrement du profil...");
 
       try {
-        const { data: receiver, error: receiverError } = await client
-          .from("profiles")
-          .select("*")
-          .eq("username", receiverUsername)
-          .maybeSingle();
-
-        if (receiverError) {
-          setStatus(messagesStatus, "Erreur destinataire : " + receiverError.message, "err");
-          return;
-        }
-
-        if (!receiver) {
-          setStatus(messagesStatus, "Pseudo introuvable.", "err");
-          return;
-        }
-
         const { error } = await client
-          .from("messages")
-          .insert({
-            sender_id: currentUser.id,
-            receiver_id: receiver.id,
-            content: content
-          });
-
-        if (error) {
-          setStatus(messagesStatus, "Erreur envoi : " + error.message, "err");
-          return;
-        }
-
-        document.getElementById("messageContent").value = "";
-        setStatus(messagesStatus, "Message envoyé à @" + receiver.username, "ok");
-        await loadMessages();
-      } catch (e) {
-        setStatus(messagesStatus, "Erreur JS envoi : " + e.message, "err");
-      }
-    }
-
-    async function loadMessages() {
-      if (!currentUser) return;
-
-      messagesList.innerHTML = "<div class='msg'><div class='meta'>Chargement...</div></div>";
-
-      try {
-        const { data, error } = await client
-          .from("messages")
-          .select("*")
-          .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
-          .order("created_at", { ascending: false });
-
-        if (error) {
-          messagesList.innerHTML = "<div class='msg'><div class='meta'>Erreur : " + escapeHtml(error.message) + "</div></div>";
-          return;
-        }
-
-        if (!data || data.length === 0) {
-          messagesList.innerHTML = "<div class='msg'><div class='meta'>Aucun message pour l’instant.</div></div>";
-          return;
-        }
-
-        const ids = [...new Set(data.flatMap(m => [m.sender_id, m.receiver_id]))];
-
-        const { data: profiles } = await client
           .from("profiles")
-          .select("id, username")
-          .in("id", ids);
+          .update({
+            first_name,
+            last_name,
+            username,
+            avatar_url,
+            bio
+          })
+          .eq("id", currentUser.id);
 
-        const usernameMap = {};
-        (profiles || []).forEach(p => {
-          usernameMap[p.id] = p.username;
-        });
+        if (error) {
+          setStatus(homeStatus, "Erreur profil : " + error.message, "err");
+          return;
+        }
 
-        messagesList.innerHTML = "";
+        const { data } = await client
+          .from("profiles")
+          .select("*")
+          .eq("id", currentUser.id)
+          .single();
 
-        data.forEach(msg => {
-          const div = document.createElement("div");
-          div.className = "msg";
-
-          const senderName = usernameMap[msg.sender_id] || "inconnu";
-          const receiverName = usernameMap[msg.receiver_id] || "inconnu";
-
-          div.innerHTML = `
-            <div class="meta">De @${escapeHtml(senderName)} vers @${escapeHtml(receiverName)}</div>
-            <div class="content">${escapeHtml(msg.content)}</div>
-            <div class="meta">${new Date(msg.created_at).toLocaleString()}</div>
-          `;
-
-          messagesList.appendChild(div);
-        });
+        currentProfile = data;
+        fillProfileUI();
+        setStatus(homeStatus, "Profil enregistré.", "ok");
       } catch (e) {
-        messagesList.innerHTML = "<div class='msg'><div class='meta'>Erreur JS : " + escapeHtml(e.message) + "</div></div>";
+        setStatus(homeStatus, "Erreur JS profil : " + e.message, "err");
       }
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
     }
 
     document.getElementById("goSignupBtn").addEventListener("click", () => {
@@ -971,16 +909,9 @@
     document.getElementById("signupBtn").addEventListener("click", signup);
     document.getElementById("loginBtn").addEventListener("click", login);
     document.getElementById("saveUsernameBtn").addEventListener("click", saveUsername);
-    document.getElementById("editUsernameBtn").addEventListener("click", () => {
-      showAuth(usernameView);
-      setStatus(usernameStatus, "Modifie ton pseudo.", "ok");
-    });
-
-    document.getElementById("sendBtn").addEventListener("click", sendMessage);
-    document.getElementById("refreshBtn").addEventListener("click", loadMessages);
+    document.getElementById("saveProfileBtn").addEventListener("click", saveFullProfile);
 
     document.getElementById("logoutBtn1").addEventListener("click", logout);
-    document.getElementById("logoutBtn2").addEventListener("click", logout);
     document.getElementById("logoutBtn3").addEventListener("click", logout);
     document.getElementById("logoutBtnTop").addEventListener("click", logout);
 
@@ -993,9 +924,7 @@
     async function init() {
       try {
         await client.auth.signOut();
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) {}
 
       currentUser = null;
       currentProfile = null;
