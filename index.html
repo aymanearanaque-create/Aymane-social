@@ -1,437 +1,996 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aymane Social</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aymane Social</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --olive: rgb(128,128,0);
+      --olive-dark: rgb(98,98,0);
+      --olive-soft: rgb(170,170,90);
+      --bg: #f5f4e8;
+      --card: #fffef4;
+      --card2: #f0edd2;
+      --border: #d6d1a8;
+      --text: #2f2f1c;
+      --muted: #6f6f4a;
+      --ok: #2f7a2f;
+      --err: #b13a3a;
+      --warn: #8a6d1f;
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    *{box-sizing:border-box;margin:0;padding:0}
 
-<style>
+    body{
+      min-height:100vh;
+      font-family:Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(128,128,0,.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(128,128,0,.08), transparent 24%),
+        var(--bg);
+      color:var(--text);
+    }
 
-:root{
---olive:rgb(128,128,0);
---olive2:rgb(150,150,40);
---bg:#f4f4e4;
---card:#ffffff;
---border:#d9d9a5;
---text:#2b2b18;
---muted:#777755;
-}
+    .hidden{display:none!important}
 
-body{
-margin:0;
-font-family:Arial;
-background:var(--bg);
-color:var(--text);
-}
+    .auth-wrap{
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
+    }
 
-.hidden{display:none}
+    .auth-card{
+      width:100%;
+      max-width:430px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:26px 22px;
+      box-shadow:0 12px 30px rgba(0,0,0,.08);
+    }
 
-.topbar{
-height:60px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:24px;
-font-weight:900;
-color:var(--olive);
-border-bottom:1px solid var(--border);
-background:white;
-}
+    h1.logo{
+      font-size:36px;
+      margin-bottom:8px;
+      text-align:center;
+      color:var(--olive);
+      font-weight:900;
+    }
 
-.page{
-padding:15px;
-padding-bottom:90px;
-}
+    .sub{
+      text-align:center;
+      color:var(--muted);
+      margin-bottom:22px;
+      line-height:1.5;
+    }
 
-.card{
-background:var(--card);
-border:1px solid var(--border);
-border-radius:18px;
-padding:15px;
-margin-bottom:15px;
-}
+    label{
+      display:block;
+      margin:12px 0 6px;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+    }
 
-button{
-background:var(--olive);
-border:none;
-color:white;
-padding:12px;
-border-radius:12px;
-width:100%;
-margin-top:10px;
-font-weight:bold;
-cursor:pointer;
-}
+    input, textarea{
+      width:100%;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--card2);
+      color:var(--text);
+      outline:none;
+      font-size:16px;
+    }
 
-input,textarea{
-width:100%;
-padding:10px;
-margin-top:5px;
-border-radius:10px;
-border:1px solid var(--border);
-}
+    textarea{
+      resize:none;
+      min-height:90px;
+    }
 
-.bottomnav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-height:70px;
-background:white;
-border-top:1px solid var(--border);
-display:grid;
-grid-template-columns:repeat(5,1fr);
-}
+    input:focus, textarea:focus{
+      border-color:var(--olive);
+      box-shadow:0 0 0 3px rgba(128,128,0,.12);
+    }
 
-.navbtn{
-border:none;
-background:none;
-font-size:12px;
-color:var(--muted);
-}
+    button{
+      width:100%;
+      margin-top:14px;
+      padding:14px;
+      border:none;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--olive),var(--olive-dark));
+      color:#fff;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+    }
 
-.navbtn.active{
-color:var(--olive);
-}
+    button.secondary{
+      background:var(--card2);
+      border:1px solid var(--border);
+      color:var(--text);
+    }
 
-.avatar{
-width:80px;
-height:80px;
-border-radius:50%;
-background:var(--olive);
-display:flex;
-align-items:center;
-justify-content:center;
-color:white;
-font-size:30px;
-overflow:hidden;
-}
+    .bottom-link{
+      margin-top:16px;
+      display:flex;
+      justify-content:flex-start;
+    }
 
-.avatar img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
+    .link-btn{
+      background:none;
+      border:none;
+      color:var(--olive-dark);
+      padding:0;
+      margin:0;
+      width:auto;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      text-decoration:underline;
+    }
 
-.profileRow{
-display:flex;
-gap:15px;
-align-items:center;
-}
+    .status{
+      margin-top:14px;
+      min-height:22px;
+      color:var(--warn);
+      text-align:center;
+      white-space:pre-wrap;
+    }
 
-.msg{
-background:#f6f6d9;
-padding:10px;
-border-radius:10px;
-margin-top:8px;
-}
+    .ok{color:var(--ok)}
+    .err{color:var(--err)}
 
-</style>
+    .app{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      max-width:480px;
+      margin:0 auto;
+      background:var(--bg);
+      border-left:1px solid rgba(0,0,0,.04);
+      border-right:1px solid rgba(0,0,0,.04);
+    }
+
+    .topbar{
+      height:64px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 16px;
+      border-bottom:1px solid var(--border);
+      position:sticky;
+      top:0;
+      background:rgba(245,244,232,.96);
+      z-index:20;
+      backdrop-filter:blur(10px);
+    }
+
+    .brand{
+      font-size:28px;
+      font-weight:900;
+      color:var(--olive);
+    }
+
+    .icon-btn{
+      width:auto;
+      margin:0;
+      padding:8px 10px;
+      background:none;
+      border:none;
+      color:var(--text);
+      font-size:22px;
+      line-height:1;
+    }
+
+    .page{
+      flex:1;
+      overflow:auto;
+      padding-bottom:86px;
+    }
+
+    .section{padding:16px}
+
+    .story-row{
+      display:flex;
+      gap:14px;
+      overflow:auto;
+      padding:12px 16px 10px;
+      border-bottom:1px solid var(--border);
+    }
+
+    .story{
+      min-width:72px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .story-ring{
+      width:72px;
+      height:72px;
+      border-radius:50%;
+      padding:3px;
+      background:linear-gradient(135deg,var(--olive-soft),var(--olive),var(--olive-dark));
+      margin-bottom:6px;
+    }
+
+    .story-inner{
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      background:var(--card2);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--olive-dark);
+      font-size:26px;
+      font-weight:800;
+      border:3px solid var(--bg);
+      overflow:hidden;
+    }
+
+    .story-inner img,
+    .avatar-big img,
+    .avatar-nav img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius:50%;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:16px;
+      margin:16px;
+    }
+
+    .placeholder{
+      text-align:center;
+      color:var(--muted);
+      padding:40px 20px;
+      line-height:1.6;
+    }
+
+    .profile-box{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:16px;
+      margin-bottom:14px;
+    }
+
+    .profile-top{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      margin-bottom:14px;
+    }
+
+    .avatar-big{
+      width:84px;
+      height:84px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--olive),var(--olive-dark));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:28px;
+      font-weight:900;
+      overflow:hidden;
+      flex-shrink:0;
+    }
+
+    .profile-name{
+      font-size:22px;
+      font-weight:800;
+      color:var(--text);
+    }
+
+    .profile-username{
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .bio{
+      color:var(--text);
+      line-height:1.6;
+      margin-top:10px;
+      white-space:pre-wrap;
+    }
+
+    .small-btn{
+      width:auto;
+      margin:0;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:14px;
+    }
+
+    .bottom-nav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      max-width:480px;
+      margin:0 auto;
+      height:74px;
+      background:rgba(245,244,232,.98);
+      border-top:1px solid var(--border);
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      z-index:30;
+      backdrop-filter:blur(10px);
+    }
+
+    .nav-item{
+      border:none;
+      background:none;
+      color:var(--muted);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
+      font-size:11px;
+      font-weight:700;
+      margin:0;
+      width:100%;
+      border-radius:0;
+      padding:0;
+    }
+
+    .nav-item .nav-ico{
+      font-size:24px;
+      line-height:1;
+    }
+
+    .nav-item.active{color:var(--olive-dark)}
+
+    .avatar-nav{
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--olive),var(--olive-dark));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:13px;
+      font-weight:800;
+      color:white;
+      overflow:hidden;
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="topbar">Aymane Social</div>
-
-<div id="home" class="page">
-
-<div class="card">
-Accueil style Instagram prêt.
-</div>
-
-</div>
-
-<div id="search" class="page hidden">
-
-<div class="card">
-
-<input id="searchInput" placeholder="chercher pseudo">
-<button onclick="searchUser()">Rechercher</button>
-
-</div>
-
-<div id="searchResults"></div>
-
-</div>
-
-<div id="messages" class="page hidden">
-
-<div class="card">
-
-<input id="dmUser" placeholder="pseudo">
-<textarea id="dmText" placeholder="message"></textarea>
-<button onclick="sendDM()">Envoyer</button>
-
-</div>
-
-<div id="dmList"></div>
-
-</div>
-
-<div id="reels" class="page hidden">
-
-<div class="card">
-Reels bientôt.
-</div>
-
-</div>
-
-<div id="profile" class="page hidden">
-
-<div class="card">
-
-<div class="profileRow">
-
-<div id="avatar" class="avatar">A</div>
-
-<div>
-
-<div id="fullname"></div>
-<div id="username"></div>
-
-<div>
-<span id="followers">0</span> followers
-•
-<span id="following">0</span> following
-</div>
-
-</div>
-
-</div>
-
-<p id="bio"></p>
-
-</div>
-
-<div class="card">
-
-<label>Photo</label>
-<input type="file" id="photo">
-
-<label>Prénom</label>
-<input id="firstname">
-
-<label>Nom</label>
-<input id="lastname">
-
-<label>Bio</label>
-<textarea id="bioEdit"></textarea>
-
-<button onclick="saveProfile()">Enregistrer</button>
-
-</div>
-
-</div>
-
-<div class="bottomnav">
-
-<button class="navbtn active" onclick="nav('home')">Accueil</button>
-<button class="navbtn" onclick="nav('search')">Recherche</button>
-<button class="navbtn" onclick="nav('messages')">Messages</button>
-<button class="navbtn" onclick="nav('reels')">Reels</button>
-<button class="navbtn" onclick="nav('profile')">Profil</button>
-
-</div>
-
-<script>
-
-const SUPABASE_URL="https://ymuoiyfyvqpxokndhsuz.supabase.co"
-const SUPABASE_KEY="sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY"
-
-const supabase=supabase_js.createClient(SUPABASE_URL,SUPABASE_KEY)
-
-let user=null
-let profile=null
-
-function nav(p){
-
-document.querySelectorAll(".page").forEach(e=>e.classList.add("hidden"))
-document.getElementById(p).classList.remove("hidden")
-
-document.querySelectorAll(".navbtn").forEach(e=>e.classList.remove("active"))
-event.target.classList.add("active")
-
-}
-
-async function loadProfile(){
-
-const {data}=await supabase.auth.getUser()
-
-user=data.user
-
-const {data:prof}=await supabase
-.from("profiles")
-.select("*")
-.eq("id",user.id)
-.single()
-
-profile=prof
-
-document.getElementById("username").innerText="@"+prof.username
-document.getElementById("fullname").innerText=prof.first_name+" "+prof.last_name
-document.getElementById("bio").innerText=prof.bio
-
-document.getElementById("firstname").value=prof.first_name
-document.getElementById("lastname").value=prof.last_name
-document.getElementById("bioEdit").value=prof.bio
-
-if(prof.avatar_url){
-
-document.getElementById("avatar").innerHTML="<img src='"+prof.avatar_url+"'>"
-
-}
-
-loadFollowers()
-
-}
-
-async function loadFollowers(){
-
-const {count}=await supabase
-.from("followers")
-.select("*",{count:"exact",head:true})
-.eq("following_id",user.id)
-
-document.getElementById("followers").innerText=count
-
-const {count:c2}=await supabase
-.from("followers")
-.select("*",{count:"exact",head:true})
-.eq("follower_id",user.id)
-
-document.getElementById("following").innerText=c2
-
-}
-
-async function saveProfile(){
-
-let avatarURL=profile.avatar_url
-
-const file=document.getElementById("photo").files[0]
-
-if(file){
-
-const name=user.id+"_"+Date.now()
-
-await supabase.storage
-.from("avatars")
-.upload(name,file)
-
-const {data}=supabase.storage
-.from("avatars")
-.getPublicUrl(name)
-
-avatarURL=data.publicUrl
-
-}
-
-await supabase
-.from("profiles")
-.update({
-first_name:document.getElementById("firstname").value,
-last_name:document.getElementById("lastname").value,
-bio:document.getElementById("bioEdit").value,
-avatar_url:avatarURL
-})
-.eq("id",user.id)
-
-loadProfile()
-
-}
-
-async function searchUser(){
-
-const q=document.getElementById("searchInput").value
-
-const {data}=await supabase
-.from("profiles")
-.select("*")
-.ilike("username","%"+q+"%")
-
-const div=document.getElementById("searchResults")
-
-div.innerHTML=""
-
-data.forEach(u=>{
-
-div.innerHTML+=`
-
-<div class="card">
-
-<b>@${u.username}</b>
-
-<button onclick="openProfile('${u.id}')">Voir profil</button>
-
-<button onclick="startDM('${u.username}')">Message</button>
-
-</div>
-
-`
-
-})
-
-}
-
-function startDM(username){
-
-nav("messages")
-
-document.getElementById("dmUser").value=username
-
-}
-
-async function sendDM(){
-
-const username=document.getElementById("dmUser").value
-const text=document.getElementById("dmText").value
-
-const {data:target}=await supabase
-.from("profiles")
-.select("*")
-.eq("username",username)
-.single()
-
-await supabase
-.from("messages")
-.insert({
-sender_id:user.id,
-receiver_id:target.id,
-content:text
-})
-
-document.getElementById("dmText").value=""
-
-loadDM()
-
-}
-
-async function loadDM(){
-
-const {data}=await supabase
-.from("messages")
-.select("*")
-.or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-.order("created_at",{ascending:false})
-
-const div=document.getElementById("dmList")
-
-div.innerHTML=""
-
-data.forEach(m=>{
-
-div.innerHTML+=`
-<div class="msg">${m.content}</div>
-`
-
-})
-
-}
-
-loadProfile()
-
-</script>
-
+  <div id="authWrap" class="auth-wrap">
+    <div class="auth-card">
+      <div id="loginView">
+        <h1 class="logo">Aymane Social</h1>
+        <p class="sub">Connexion simple puis choix du pseudo</p>
+
+        <label>Email</label>
+        <input id="loginEmail" type="email" placeholder="vous@exemple.com">
+
+        <label>Mot de passe</label>
+        <input id="loginPassword" type="password" placeholder="••••••••">
+
+        <button id="loginBtn" type="button">Se connecter</button>
+
+        <div class="bottom-link">
+          <button id="goSignupBtn" class="link-btn" type="button">S’inscrire</button>
+        </div>
+
+        <div id="loginStatus" class="status">Prêt</div>
+      </div>
+
+      <div id="signupView" class="hidden">
+        <h1 class="logo">Inscription</h1>
+        <p class="sub">Crée ton compte puis retourne te connecter</p>
+
+        <label>Email</label>
+        <input id="signupEmail" type="email" placeholder="vous@exemple.com">
+
+        <label>Mot de passe</label>
+        <input id="signupPassword" type="password" placeholder="••••••••">
+
+        <button id="signupBtn" type="button">Créer un compte</button>
+
+        <div class="bottom-link">
+          <button id="backLoginBtn" class="link-btn" type="button">Retour connexion</button>
+        </div>
+
+        <div id="signupStatus" class="status">Prêt</div>
+      </div>
+
+      <div id="usernameView" class="hidden">
+        <h1 class="logo">Choisir pseudo</h1>
+        <p class="sub">Choisis un pseudo unique</p>
+
+        <label>Pseudo</label>
+        <input id="usernameInput" type="text" placeholder="ex: lwa3r">
+
+        <button id="saveUsernameBtn" type="button">Enregistrer le pseudo</button>
+        <button id="logoutBtn1" class="secondary" type="button">Déconnexion</button>
+
+        <div id="usernameStatus" class="status">Prêt</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="appWrap" class="app hidden">
+    <div class="topbar">
+      <button class="icon-btn" type="button">＋</button>
+      <div class="brand">Aymane Social</div>
+      <button id="logoutBtnTop" class="icon-btn" type="button">♡</button>
+    </div>
+
+    <div id="homePage" class="page">
+      <div class="story-row">
+        <div class="story">
+          <div class="story-ring"><div id="storyMe" class="story-inner">A</div></div>
+          <div>Votre story</div>
+        </div>
+        <div class="story">
+          <div class="story-ring"><div class="story-inner">L</div></div>
+          <div>lwa3r</div>
+        </div>
+        <div class="story">
+          <div class="story-ring"><div class="story-inner">S</div></div>
+          <div>sami</div>
+        </div>
+        <div class="story">
+          <div class="story-ring"><div class="story-inner">M</div></div>
+          <div>mehdi</div>
+        </div>
+        <div class="story">
+          <div class="story-ring"><div class="story-inner">N</div></div>
+          <div>nora</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:8px;">Accueil</div>
+        <div class="placeholder">
+          Version stable.<br>
+          Recherche et profil fonctionnent.
+        </div>
+      </div>
+    </div>
+
+    <div id="searchPage" class="page hidden">
+      <div class="section">
+        <div class="card">
+          <label>Recherche par pseudo</label>
+          <input id="searchInput" type="text" placeholder="ex: lwa3r">
+          <button id="searchBtn" type="button">Rechercher</button>
+          <div id="searchStatus" class="status"></div>
+        </div>
+        <div id="searchResults"></div>
+      </div>
+    </div>
+
+    <div id="messagesPage" class="page hidden">
+      <div class="section">
+        <div class="card">
+          <div style="font-weight:800;margin-bottom:10px;">Messages</div>
+          <div class="placeholder">Onglet messages prêt pour la suite.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="reelsPage" class="page hidden">
+      <div class="section">
+        <div class="card">
+          <div style="font-weight:800;margin-bottom:10px;">Reels</div>
+          <div class="placeholder">Onglet reels prêt.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="profilePage" class="page hidden">
+      <div class="section">
+        <div class="profile-box">
+          <div class="profile-top">
+            <div id="profileAvatarBig" class="avatar-big">A</div>
+            <div>
+              <div id="profileFullName" class="profile-name">Ton nom</div>
+              <div id="profileUsernameText" class="profile-username">@pseudo</div>
+            </div>
+          </div>
+          <div id="profileBioText" class="bio">Aucune bio pour le moment.</div>
+        </div>
+
+        <div class="card" style="margin:0 0 14px 0;">
+          <div class="grid2">
+            <div>
+              <label>Prénom</label>
+              <input id="firstNameInput" type="text" placeholder="Prénom">
+            </div>
+            <div>
+              <label>Nom</label>
+              <input id="lastNameInput" type="text" placeholder="Nom">
+            </div>
+          </div>
+
+          <label>Pseudo</label>
+          <input id="editUsernameInput" type="text" placeholder="Pseudo">
+
+          <label>Bio</label>
+          <textarea id="bioInput" placeholder="Ta bio..."></textarea>
+
+          <button id="saveProfileBtn" type="button">Enregistrer le profil</button>
+          <button id="logoutBtn3" class="secondary" type="button">Déconnexion</button>
+
+          <div id="homeStatus" class="status">Profil chargé</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button id="navHome" class="nav-item active" type="button">
+        <div class="nav-ico">⌂</div>
+        <div>Accueil</div>
+      </button>
+      <button id="navSearch" class="nav-item" type="button">
+        <div class="nav-ico">⌕</div>
+        <div>Recherche</div>
+      </button>
+      <button id="navMessages" class="nav-item" type="button">
+        <div class="nav-ico">✉</div>
+        <div>Messages</div>
+      </button>
+      <button id="navReels" class="nav-item" type="button">
+        <div class="nav-ico">▣</div>
+        <div>Reels</div>
+      </button>
+      <button id="navProfile" class="nav-item" type="button">
+        <div id="navAvatar" class="avatar-nav">A</div>
+        <div>Profil</div>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = null;
+    let currentProfile = null;
+
+    const authWrap = document.getElementById("authWrap");
+    const appWrap = document.getElementById("appWrap");
+
+    const loginView = document.getElementById("loginView");
+    const signupView = document.getElementById("signupView");
+    const usernameView = document.getElementById("usernameView");
+
+    const homePage = document.getElementById("homePage");
+    const searchPage = document.getElementById("searchPage");
+    const messagesPage = document.getElementById("messagesPage");
+    const reelsPage = document.getElementById("reelsPage");
+    const profilePage = document.getElementById("profilePage");
+
+    const loginStatus = document.getElementById("loginStatus");
+    const signupStatus = document.getElementById("signupStatus");
+    const usernameStatus = document.getElementById("usernameStatus");
+    const homeStatus = document.getElementById("homeStatus");
+    const searchStatus = document.getElementById("searchStatus");
+
+    function setStatus(el, text, type = "") {
+      el.textContent = text || "";
+      el.className = "status";
+      if (type) el.classList.add(type);
+    }
+
+    function showAuth(view) {
+      authWrap.classList.remove("hidden");
+      appWrap.classList.add("hidden");
+      loginView.classList.add("hidden");
+      signupView.classList.add("hidden");
+      usernameView.classList.add("hidden");
+      view.classList.remove("hidden");
+    }
+
+    function showApp() {
+      authWrap.classList.add("hidden");
+      appWrap.classList.remove("hidden");
+      switchTab("home");
+    }
+
+    function switchTab(tab) {
+      homePage.classList.add("hidden");
+      searchPage.classList.add("hidden");
+      messagesPage.classList.add("hidden");
+      reelsPage.classList.add("hidden");
+      profilePage.classList.add("hidden");
+
+      document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+
+      if (tab === "home") {
+        homePage.classList.remove("hidden");
+        document.getElementById("navHome").classList.add("active");
+      }
+      if (tab === "search") {
+        searchPage.classList.remove("hidden");
+        document.getElementById("navSearch").classList.add("active");
+      }
+      if (tab === "messages") {
+        messagesPage.classList.remove("hidden");
+        document.getElementById("navMessages").classList.add("active");
+      }
+      if (tab === "reels") {
+        reelsPage.classList.remove("hidden");
+        document.getElementById("navReels").classList.add("active");
+      }
+      if (tab === "profile") {
+        profilePage.classList.remove("hidden");
+        document.getElementById("navProfile").classList.add("active");
+      }
+    }
+
+    function renderAvatar(el, text) {
+      if (!el) return;
+      el.textContent = (text || "A").charAt(0).toUpperCase();
+    }
+
+    function fullNameOf(profile) {
+      const first = (profile.first_name || "").trim();
+      const last = (profile.last_name || "").trim();
+      const full = `${first} ${last}`.trim();
+      return full || "Nom non renseigné";
+    }
+
+    function fillProfileUI() {
+      document.getElementById("profileFullName").textContent = fullNameOf(currentProfile);
+      document.getElementById("profileUsernameText").textContent = "@" + (currentProfile.username || "");
+      document.getElementById("profileBioText").textContent = currentProfile.bio || "Aucune bio pour le moment.";
+
+      document.getElementById("firstNameInput").value = currentProfile.first_name || "";
+      document.getElementById("lastNameInput").value = currentProfile.last_name || "";
+      document.getElementById("editUsernameInput").value = currentProfile.username || "";
+      document.getElementById("bioInput").value = currentProfile.bio || "";
+
+      const fallback = currentProfile.username || "A";
+      renderAvatar(document.getElementById("profileAvatarBig"), fallback);
+      renderAvatar(document.getElementById("navAvatar"), fallback);
+      renderAvatar(document.getElementById("storyMe"), fallback);
+    }
+
+    async function signup() {
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value;
+
+      if (!email || !password) {
+        setStatus(signupStatus, "Remplis tous les champs.", "err");
+        return;
+      }
+
+      if (password.length < 6) {
+        setStatus(signupStatus, "Le mot de passe doit contenir au moins 6 caractères.", "err");
+        return;
+      }
+
+      setStatus(signupStatus, "Création du compte...");
+
+      try {
+        const { error } = await client.auth.signUp({ email, password });
+
+        if (error) {
+          setStatus(signupStatus, "Erreur inscription : " + error.message, "err");
+          return;
+        }
+
+        document.getElementById("loginEmail").value = email;
+        document.getElementById("loginPassword").value = password;
+        showAuth(loginView);
+        setStatus(loginStatus, "Compte créé. Tu peux te connecter.", "ok");
+      } catch (e) {
+        setStatus(signupStatus, "Erreur JS inscription : " + e.message, "err");
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+
+      if (!email || !password) {
+        setStatus(loginStatus, "Entre email et mot de passe.", "err");
+        return;
+      }
+
+      setStatus(loginStatus, "Connexion...");
+
+      try {
+        const { error } = await client.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          setStatus(loginStatus, "Erreur connexion : " + error.message, "err");
+          return;
+        }
+
+        setStatus(loginStatus, "Connexion réussie.", "ok");
+        await refreshRealUser();
+      } catch (e) {
+        setStatus(loginStatus, "Erreur JS connexion : " + e.message, "err");
+      }
+    }
+
+    async function logout() {
+      try { await client.auth.signOut(); } catch (e) {}
+      currentUser = null;
+      currentProfile = null;
+      showAuth(loginView);
+      setStatus(loginStatus, "Déconnecté.", "ok");
+    }
+
+    async function refreshRealUser() {
+      const { data, error } = await client.auth.getUser();
+
+      if (error || !data.user) {
+        showAuth(loginView);
+        setStatus(loginStatus, "Session invalide. Reconnecte-toi.", "err");
+        return;
+      }
+
+      currentUser = data.user;
+      await loadMyProfile();
+    }
+
+    async function loadMyProfile() {
+      showAuth(usernameView);
+      setStatus(usernameStatus, "Recherche du profil...");
+
+      try {
+        const { data, error } = await client
+          .from("profiles")
+          .select("*")
+          .eq("id", currentUser.id)
+          .maybeSingle();
+
+        if (error) {
+          setStatus(usernameStatus, "Erreur profil : " + error.message, "err");
+          return;
+        }
+
+        if (!data) {
+          currentProfile = null;
+          document.getElementById("usernameInput").value = "";
+          setStatus(usernameStatus, "Profil absent. Choisis un pseudo.", "ok");
+          return;
+        }
+
+        currentProfile = data;
+        fillProfileUI();
+        showApp();
+      } catch (e) {
+        setStatus(usernameStatus, "Erreur JS profil : " + e.message, "err");
+      }
+    }
+
+    async function saveUsername() {
+      const username = document.getElementById("usernameInput").value.trim().toLowerCase();
+
+      if (!username) {
+        setStatus(usernameStatus, "Entre un pseudo.", "err");
+        return;
+      }
+
+      if (username.length < 3) {
+        setStatus(usernameStatus, "Le pseudo doit contenir au moins 3 caractères.", "err");
+        return;
+      }
+
+      setStatus(usernameStatus, "Enregistrement du pseudo...");
+
+      try {
+        if (!currentProfile) {
+          const { error } = await client
+            .from("profiles")
+            .insert({
+              id: currentUser.id,
+              username: username,
+              first_name: "",
+              last_name: "",
+              bio: "",
+              avatar_url: ""
+            });
+
+          if (error) {
+            setStatus(usernameStatus, "Erreur insert pseudo : " + error.message, "err");
+            return;
+          }
+        } else {
+          const { error } = await client
+            .from("profiles")
+            .update({ username: username })
+            .eq("id", currentUser.id);
+
+          if (error) {
+            setStatus(usernameStatus, "Erreur update pseudo : " + error.message, "err");
+            return;
+          }
+        }
+
+        const { data } = await client
+          .from("profiles")
+          .select("*")
+          .eq("id", currentUser.id)
+          .single();
+
+        currentProfile = data;
+        fillProfileUI();
+        showApp();
+      } catch (e) {
+        setStatus(usernameStatus, "Erreur JS pseudo : " + e.message, "err");
+      }
+    }
+
+    async function saveFullProfile() {
+      const first_name = document.getElementById("firstNameInput").value.trim();
+      const last_name = document.getElementById("lastNameInput").value.trim();
+      const username = document.getElementById("editUsernameInput").value.trim().toLowerCase();
+      const bio = document.getElementById("bioInput").value.trim();
+
+      if (!username) {
+        setStatus(homeStatus, "Le pseudo est obligatoire.", "err");
+        return;
+      }
+
+      setStatus(homeStatus, "Enregistrement du profil...");
+
+      try {
+        const { error } = await client
+          .from("profiles")
+          .update({
+            first_name,
+            last_name,
+            username,
+            bio
+          })
+          .eq("id", currentUser.id);
+
+        if (error) {
+          setStatus(homeStatus, "Erreur profil : " + error.message, "err");
+          return;
+        }
+
+        const { data } = await client
+          .from("profiles")
+          .select("*")
+          .eq("id", currentUser.id)
+          .single();
+
+        currentProfile = data;
+        fillProfileUI();
+        setStatus(homeStatus, "Profil enregistré.", "ok");
+      } catch (e) {
+        setStatus(homeStatus, "Erreur JS profil : " + e.message, "err");
+      }
+    }
+
+    async function searchUsers() {
+      const q = document.getElementById("searchInput").value.trim().toLowerCase();
+      const results = document.getElementById("searchResults");
+
+      if (!q) {
+        setStatus(searchStatus, "Entre un pseudo à chercher.", "err");
+        results.innerHTML = "";
+        return;
+      }
+
+      setStatus(searchStatus, "Recherche...", "ok");
+
+      try {
+        const { data, error } = await client
+          .from("profiles")
+          .select("*")
+          .ilike("username", "%" + q + "%")
+          .limit(20);
+
+        if (error) {
+          setStatus(searchStatus, "Erreur recherche : " + error.message, "err");
+          return;
+        }
+
+        results.innerHTML = "";
+
+        if (!data || data.length === 0) {
+          results.innerHTML = '<div class="card"><div class="placeholder">Aucun résultat.</div></div>';
+          return;
+        }
+
+        data.forEach(u => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <div style="font-weight:800">@${escapeHtml(u.username || "")}</div>
+            <div style="color:var(--muted);margin-top:6px;">${escapeHtml((u.first_name || "") + " " + (u.last_name || ""))}</div>
+            <div style="margin-top:12px;">
+              <button type="button" data-id="${u.id}" class="view-profile-btn">Voir profil</button>
+            </div>
+          `;
+          results.appendChild(card);
+        });
+
+        setStatus(searchStatus, "Résultats trouvés.", "ok");
+
+        document.querySelectorAll(".view-profile-btn").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const userId = btn.getAttribute("data-id");
+            await openPublicProfile(userId);
+          });
+        });
+      } catch (e) {
+        setStatus(searchStatus, "Erreur JS recherche : " + e.message, "err");
+      }
+    }
+
+    async function openPublicProfile(userId) {
+      const results = document.getElementById("searchResults");
+      results.innerHTML = '<div class="card"><div class="placeholder">Profil public bientôt détaillé.</div></div>';
+    }
+
+    document.getElementById("goSignupBtn").addEventListener("click", () => {
+      showAuth(signupView);
+      setStatus(signupStatus, "Écran inscription.", "ok");
+    });
+
+    document.getElementById("backLoginBtn").addEventListener("click", () => {
+      showAuth(loginView);
+      setStatus(loginStatus, "Écran connexion.", "ok");
+    });
+
+    document.getElementById("signupBtn").addEventListener("click", signup);
+    document.getElementById("loginBtn").addEventListener("click", login);
+    document.getElementById("saveUsernameBtn").addEventListener("click", saveUsername);
+    document.getElementById("saveProfileBtn").addEventListener("click", saveFullProfile);
+    document.getElementById("searchBtn").addEventListener("click", searchUsers);
+
+    document.getElementById("logoutBtn1").addEventListener("click", logout);
+    document.getElementById("logoutBtn3").addEventListener("click", logout);
+    document.getElementById("logoutBtnTop").addEventListener("click", logout);
+
+    document.getElementById("navHome").addEventListener("click", () => switchTab("home"));
+    document.getElementById("navSearch").addEventListener("click", () => switchTab("search"));
+    document.getElementById("navMessages").addEventListener("click", () => switchTab("messages"));
+    document.getElementById("navReels").addEventListener("click", () => switchTab("reels"));
+    document.getElementById("navProfile").addEventListener("click", () => switchTab("profile"));
+
+    async function init() {
+      try { await client.auth.signOut(); } catch (e) {}
+      currentUser = null;
+      currentProfile = null;
+      showAuth(loginView);
+      setStatus(loginStatus, "Session réinitialisée. Connecte-toi.", "ok");
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    init();
+  </script>
 </body>
 </html>
