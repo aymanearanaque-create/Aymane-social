@@ -1,339 +1,947 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aymane Social</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* === VARIABLES & RESET === */
+        :root {
+            --primary: rgb(128, 128, 0);
+            --primary-light: rgba(128, 128, 0, 0.1);
+            --bg-color: #fdfdf9;
+            --card-bg: #ffffff;
+            --text-dark: #1a1a1a;
+            --text-muted: #8e8e8e;
+            --border-color: #eaeaea;
+            --nav-height: 60px;
+            --top-height: 50px;
+        }
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-<title>Aymane Social</title>
+        body {
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-dark);
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        /* === APP CONTAINER (Mobile Simulation) === */
+        #app-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            background-color: var(--bg-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
 
-<style>
+        /* === NOTIFICATIONS === */
+        #status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            z-index: 9999;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+        #status-bar.visible {
+            transform: translateY(0);
+        }
+        #status-bar.error {
+            background: #e74c3c;
+        }
 
-:root{
---olive:rgb(128,128,0);
---bg:#f6f6e7;
---card:white;
-}
+        /* === SCREENS === */
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            overflow-y: auto;
+        }
+        .screen.active {
+            display: flex;
+        }
 
-body{
-margin:0;
-font-family:Arial;
-background:var(--bg);
-}
+        /* === AUTH & SETUP === */
+        .auth-container {
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: var(--card-bg);
+        }
+        .auth-container h1 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 32px;
+            font-weight: 600;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+            font-size: 14px;
+            outline: none;
+        }
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:active { opacity: 0.8; }
+        button.secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            margin-top: 10px;
+        }
+        .auth-switch {
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .auth-switch span {
+            color: var(--primary);
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-.topbar{
-height:60px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:900;
-font-size:26px;
-color:var(--olive);
-border-bottom:1px solid #ddd;
-background:white;
-}
+        /* === MAIN APP TOP & BOTTOM BAR === */
+        #top-bar {
+            height: var(--top-height);
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--primary);
+            flex-shrink: 0;
+            position: relative;
+        }
+        #content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: var(--nav-height);
+            background: var(--bg-color);
+        }
+        #bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 20%;
+        }
+        .nav-item.active {
+            color: var(--primary);
+        }
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 2px;
+        }
+        .nav-label {
+            font-size: 10px;
+        }
 
-.page{
-padding:15px;
-padding-bottom:80px;
-}
+        /* === TABS === */
+        .tab-content {
+            display: none;
+            padding: 15px;
+        }
+        .tab-content.active {
+            display: block;
+        }
 
-.hidden{display:none}
+        /* === UI COMPONENTS === */
+        .user-row {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            object-fit: cover;
+            margin-right: 12px;
+            border: 2px solid var(--primary-light);
+        }
+        .avatar.large { width: 80px; height: 80px; margin: 0 auto 15px auto; display: block; }
+        .user-info { flex-grow: 1; }
+        .user-info .username { font-weight: bold; font-size: 14px; }
+        .user-info .fullname { font-size: 12px; color: var(--text-muted); }
+        .btn-small { width: auto; padding: 6px 12px; font-size: 12px; }
 
-.card{
-background:white;
-border-radius:15px;
-padding:15px;
-margin-bottom:10px;
-border:1px solid #ddd;
-}
+        /* Profile Layout */
+        .profile-header { text-align: center; margin-bottom: 20px; }
+        .profile-stats { display: flex; justify-content: space-around; margin: 15px 0; padding: 10px 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .stat-box { text-align: center; cursor: pointer; }
+        .stat-num { font-weight: bold; font-size: 16px; color: var(--primary); }
+        .stat-label { font-size: 12px; color: var(--text-muted); }
+        .profile-actions { display: flex; gap: 10px; margin-top: 15px; }
+        
+        /* Modal / Overlay */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-color);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+        }
+        .overlay.active { display: flex; }
+        .overlay-header {
+            height: var(--top-height);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            background: var(--card-bg);
+            font-weight: bold;
+        }
+        .back-btn { font-size: 24px; cursor: pointer; margin-right: 15px; color: var(--primary); }
+        .overlay-content { flex-grow: 1; overflow-y: auto; padding: 15px; }
 
-input{
-width:100%;
-padding:12px;
-border-radius:10px;
-border:1px solid #ccc;
-margin-top:6px;
-}
+        /* Chat Layout */
+        .chat-container { display: flex; flex-direction: column; height: 100%; }
+        .messages-area { flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+        .msg-sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .msg-received { align-self: flex-start; background: #eee; color: var(--text-dark); border-bottom-left-radius: 4px; }
+        .chat-input-area { display: flex; padding: 10px; border-top: 1px solid var(--border-color); background: var(--card-bg); }
+        .chat-input-area input { margin-bottom: 0; border-radius: 20px; border: 1px solid var(--border-color); padding: 10px 15px; flex-grow: 1; margin-right: 10px; }
+        .chat-input-area button { width: auto; border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; justify-content: center; align-items: center; }
 
-button{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:10px;
-background:var(--olive);
-color:white;
-font-weight:bold;
-}
-
-.bottom{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-height:70px;
-background:white;
-border-top:1px solid #ddd;
-display:grid;
-grid-template-columns:repeat(5,1fr);
-}
-
-.navbtn{
-background:none;
-border:none;
-font-size:12px;
-}
-
-.avatar{
-width:80px;
-height:80px;
-border-radius:50%;
-background:var(--olive);
-color:white;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:28px;
-overflow:hidden;
-}
-
-.avatar img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-.profileRow{
-display:flex;
-gap:15px;
-align-items:center;
-}
-
-</style>
+        /* Placeholder */
+        .placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; }
+        .placeholder-icon { font-size: 48px; margin-bottom: 10px; opacity: 0.5; }
+    </style>
 </head>
-
 <body>
 
-<div class="topbar">Aymane Social</div>
+<div id="app-container">
+    <div id="status-bar"></div>
 
-<div id="loginPage" class="page">
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container" id="login-form">
+            <h1>Aymane Social</h1>
+            <input type="email" id="login-email" placeholder="Email" />
+            <input type="password" id="login-password" placeholder="Mot de passe" />
+            <button onclick="login()">Se connecter</button>
+            <div class="auth-switch">Pas de compte ? <span onclick="toggleAuthForm('signup')">S'inscrire</span></div>
+        </div>
+        <div class="auth-container" id="signup-form" style="display: none;">
+            <h1>Aymane Social</h1>
+            <input type="email" id="signup-email" placeholder="Email" />
+            <input type="password" id="signup-password" placeholder="Mot de passe" />
+            <button onclick="signup()">Créer le compte</button>
+            <div class="auth-switch">Déjà un compte ? <span onclick="toggleAuthForm('login')">Se connecter</span></div>
+        </div>
+    </div>
 
-<div class="card">
+    <div id="setup-profile-screen" class="screen">
+        <div class="auth-container">
+            <h1>Bienvenue</h1>
+            <p style="margin-bottom:20px; text-align:center; color:var(--text-muted);">Veuillez choisir un pseudo pour continuer.</p>
+            <input type="text" id="setup-username" placeholder="Pseudo (ex: aymane99)" />
+            <button onclick="saveUsername()">Enregistrer</button>
+            <button class="secondary" onclick="logout()">Déconnexion</button>
+        </div>
+    </div>
 
-<input id="email" placeholder="email">
-<input id="password" type="password" placeholder="password">
+    <div id="main-app" class="screen">
+        <div id="top-bar">Aymane Social</div>
+        
+        <div id="content-area">
+            
+            <div id="tab-accueil" class="tab-content active">
+                <div class="placeholder">
+                    <div class="placeholder-icon">🌱</div>
+                    <h3>Bienvenue sur Aymane Social</h3>
+                    <p>Ton fil d'actualité est prêt.</p>
+                </div>
+            </div>
 
-<button onclick="login()">Connexion</button>
-<button onclick="signup()">Inscription</button>
+            <div id="tab-recherche" class="tab-content">
+                <input type="text" id="search-input" placeholder="Rechercher un pseudo..." oninput="searchUsers()" style="border-radius:20px;">
+                <div id="search-results"></div>
+            </div>
 
-</div>
+            <div id="tab-messages" class="tab-content">
+                <h3 style="margin-bottom: 15px;">Conversations</h3>
+                <div id="conversations-list"></div>
+            </div>
 
-</div>
+            <div id="tab-reels" class="tab-content">
+                <div class="placeholder">
+                    <div class="placeholder-icon">🎬</div>
+                    <h3>Reels</h3>
+                    <p>Bientôt disponible dans Aymane Social.</p>
+                </div>
+            </div>
 
-<div id="usernamePage" class="page hidden">
+            <div id="tab-profil" class="tab-content">
+                <div class="profile-header">
+                    <img id="my-avatar-preview" class="avatar large" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23eaeaea'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
+                    <h3 id="my-profile-username">@pseudo</h3>
+                    <div class="profile-stats">
+                        <div class="stat-box" onclick="listPeople('followers', currentUser.id)">
+                            <div class="stat-num" id="my-stat-followers">0</div>
+                            <div class="stat-label">Abonnés</div>
+                        </div>
+                        <div class="stat-box" onclick="listPeople('following', currentUser.id)">
+                            <div class="stat-num" id="my-stat-following">0</div>
+                            <div class="stat-label">Abonnements</div>
+                        </div>
+                    </div>
+                </div>
 
-<div class="card">
+                <div style="background:var(--card-bg); padding:15px; border-radius:8px; border:1px solid var(--border-color);">
+                    <h4 style="margin-bottom:15px; color:var(--primary);">Éditer le profil</h4>
+                    <label style="font-size:12px; color:var(--text-muted);">Photo de profil</label>
+                    <input type="file" id="edit-avatar-file" accept="image/*" style="padding:5px;">
+                    <input type="text" id="edit-username" placeholder="Pseudo">
+                    <input type="text" id="edit-firstname" placeholder="Prénom">
+                    <input type="text" id="edit-lastname" placeholder="Nom">
+                    <textarea id="edit-bio" placeholder="Bio..." rows="3"></textarea>
+                    <button onclick="saveFullProfile()">Enregistrer le profil</button>
+                    <button class="secondary" onclick="logout()" style="margin-top:15px;">Déconnexion</button>
+                </div>
+            </div>
 
-<input id="username" placeholder="choisir pseudo">
+        </div>
 
-<button onclick="saveUsername()">Enregistrer pseudo</button>
+        <div id="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('accueil', this)">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Accueil</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('recherche', this)">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-label">Recherche</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('messages', this)">
+                <div class="nav-icon">✉️</div>
+                <div class="nav-label">Messages</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('reels', this)">
+                <div class="nav-icon">▶️</div>
+                <div class="nav-label">Reels</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('profil', this)">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profil</div>
+            </div>
+        </div>
+    </div>
 
-</div>
+    <div id="public-profile-overlay" class="overlay">
+        <div class="overlay-header">
+            <div class="back-btn" onclick="closeOverlay('public-profile-overlay')">←</div>
+            <div style="flex-grow:1; text-align:center; margin-right:24px;" id="public-top-title">Profil</div>
+        </div>
+        <div class="overlay-content">
+            <div class="profile-header">
+                <img id="public-avatar" class="avatar large" src="">
+                <h3 id="public-username"></h3>
+                <p id="public-fullname" style="color:var(--text-muted); font-size:14px; margin-top:5px;"></p>
+                <p id="public-bio" style="font-size:14px; margin-top:10px;"></p>
+                
+                <div class="profile-stats">
+                    <div class="stat-box" onclick="listPeople('followers', currentPublicProfileId)">
+                        <div class="stat-num" id="public-stat-followers">0</div>
+                        <div class="stat-label">Abonnés</div>
+                    </div>
+                    <div class="stat-box" onclick="listPeople('following', currentPublicProfileId)">
+                        <div class="stat-num" id="public-stat-following">0</div>
+                        <div class="stat-label">Abonnements</div>
+                    </div>
+                </div>
 
-</div>
+                <div class="profile-actions">
+                    <button id="btn-follow" onclick="toggleFollow()"></button>
+                    <button class="secondary" onclick="openConversationFromProfile()">Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div id="homePage" class="page hidden">
+    <div id="chat-overlay" class="overlay">
+        <div class="overlay-header">
+            <div class="back-btn" onclick="closeOverlay('chat-overlay')">←</div>
+            <div style="display:flex; align-items:center; flex-grow:1;">
+                <img id="chat-header-avatar" class="avatar" style="width:30px; height:30px;" src="">
+                <div id="chat-header-name" style="font-size:16px;"></div>
+            </div>
+        </div>
+        <div class="chat-container">
+            <div class="messages-area" id="chat-messages-area">
+                </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Votre message..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
 
-<div class="card">Accueil Instagram prêt</div>
-
-</div>
-
-<div id="searchPage" class="page hidden">
-
-<div class="card">
-
-<input id="searchInput" placeholder="chercher pseudo">
-
-<button onclick="searchUser()">Rechercher</button>
-
-</div>
-
-<div id="results"></div>
-
-</div>
-
-<div id="profilePage" class="page hidden">
-
-<div class="card">
-
-<div class="profileRow">
-
-<div id="avatar" class="avatar">A</div>
-
-<div>
-
-<div id="usernameText"></div>
-
-<div>
-
-<span id="followers">0</span> followers
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="bottom">
-
-<button class="navbtn" onclick="nav('homePage')">Accueil</button>
-
-<button class="navbtn" onclick="nav('searchPage')">Recherche</button>
-
-<button class="navbtn">Messages</button>
-
-<button class="navbtn">Reels</button>
-
-<button class="navbtn" onclick="nav('profilePage')">Profil</button>
+    <div id="list-overlay" class="overlay">
+        <div class="overlay-header">
+            <div class="back-btn" onclick="closeOverlay('list-overlay')">←</div>
+            <div style="flex-grow:1; text-align:center; margin-right:24px;" id="list-title">Liste</div>
+        </div>
+        <div class="overlay-content" id="list-content">
+            </div>
+    </div>
 
 </div>
 
 <script>
+    // ==========================================
+    // INITIALISATION SUPABASE
+    // ==========================================
+    const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const supabase=supabase.createClient(
-"https://ymuoiyfyvqpxokndhsuz.supabase.co",
-"sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY"
-)
+    // Variables globales d'état
+    let currentUser = null;
+    let myProfile = null;
+    let currentPublicProfileId = null;
+    let isFollowingCurrentPublic = false;
+    let currentChatUserId = null;
+    let chatInterval = null;
 
-let user
+    const DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23eaeaea'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
 
-function nav(p){
+    // ==========================================
+    // UTILITAIRES & UI
+    // ==========================================
+    function setStatus(msg, isError = false) {
+        const bar = document.getElementById('status-bar');
+        bar.textContent = msg;
+        bar.className = isError ? 'error visible' : 'visible';
+        setTimeout(() => { bar.className = ''; }, 3000);
+    }
 
-document.querySelectorAll(".page").forEach(e=>e.classList.add("hidden"))
+    function escapeHtml(unsafe) {
+        if (!unsafe) return '';
+        return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
 
-document.getElementById(p).classList.remove("hidden")
+    function renderAvatar(url) {
+        return url ? escapeHtml(url) : DEFAULT_AVATAR;
+    }
 
-}
+    function fullNameOf(first, last) {
+        const f = first || '';
+        const l = last || '';
+        return escapeHtml((f + ' ' + l).trim());
+    }
 
-async function signup(){
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
 
-let email=document.getElementById("email").value
-let password=document.getElementById("password").value
+    function showAuth() { showScreen('auth-screen'); }
+    function showApp() { showScreen('main-app'); switchTab('accueil', document.querySelector('.nav-item')); }
+    
+    function toggleAuthForm(type) {
+        document.getElementById('login-form').style.display = type === 'login' ? 'flex' : 'none';
+        document.getElementById('signup-form').style.display = type === 'signup' ? 'flex' : 'none';
+    }
 
-await supabase.auth.signUp({email,password})
+    function switchTab(tabId, navElement) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+        
+        if (navElement) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            navElement.classList.add('active');
+        }
 
-alert("compte créé")
+        if (tabId === 'profil') fillProfileUI();
+        if (tabId === 'messages') loadConversations();
+    }
 
-}
+    function openOverlay(id) { document.getElementById(id).classList.add('active'); }
+    function closeOverlay(id) { 
+        document.getElementById(id).classList.remove('active'); 
+        if(id === 'chat-overlay') {
+            currentChatUserId = null;
+            if(chatInterval) clearInterval(chatInterval);
+        }
+    }
 
-async function login(){
+    // ==========================================
+    // AUTHENTIFICATION
+    // ==========================================
+    async function init() {
+        const { data: { session } } = await sb.auth.getSession();
+        refreshRealUser(session);
 
-let email=document.getElementById("email").value
-let password=document.getElementById("password").value
+        sb.auth.onAuthStateChange((_event, session) => {
+            refreshRealUser(session);
+        });
+    }
 
-let {data}=await supabase.auth.signInWithPassword({email,password})
+    async function refreshRealUser(session) {
+        if (!session) {
+            currentUser = null;
+            myProfile = null;
+            showAuth();
+            return;
+        }
+        currentUser = session.user;
+        await loadMyProfile();
+    }
 
-user=data.user
+    async function login() {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        if (!email || !password) return setStatus("Remplissez tous les champs", true);
+        
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) setStatus(error.message, true);
+        else setStatus("Connecté !");
+    }
 
-checkProfile()
+    async function signup() {
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        if (!email || !password) return setStatus("Remplissez tous les champs", true);
 
-}
+        const { error } = await sb.auth.signUp({ email, password });
+        if (error) setStatus(error.message, true);
+        else setStatus("Compte créé ! Vérifiez vos emails si nécessaire, puis connectez-vous.");
+    }
 
-async function checkProfile(){
+    async function logout() {
+        await sb.auth.signOut();
+        setStatus("Déconnecté");
+    }
 
-let {data}=await supabase
-.from("profiles")
-.select("*")
-.eq("id",user.id)
-.single()
+    // ==========================================
+    // GESTION DU PROFIL PERSONNEL
+    // ==========================================
+    async function loadMyProfile() {
+        if (!currentUser) return;
+        const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+        
+        if (error || !data) {
+            // Profil n'existe pas encore
+            showScreen('setup-profile-screen');
+        } else {
+            myProfile = data;
+            showApp();
+        }
+    }
 
-if(!data){
+    async function saveUsername() {
+        const username = document.getElementById('setup-username').value.trim();
+        if (!username) return setStatus("Pseudo requis", true);
 
-nav("usernamePage")
+        const { error } = await sb.from('profiles').insert([
+            { id: currentUser.id, username: username }
+        ]);
 
-}else{
+        if (error) {
+            setStatus("Ce pseudo est peut-être déjà pris.", true);
+        } else {
+            setStatus("Profil créé !");
+            await loadMyProfile();
+        }
+    }
 
-loadProfile(data)
+    async function fillProfileUI() {
+        if (!myProfile) return;
+        document.getElementById('my-avatar-preview').src = renderAvatar(myProfile.avatar_url);
+        document.getElementById('my-profile-username').textContent = '@' + escapeHtml(myProfile.username);
+        
+        document.getElementById('edit-username').value = myProfile.username || '';
+        document.getElementById('edit-firstname').value = myProfile.first_name || '';
+        document.getElementById('edit-lastname').value = myProfile.last_name || '';
+        document.getElementById('edit-bio').value = myProfile.bio || '';
 
-nav("homePage")
+        await loadFollowCounts(currentUser.id, 'my-stat');
+    }
 
-}
+    async function uploadAvatarIfNeeded() {
+        const fileInput = document.getElementById('edit-avatar-file');
+        const file = fileInput.files[0];
+        if (!file) return myProfile.avatar_url; // Pas de modif
 
-}
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${currentUser.id}_${Date.now()}.${fileExt}`;
+        const filePath = `public/${fileName}`;
 
-async function saveUsername(){
+        setStatus("Upload de l'image...");
+        const { error: uploadError } = await sb.storage.from('avatars').upload(filePath, file);
+        if (uploadError) {
+            setStatus("Erreur upload: " + uploadError.message, true);
+            return myProfile.avatar_url;
+        }
 
-let username=document.getElementById("username").value
+        const { data } = sb.storage.from('avatars').getPublicUrl(filePath);
+        return data.publicUrl;
+    }
 
-await supabase
-.from("profiles")
-.insert({id:user.id,username})
+    async function saveFullProfile() {
+        const username = document.getElementById('edit-username').value.trim();
+        const first_name = document.getElementById('edit-firstname').value.trim();
+        const last_name = document.getElementById('edit-lastname').value.trim();
+        const bio = document.getElementById('edit-bio').value.trim();
 
-checkProfile()
+        if (!username) return setStatus("Pseudo requis", true);
 
-}
+        const newAvatarUrl = await uploadAvatarIfNeeded();
 
-function loadProfile(p){
+        const updates = {
+            username, first_name, last_name, bio, avatar_url: newAvatarUrl
+        };
 
-document.getElementById("usernameText").innerText="@"+p.username
+        const { error } = await sb.from('profiles').update(updates).eq('id', currentUser.id);
 
-document.getElementById("avatar").innerText=p.username[0]
+        if (error) {
+            setStatus("Erreur sauvegarde (pseudo pris?)", true);
+        } else {
+            setStatus("Profil mis à jour !");
+            document.getElementById('edit-avatar-file').value = ""; // reset input file
+            await loadMyProfile();
+            fillProfileUI();
+        }
+    }
 
-}
+    // ==========================================
+    // RECHERCHE
+    // ==========================================
+    async function searchUsers() {
+        const query = document.getElementById('search-input').value.trim();
+        const resultsDiv = document.getElementById('search-results');
+        
+        if (query.length < 2) {
+            resultsDiv.innerHTML = "<p style='text-align:center; color:var(--text-muted); margin-top:20px;'>Tapez au moins 2 caractères</p>";
+            return;
+        }
 
-async function searchUser(){
+        const { data, error } = await sb.from('profiles')
+            .select('*')
+            .ilike('username', `%${query}%`)
+            .limit(20);
 
-let q=document.getElementById("searchInput").value
+        if (error) {
+            resultsDiv.innerHTML = "<p style='text-align:center; color:red;'>Erreur recherche</p>";
+            return;
+        }
 
-let {data}=await supabase
-.from("profiles")
-.select("*")
-.ilike("username","%"+q+"%")
+        if (data.length === 0) {
+            resultsDiv.innerHTML = "<p style='text-align:center; color:var(--text-muted); margin-top:20px;'>Aucun résultat</p>";
+            return;
+        }
 
-let div=document.getElementById("results")
+        resultsDiv.innerHTML = data.map(user => `
+            <div class="user-row">
+                <img class="avatar" src="${renderAvatar(user.avatar_url)}">
+                <div class="user-info">
+                    <div class="username">@${escapeHtml(user.username)}</div>
+                    <div class="fullname">${fullNameOf(user.first_name, user.last_name)}</div>
+                </div>
+                <button class="btn-small secondary" onclick="openPublicProfile('${user.id}')">Voir</button>
+            </div>
+        `).join('');
+    }
 
-div.innerHTML=""
+    // ==========================================
+    // PROFIL PUBLIC & FOLLOW
+    // ==========================================
+    async function openPublicProfile(userId) {
+        if (userId === currentUser.id) {
+            switchTab('profil', document.querySelectorAll('.nav-item')[4]);
+            return;
+        }
 
-data.forEach(u=>{
+        currentPublicProfileId = userId;
+        const { data: profile, error } = await sb.from('profiles').select('*').eq('id', userId).single();
+        if (error || !profile) return setStatus("Utilisateur introuvable", true);
 
-div.innerHTML+=`
+        document.getElementById('public-avatar').src = renderAvatar(profile.avatar_url);
+        document.getElementById('public-username').textContent = '@' + escapeHtml(profile.username);
+        document.getElementById('public-fullname').textContent = fullNameOf(profile.first_name, profile.last_name);
+        document.getElementById('public-bio').textContent = escapeHtml(profile.bio || '');
 
-<div class="card">
+        await loadFollowCounts(userId, 'public-stat');
+        await isFollowingUser(userId);
+        
+        openOverlay('public-profile-overlay');
+    }
 
-<b>@${u.username}</b>
+    async function loadFollowCounts(userId, prefix) {
+        const { count: followersCount } = await sb.from('followers').select('*', { count: 'exact', head: true }).eq('following_id', userId);
+        const { count: followingCount } = await sb.from('followers').select('*', { count: 'exact', head: true }).eq('follower_id', userId);
+        
+        document.getElementById(`${prefix}-followers`).textContent = followersCount || 0;
+        document.getElementById(`${prefix}-following`).textContent = followingCount || 0;
+    }
 
-<button onclick="openProfile('${u.id}')">voir profil</button>
+    async function isFollowingUser(userId) {
+        const btn = document.getElementById('btn-follow');
+        const { data } = await sb.from('followers').select('*').eq('follower_id', currentUser.id).eq('following_id', userId).single();
+        
+        isFollowingCurrentPublic = !!data;
+        if (isFollowingCurrentPublic) {
+            btn.textContent = "Ne plus suivre";
+            btn.className = "secondary";
+        } else {
+            btn.textContent = "Suivre";
+            btn.className = "";
+        }
+    }
 
-</div>
+    async function toggleFollow() {
+        if (!currentPublicProfileId) return;
+        const btn = document.getElementById('btn-follow');
+        btn.disabled = true;
 
-`
+        if (isFollowingCurrentPublic) {
+            await sb.from('followers').delete().eq('follower_id', currentUser.id).eq('following_id', currentPublicProfileId);
+        } else {
+            await sb.from('followers').insert([{ follower_id: currentUser.id, following_id: currentPublicProfileId }]);
+        }
 
-})
+        await isFollowingUser(currentPublicProfileId);
+        await loadFollowCounts(currentPublicProfileId, 'public-stat');
+        btn.disabled = false;
+    }
 
-}
+    // ==========================================
+    // LISTES (Followers / Following)
+    // ==========================================
+    async function listPeople(type, targetUserId) {
+        const titleEl = document.getElementById('list-title');
+        const contentEl = document.getElementById('list-content');
+        titleEl.textContent = type === 'followers' ? "Abonnés" : "Abonnements";
+        contentEl.innerHTML = "<p style='text-align:center;'>Chargement...</p>";
+        openOverlay('list-overlay');
 
-async function openProfile(id){
+        let columnToFilter = type === 'followers' ? 'following_id' : 'follower_id';
+        let columnToExtract = type === 'followers' ? 'follower_id' : 'following_id';
 
-let {data}=await supabase
-.from("profiles")
-.select("*")
-.eq("id",id)
-.single()
+        const { data: relations } = await sb.from('followers').select('*').eq(columnToFilter, targetUserId);
+        
+        if (!relations || relations.length === 0) {
+            contentEl.innerHTML = "<p style='text-align:center; color:var(--text-muted); margin-top:20px;'>Aucun utilisateur trouvé.</p>";
+            return;
+        }
 
-loadProfile(data)
+        const ids = relations.map(r => r[columnToExtract]);
+        const { data: profiles } = await sb.from('profiles').select('*').in('id', ids);
 
-nav("profilePage")
+        contentEl.innerHTML = profiles.map(user => `
+            <div class="user-row">
+                <img class="avatar" src="${renderAvatar(user.avatar_url)}">
+                <div class="user-info">
+                    <div class="username">@${escapeHtml(user.username)}</div>
+                    <div class="fullname">${fullNameOf(user.first_name, user.last_name)}</div>
+                </div>
+                <button class="btn-small secondary" onclick="closeOverlay('list-overlay'); openPublicProfile('${user.id}')">Voir</button>
+            </div>
+        `).join('');
+    }
 
-}
+    // ==========================================
+    // MESSAGES
+    // ==========================================
+    function openConversationFromProfile() {
+        closeOverlay('public-profile-overlay');
+        openConversation(currentPublicProfileId);
+    }
+
+    async function loadConversations() {
+        const listDiv = document.getElementById('conversations-list');
+        listDiv.innerHTML = "<p style='text-align:center;'>Chargement...</p>";
+
+        // Récupérer tous mes messages (limite 500 pour perf)
+        const { data: msgs, error } = await sb.from('messages')
+            .select('*')
+            .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+            .order('created_at', { ascending: false })
+            .limit(500);
+
+        if (error || !msgs) {
+            listDiv.innerHTML = "<p style='text-align:center; color:red;'>Erreur chargement</p>";
+            return;
+        }
+
+        // Grouper par utilisateur avec le dernier message
+        const convos = {};
+        msgs.forEach(m => {
+            const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+            if (!convos[otherId]) convos[otherId] = m;
+        });
+
+        const userIds = Object.keys(convos);
+        if (userIds.length === 0) {
+            listDiv.innerHTML = "<p style='text-align:center; color:var(--text-muted); margin-top:20px;'>Aucune conversation</p>";
+            return;
+        }
+
+        const { data: profiles } = await sb.from('profiles').select('*').in('id', userIds);
+        
+        listDiv.innerHTML = profiles.map(user => {
+            const lastMsg = convos[user.id];
+            const isMe = lastMsg.sender_id === currentUser.id;
+            const prefix = isMe ? "Vous: " : "";
+            return `
+            <div class="user-row" style="cursor:pointer;" onclick="openConversation('${user.id}')">
+                <img class="avatar" src="${renderAvatar(user.avatar_url)}">
+                <div class="user-info" style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
+                    <div class="username">@${escapeHtml(user.username)}</div>
+                    <div class="fullname" style="overflow:hidden; text-overflow:ellipsis;">${prefix}${escapeHtml(lastMsg.content)}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    async function openConversation(userId) {
+        currentChatUserId = userId;
+        const headerName = document.getElementById('chat-header-name');
+        const headerAvatar = document.getElementById('chat-header-avatar');
+        
+        headerName.textContent = "Chargement...";
+        headerAvatar.src = DEFAULT_AVATAR;
+        document.getElementById('chat-messages-area').innerHTML = "";
+        openOverlay('chat-overlay');
+
+        // Charger info du profil distant
+        const { data: profile } = await sb.from('profiles').select('username, avatar_url').eq('id', userId).single();
+        if(profile) {
+            headerName.textContent = '@' + escapeHtml(profile.username);
+            headerAvatar.src = renderAvatar(profile.avatar_url);
+        }
+
+        await loadMessagesWithUser();
+
+        // Polling simple toutes les 3 secondes pour actualiser le chat
+        if(chatInterval) clearInterval(chatInterval);
+        chatInterval = setInterval(loadMessagesWithUser, 3000);
+    }
+
+    async function loadMessagesWithUser() {
+        if (!currentChatUserId || !currentUser) return;
+        
+        const { data: msgs } = await sb.from('messages')
+            .select('*')
+            .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+            .order('created_at', { ascending: true });
+            
+        if (!msgs) return;
+
+        // Filtrer côté JS pour sécuriser l'affichage de la bonne conversation
+        const chatMsgs = msgs.filter(m => 
+            (m.sender_id === currentUser.id && m.receiver_id === currentChatUserId) ||
+            (m.receiver_id === currentUser.id && m.sender_id === currentChatUserId)
+        );
+
+        const area = document.getElementById('chat-messages-area');
+        
+        // Optimisation: ne rafraichir le DOM que s'il y a des nouveaux messages
+        const currentCount = area.childElementCount;
+        if(currentCount === chatMsgs.length) return; 
+
+        area.innerHTML = chatMsgs.map(m => {
+            const isMe = m.sender_id === currentUser.id;
+            const cls = isMe ? "msg-sent" : "msg-received";
+            return `<div class="msg-bubble ${cls}">${escapeHtml(m.content)}</div>`;
+        }).join('');
+
+        // Scroll au fond
+        area.scrollTop = area.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const content = input.value.trim();
+        if (!content || !currentChatUserId) return;
+
+        input.value = ""; // Vider immédiatement pour la sensation de fluidité
+        
+        // Optimiste UI (ajouter le message au DOM avant l'envoi SQL)
+        const area = document.getElementById('chat-messages-area');
+        area.innerHTML += `<div class="msg-bubble msg-sent" style="opacity:0.7">${escapeHtml(content)}</div>`;
+        area.scrollTop = area.scrollHeight;
+
+        const { error } = await sb.from('messages').insert([{
+            sender_id: currentUser.id,
+            receiver_id: currentChatUserId,
+            content: content
+        }]);
+
+        if (error) {
+            setStatus("Erreur d'envoi", true);
+        } else {
+            await loadMessagesWithUser(); // recharge la vraie db
+        }
+    }
+
+    // Démarrage
+    window.onload = init;
 
 </script>
-
 </body>
 </html>
