@@ -1,648 +1,437 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aymane Social</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root{
-      --olive: rgb(128,128,0);
-      --olive-dark: rgb(98,98,0);
-      --olive-soft: rgb(170,170,90);
-      --bg: #f5f4e8;
-      --card: #fffef4;
-      --card2: #f0edd2;
-      --border: #d6d1a8;
-      --text: #2f2f1c;
-      --muted: #6f6f4a;
-      --ok: #2f7a2f;
-      --err: #b13a3a;
-      --warn: #8a6d1f;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aymane Social</title>
 
-    *{box-sizing:border-box;margin:0;padding:0}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    body{
-      min-height:100vh;
-      font-family:Arial,sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(128,128,0,.12), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(128,128,0,.08), transparent 24%),
-        var(--bg);
-      color:var(--text);
-    }
+<style>
 
-    .hidden{display:none!important}
+:root{
+--olive:rgb(128,128,0);
+--olive2:rgb(150,150,40);
+--bg:#f4f4e4;
+--card:#ffffff;
+--border:#d9d9a5;
+--text:#2b2b18;
+--muted:#777755;
+}
 
-    .wrap{
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:20px;
-    }
+body{
+margin:0;
+font-family:Arial;
+background:var(--bg);
+color:var(--text);
+}
 
-    .card{
-      width:100%;
-      max-width:430px;
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:24px;
-      padding:26px 22px;
-      box-shadow:0 12px 30px rgba(0,0,0,.08);
-    }
+.hidden{display:none}
 
-    h1.logo{
-      font-size:36px;
-      margin-bottom:8px;
-      text-align:center;
-      color:var(--olive);
-      font-weight:900;
-    }
+.topbar{
+height:60px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+font-weight:900;
+color:var(--olive);
+border-bottom:1px solid var(--border);
+background:white;
+}
 
-    .sub{
-      text-align:center;
-      color:var(--muted);
-      margin-bottom:22px;
-      line-height:1.5;
-    }
+.page{
+padding:15px;
+padding-bottom:90px;
+}
 
-    label{
-      display:block;
-      margin:12px 0 6px;
-      color:var(--muted);
-      font-size:13px;
-      font-weight:700;
-    }
+.card{
+background:var(--card);
+border:1px solid var(--border);
+border-radius:18px;
+padding:15px;
+margin-bottom:15px;
+}
 
-    input, textarea{
-      width:100%;
-      padding:14px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background:var(--card2);
-      color:var(--text);
-      outline:none;
-      font-size:16px;
-    }
+button{
+background:var(--olive);
+border:none;
+color:white;
+padding:12px;
+border-radius:12px;
+width:100%;
+margin-top:10px;
+font-weight:bold;
+cursor:pointer;
+}
 
-    input:focus, textarea:focus{
-      border-color:var(--olive);
-      box-shadow:0 0 0 3px rgba(128,128,0,.12);
-    }
+input,textarea{
+width:100%;
+padding:10px;
+margin-top:5px;
+border-radius:10px;
+border:1px solid var(--border);
+}
 
-    button{
-      width:100%;
-      margin-top:14px;
-      padding:14px;
-      border:none;
-      border-radius:14px;
-      background:linear-gradient(135deg,var(--olive),var(--olive-dark));
-      color:#fff;
-      font-size:16px;
-      font-weight:800;
-      cursor:pointer;
-    }
+.bottomnav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+height:70px;
+background:white;
+border-top:1px solid var(--border);
+display:grid;
+grid-template-columns:repeat(5,1fr);
+}
 
-    button.secondary{
-      background:var(--card2);
-      border:1px solid var(--border);
-      color:var(--text);
-    }
+.navbtn{
+border:none;
+background:none;
+font-size:12px;
+color:var(--muted);
+}
 
-    .bottom-link{
-      margin-top:16px;
-      display:flex;
-      justify-content:flex-start;
-    }
+.navbtn.active{
+color:var(--olive);
+}
 
-    .link-btn{
-      background:none;
-      border:none;
-      color:var(--olive-dark);
-      padding:0;
-      margin:0;
-      width:auto;
-      font-size:14px;
-      font-weight:700;
-      cursor:pointer;
-      text-decoration:underline;
-    }
+.avatar{
+width:80px;
+height:80px;
+border-radius:50%;
+background:var(--olive);
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:30px;
+overflow:hidden;
+}
 
-    .status{
-      margin-top:14px;
-      min-height:22px;
-      color:var(--warn);
-      text-align:center;
-      white-space:pre-wrap;
-    }
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
 
-    .ok{color:var(--ok)}
-    .err{color:var(--err)}
+.profileRow{
+display:flex;
+gap:15px;
+align-items:center;
+}
 
-    .app{
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-      max-width:480px;
-      margin:0 auto;
-      background:var(--bg);
-      border-left:1px solid rgba(0,0,0,.04);
-      border-right:1px solid rgba(0,0,0,.04);
-    }
+.msg{
+background:#f6f6d9;
+padding:10px;
+border-radius:10px;
+margin-top:8px;
+}
 
-    .topbar{
-      height:64px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 16px;
-      border-bottom:1px solid var(--border);
-      position:sticky;
-      top:0;
-      background:rgba(245,244,232,.96);
-      z-index:20;
-      backdrop-filter:blur(10px);
-    }
-
-    .brand{
-      font-size:28px;
-      font-weight:900;
-      color:var(--olive);
-    }
-
-    .page{
-      flex:1;
-      overflow:auto;
-      padding-bottom:86px;
-    }
-
-    .section{padding:16px}
-
-    .placeholder{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:30px 20px;
-      text-align:center;
-      color:var(--muted);
-      line-height:1.6;
-      margin:16px;
-    }
-
-    .profile-box{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:16px;
-      margin:16px;
-    }
-
-    .bottom-nav{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      max-width:480px;
-      margin:0 auto;
-      height:74px;
-      background:rgba(245,244,232,.98);
-      border-top:1px solid var(--border);
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      z-index:30;
-      backdrop-filter:blur(10px);
-    }
-
-    .nav-item{
-      border:none;
-      background:none;
-      color:var(--muted);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:4px;
-      font-size:11px;
-      font-weight:700;
-      margin:0;
-      width:100%;
-      border-radius:0;
-      padding:0;
-    }
-
-    .nav-item.active{color:var(--olive-dark)}
-    .nav-ico{font-size:24px}
-  </style>
+</style>
 </head>
+
 <body>
 
-  <div id="authWrap" class="wrap">
-    <div class="card">
+<div class="topbar">Aymane Social</div>
 
-      <div id="loginView">
-        <h1 class="logo">Aymane Social</h1>
-        <p class="sub">Connexion, code OTP optionnel, puis pseudo</p>
+<div id="home" class="page">
 
-        <label>Email</label>
-        <input id="loginEmail" type="email" placeholder="vous@exemple.com">
+<div class="card">
+Accueil style Instagram prêt.
+</div>
 
-        <label>Mot de passe</label>
-        <input id="loginPassword" type="password" placeholder="••••••••">
+</div>
 
-        <button id="loginBtn" type="button">Se connecter</button>
+<div id="search" class="page hidden">
 
-        <div class="bottom-link">
-          <button id="goSignupBtn" class="link-btn" type="button">S’inscrire</button>
-        </div>
+<div class="card">
 
-        <div id="loginStatus" class="status">Prêt</div>
-      </div>
+<input id="searchInput" placeholder="chercher pseudo">
+<button onclick="searchUser()">Rechercher</button>
 
-      <div id="signupView" class="hidden">
-        <h1 class="logo">Inscription</h1>
-        <p class="sub">Crée ton compte, puis confirme par code ou passe sans code</p>
+</div>
 
-        <label>Email</label>
-        <input id="signupEmail" type="email" placeholder="vous@exemple.com">
+<div id="searchResults"></div>
 
-        <label>Mot de passe</label>
-        <input id="signupPassword" type="password" placeholder="••••••••">
+</div>
 
-        <button id="signupBtn" type="button">Créer un compte</button>
+<div id="messages" class="page hidden">
 
-        <div class="bottom-link">
-          <button id="backLoginBtn" class="link-btn" type="button">Retour connexion</button>
-        </div>
+<div class="card">
 
-        <div id="signupStatus" class="status">Prêt</div>
-      </div>
+<input id="dmUser" placeholder="pseudo">
+<textarea id="dmText" placeholder="message"></textarea>
+<button onclick="sendDM()">Envoyer</button>
 
-      <div id="otpView" class="hidden">
-        <h1 class="logo">Entrer le code</h1>
-        <p class="sub">Entre le code reçu par email, ou passe sans code si tu utilises juste le mot de passe</p>
+</div>
 
-        <label>Email</label>
-        <input id="otpEmail" type="email" placeholder="vous@exemple.com">
+<div id="dmList"></div>
 
-        <label>Code</label>
-        <input id="otpCode" type="text" placeholder="123456">
-
-        <button id="verifyCodeBtn" type="button">Valider le code</button>
-        <button id="skipCodeBtn" class="secondary" type="button">Passer sans code</button>
-        <button id="backLoginFromOtpBtn" class="secondary" type="button">Retour connexion</button>
-
-        <div id="otpStatus" class="status">Prêt</div>
-      </div>
-
-      <div id="usernameView" class="hidden">
-        <h1 class="logo">Choisir pseudo</h1>
-        <p class="sub">Choisis un pseudo unique</p>
-
-        <label>Pseudo</label>
-        <input id="usernameInput" type="text" placeholder="ex: lwa3r">
-
-        <button id="saveUsernameBtn" type="button">Enregistrer le pseudo</button>
-        <button id="logoutBtn1" class="secondary" type="button">Déconnexion</button>
-
-        <div id="usernameStatus" class="status">Prêt</div>
-      </div>
-
-    </div>
-  </div>
-
-  <div id="appWrap" class="app hidden">
-    <div class="topbar">
-      <div class="brand">Aymane Social</div>
-      <button id="logoutBtn2" class="link-btn" type="button" style="text-decoration:none;">Déconnexion</button>
-    </div>
-
-    <div id="homePage" class="page">
-      <div class="placeholder">Accueil style Insta prêt.</div>
-    </div>
-
-    <div id="searchPage" class="page hidden">
-      <div class="placeholder">Recherche prête.</div>
-    </div>
-
-    <div id="messagesPage" class="page hidden">
-      <div class="placeholder">Messages prêts pour la prochaine étape.</div>
-    </div>
-
-    <div id="reelsPage" class="page hidden">
-      <div class="placeholder">Reels prêts.</div>
-    </div>
-
-    <div id="profilePage" class="page hidden">
-      <div class="profile-box">
-        <div><strong>Email :</strong> <span id="profileEmail"></span></div>
-        <div><strong>Pseudo :</strong> @<span id="profileUsername"></span></div>
-      </div>
-    </div>
-
-    <nav class="bottom-nav">
-      <button id="navHome" class="nav-item active" type="button"><div class="nav-ico">⌂</div><div>Accueil</div></button>
-      <button id="navSearch" class="nav-item" type="button"><div class="nav-ico">⌕</div><div>Recherche</div></button>
-      <button id="navMessages" class="nav-item" type="button"><div class="nav-ico">✉</div><div>Messages</div></button>
-      <button id="navReels" class="nav-item" type="button"><div class="nav-ico">▣</div><div>Reels</div></button>
-      <button id="navProfile" class="nav-item" type="button"><div class="nav-ico">☺</div><div>Profil</div></button>
-    </nav>
-  </div>
-
-  <script>
-    const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
-    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    let currentUser = null;
-    let currentProfile = null;
-
-    const authWrap = document.getElementById("authWrap");
-    const appWrap = document.getElementById("appWrap");
-
-    const loginView = document.getElementById("loginView");
-    const signupView = document.getElementById("signupView");
-    const otpView = document.getElementById("otpView");
-    const usernameView = document.getElementById("usernameView");
-
-    const homePage = document.getElementById("homePage");
-    const searchPage = document.getElementById("searchPage");
-    const messagesPage = document.getElementById("messagesPage");
-    const reelsPage = document.getElementById("reelsPage");
-    const profilePage = document.getElementById("profilePage");
-
-    const loginStatus = document.getElementById("loginStatus");
-    const signupStatus = document.getElementById("signupStatus");
-    const otpStatus = document.getElementById("otpStatus");
-    const usernameStatus = document.getElementById("usernameStatus");
-
-    function setStatus(el, text, type = "") {
-      el.textContent = text || "";
-      el.className = "status";
-      if (type) el.classList.add(type);
-    }
-
-    function showAuth(view) {
-      authWrap.classList.remove("hidden");
-      appWrap.classList.add("hidden");
-      loginView.classList.add("hidden");
-      signupView.classList.add("hidden");
-      otpView.classList.add("hidden");
-      usernameView.classList.add("hidden");
-      view.classList.remove("hidden");
-    }
-
-    function showApp() {
-      authWrap.classList.add("hidden");
-      appWrap.classList.remove("hidden");
-      switchTab("home");
-    }
-
-    function switchTab(tab) {
-      homePage.classList.add("hidden");
-      searchPage.classList.add("hidden");
-      messagesPage.classList.add("hidden");
-      reelsPage.classList.add("hidden");
-      profilePage.classList.add("hidden");
-      document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
-
-      if (tab === "home") {
-        homePage.classList.remove("hidden");
-        document.getElementById("navHome").classList.add("active");
-      }
-      if (tab === "search") {
-        searchPage.classList.remove("hidden");
-        document.getElementById("navSearch").classList.add("active");
-      }
-      if (tab === "messages") {
-        messagesPage.classList.remove("hidden");
-        document.getElementById("navMessages").classList.add("active");
-      }
-      if (tab === "reels") {
-        reelsPage.classList.remove("hidden");
-        document.getElementById("navReels").classList.add("active");
-      }
-      if (tab === "profile") {
-        profilePage.classList.remove("hidden");
-        document.getElementById("navProfile").classList.add("active");
-      }
-    }
-
-    async function signup() {
-      const email = document.getElementById("signupEmail").value.trim();
-      const password = document.getElementById("signupPassword").value;
-
-      if (!email || !password) {
-        setStatus(signupStatus, "Remplis tous les champs.", "err");
-        return;
-      }
-
-      if (password.length < 6) {
-        setStatus(signupStatus, "Le mot de passe doit contenir au moins 6 caractères.", "err");
-        return;
-      }
-
-      setStatus(signupStatus, "Création du compte...");
-
-      try {
-        const { error } = await client.auth.signUp({ email, password });
-
-        if (error) {
-          setStatus(signupStatus, "Erreur inscription : " + error.message, "err");
-          return;
-        }
-
-        document.getElementById("otpEmail").value = email;
-        setStatus(signupStatus, "Compte créé. Passe à l’écran code.", "ok");
-        showAuth(otpView);
-        setStatus(otpStatus, "Entre le code reçu par email, ou clique sur Passer sans code.", "ok");
-      } catch (e) {
-        setStatus(signupStatus, "Erreur JS inscription : " + e.message, "err");
-      }
-    }
-
-    async function login() {
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-
-      if (!email || !password) {
-        setStatus(loginStatus, "Entre email et mot de passe.", "err");
-        return;
-      }
-
-      setStatus(loginStatus, "Connexion...");
-
-      try {
-        const { error } = await client.auth.signInWithPassword({ email, password });
-
-        if (!error) {
-          setStatus(loginStatus, "Connexion réussie.", "ok");
-          await refreshRealUser();
-          return;
-        }
-
-        document.getElementById("otpEmail").value = email;
-        showAuth(otpView);
-        setStatus(otpStatus, "Si tu utilises le code, entre-le. Sinon clique sur Passer sans code puis reconnecte-toi.", "ok");
-      } catch (e) {
-        setStatus(loginStatus, "Erreur JS connexion : " + e.message, "err");
-      }
-    }
-
-    async function verifyCode() {
-      const email = document.getElementById("otpEmail").value.trim();
-      const token = document.getElementById("otpCode").value.trim();
-
-      if (!email || !token) {
-        setStatus(otpStatus, "Entre l’email et le code.", "err");
-        return;
-      }
-
-      setStatus(otpStatus, "Vérification du code...");
-
-      try {
-        const { error } = await client.auth.verifyOtp({
-          email,
-          token,
-          type: "email"
-        });
-
-        if (error) {
-          setStatus(otpStatus, "Erreur code : " + error.message, "err");
-          return;
-        }
-
-        setStatus(otpStatus, "Code validé.", "ok");
-        await refreshRealUser();
-      } catch (e) {
-        setStatus(otpStatus, "Erreur JS code : " + e.message, "err");
-      }
-    }
-
-    function skipCode() {
-      showAuth(loginView);
-      setStatus(loginStatus, "Mode sans code. Connecte-toi normalement avec email + mot de passe.", "ok");
-    }
-
-    async function logout() {
-      try { await client.auth.signOut(); } catch (e) {}
-      currentUser = null;
-      currentProfile = null;
-      showAuth(loginView);
-      setStatus(loginStatus, "Déconnecté.", "ok");
-    }
-
-    async function refreshRealUser() {
-      const { data, error } = await client.auth.getUser();
-
-      if (error || !data.user) {
-        showAuth(loginView);
-        setStatus(loginStatus, "Session invalide. Reconnecte-toi.", "err");
-        return;
-      }
-
-      currentUser = data.user;
-      await loadMyProfile();
-    }
-
-    async function loadMyProfile() {
-      showAuth(usernameView);
-      setStatus(usernameStatus, "Recherche du profil...");
-
-      const { data, error } = await client
-        .from("profiles")
-        .select("*")
-        .eq("id", currentUser.id)
-        .maybeSingle();
-
-      if (error) {
-        setStatus(usernameStatus, "Erreur profil : " + error.message, "err");
-        return;
-      }
-
-      if (!data) {
-        currentProfile = null;
-        document.getElementById("usernameInput").value = "";
-        setStatus(usernameStatus, "Profil absent. Choisis un pseudo.", "ok");
-        return;
-      }
-
-      currentProfile = data;
-      document.getElementById("profileEmail").textContent = currentUser.email || "";
-      document.getElementById("profileUsername").textContent = currentProfile.username || "";
-      showApp();
-    }
-
-    async function saveUsername() {
-      const username = document.getElementById("usernameInput").value.trim().toLowerCase();
-
-      if (!username) {
-        setStatus(usernameStatus, "Entre un pseudo.", "err");
-        return;
-      }
-
-      setStatus(usernameStatus, "Enregistrement du pseudo...");
-
-      try {
-        if (!currentProfile) {
-          const { error } = await client
-            .from("profiles")
-            .insert({
-              id: currentUser.id,
-              username: username
-            });
-
-          if (error) {
-            setStatus(usernameStatus, "Erreur insert pseudo : " + error.message, "err");
-            return;
-          }
-        } else {
-          const { error } = await client
-            .from("profiles")
-            .update({ username })
-            .eq("id", currentUser.id);
-
-          if (error) {
-            setStatus(usernameStatus, "Erreur update pseudo : " + error.message, "err");
-            return;
-          }
-        }
-
-        await loadMyProfile();
-      } catch (e) {
-        setStatus(usernameStatus, "Erreur JS pseudo : " + e.message, "err");
-      }
-    }
-
-    document.getElementById("goSignupBtn").addEventListener("click", () => showAuth(signupView));
-    document.getElementById("backLoginBtn").addEventListener("click", () => showAuth(loginView));
-    document.getElementById("backLoginFromOtpBtn").addEventListener("click", () => showAuth(loginView));
-
-    document.getElementById("signupBtn").addEventListener("click", signup);
-    document.getElementById("loginBtn").addEventListener("click", login);
-    document.getElementById("verifyCodeBtn").addEventListener("click", verifyCode);
-    document.getElementById("skipCodeBtn").addEventListener("click", skipCode);
-    document.getElementById("saveUsernameBtn").addEventListener("click", saveUsername);
-
-    document.getElementById("logoutBtn1").addEventListener("click", logout);
-    document.getElementById("logoutBtn2").addEventListener("click", logout);
-
-    document.getElementById("navHome").addEventListener("click", () => switchTab("home"));
-    document.getElementById("navSearch").addEventListener("click", () => switchTab("search"));
-    document.getElementById("navMessages").addEventListener("click", () => switchTab("messages"));
-    document.getElementById("navReels").addEventListener("click", () => switchTab("reels"));
-    document.getElementById("navProfile").addEventListener("click", () => switchTab("profile"));
-
-    async function init() {
-      try { await client.auth.signOut(); } catch (e) {}
-      currentUser = null;
-      currentProfile = null;
-      showAuth(loginView);
-      setStatus(loginStatus, "Commence par connexion ou inscription.", "ok");
-    }
-
-    init();
-  </script>
+</div>
+
+<div id="reels" class="page hidden">
+
+<div class="card">
+Reels bientôt.
+</div>
+
+</div>
+
+<div id="profile" class="page hidden">
+
+<div class="card">
+
+<div class="profileRow">
+
+<div id="avatar" class="avatar">A</div>
+
+<div>
+
+<div id="fullname"></div>
+<div id="username"></div>
+
+<div>
+<span id="followers">0</span> followers
+•
+<span id="following">0</span> following
+</div>
+
+</div>
+
+</div>
+
+<p id="bio"></p>
+
+</div>
+
+<div class="card">
+
+<label>Photo</label>
+<input type="file" id="photo">
+
+<label>Prénom</label>
+<input id="firstname">
+
+<label>Nom</label>
+<input id="lastname">
+
+<label>Bio</label>
+<textarea id="bioEdit"></textarea>
+
+<button onclick="saveProfile()">Enregistrer</button>
+
+</div>
+
+</div>
+
+<div class="bottomnav">
+
+<button class="navbtn active" onclick="nav('home')">Accueil</button>
+<button class="navbtn" onclick="nav('search')">Recherche</button>
+<button class="navbtn" onclick="nav('messages')">Messages</button>
+<button class="navbtn" onclick="nav('reels')">Reels</button>
+<button class="navbtn" onclick="nav('profile')">Profil</button>
+
+</div>
+
+<script>
+
+const SUPABASE_URL="https://ymuoiyfyvqpxokndhsuz.supabase.co"
+const SUPABASE_KEY="sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY"
+
+const supabase=supabase_js.createClient(SUPABASE_URL,SUPABASE_KEY)
+
+let user=null
+let profile=null
+
+function nav(p){
+
+document.querySelectorAll(".page").forEach(e=>e.classList.add("hidden"))
+document.getElementById(p).classList.remove("hidden")
+
+document.querySelectorAll(".navbtn").forEach(e=>e.classList.remove("active"))
+event.target.classList.add("active")
+
+}
+
+async function loadProfile(){
+
+const {data}=await supabase.auth.getUser()
+
+user=data.user
+
+const {data:prof}=await supabase
+.from("profiles")
+.select("*")
+.eq("id",user.id)
+.single()
+
+profile=prof
+
+document.getElementById("username").innerText="@"+prof.username
+document.getElementById("fullname").innerText=prof.first_name+" "+prof.last_name
+document.getElementById("bio").innerText=prof.bio
+
+document.getElementById("firstname").value=prof.first_name
+document.getElementById("lastname").value=prof.last_name
+document.getElementById("bioEdit").value=prof.bio
+
+if(prof.avatar_url){
+
+document.getElementById("avatar").innerHTML="<img src='"+prof.avatar_url+"'>"
+
+}
+
+loadFollowers()
+
+}
+
+async function loadFollowers(){
+
+const {count}=await supabase
+.from("followers")
+.select("*",{count:"exact",head:true})
+.eq("following_id",user.id)
+
+document.getElementById("followers").innerText=count
+
+const {count:c2}=await supabase
+.from("followers")
+.select("*",{count:"exact",head:true})
+.eq("follower_id",user.id)
+
+document.getElementById("following").innerText=c2
+
+}
+
+async function saveProfile(){
+
+let avatarURL=profile.avatar_url
+
+const file=document.getElementById("photo").files[0]
+
+if(file){
+
+const name=user.id+"_"+Date.now()
+
+await supabase.storage
+.from("avatars")
+.upload(name,file)
+
+const {data}=supabase.storage
+.from("avatars")
+.getPublicUrl(name)
+
+avatarURL=data.publicUrl
+
+}
+
+await supabase
+.from("profiles")
+.update({
+first_name:document.getElementById("firstname").value,
+last_name:document.getElementById("lastname").value,
+bio:document.getElementById("bioEdit").value,
+avatar_url:avatarURL
+})
+.eq("id",user.id)
+
+loadProfile()
+
+}
+
+async function searchUser(){
+
+const q=document.getElementById("searchInput").value
+
+const {data}=await supabase
+.from("profiles")
+.select("*")
+.ilike("username","%"+q+"%")
+
+const div=document.getElementById("searchResults")
+
+div.innerHTML=""
+
+data.forEach(u=>{
+
+div.innerHTML+=`
+
+<div class="card">
+
+<b>@${u.username}</b>
+
+<button onclick="openProfile('${u.id}')">Voir profil</button>
+
+<button onclick="startDM('${u.username}')">Message</button>
+
+</div>
+
+`
+
+})
+
+}
+
+function startDM(username){
+
+nav("messages")
+
+document.getElementById("dmUser").value=username
+
+}
+
+async function sendDM(){
+
+const username=document.getElementById("dmUser").value
+const text=document.getElementById("dmText").value
+
+const {data:target}=await supabase
+.from("profiles")
+.select("*")
+.eq("username",username)
+.single()
+
+await supabase
+.from("messages")
+.insert({
+sender_id:user.id,
+receiver_id:target.id,
+content:text
+})
+
+document.getElementById("dmText").value=""
+
+loadDM()
+
+}
+
+async function loadDM(){
+
+const {data}=await supabase
+.from("messages")
+.select("*")
+.or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+.order("created_at",{ascending:false})
+
+const div=document.getElementById("dmList")
+
+div.innerHTML=""
+
+data.forEach(m=>{
+
+div.innerHTML+=`
+<div class="msg">${m.content}</div>
+`
+
+})
+
+}
+
+loadProfile()
+
+</script>
+
 </body>
 </html>
