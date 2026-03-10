@@ -22,6 +22,7 @@
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
+
     body{
       min-height:100vh;
       font-family:Arial,sans-serif;
@@ -34,7 +35,7 @@
 
     .hidden{display:none!important}
 
-    .auth-wrap{
+    .wrap{
       min-height:100vh;
       display:flex;
       justify-content:center;
@@ -42,7 +43,7 @@
       padding:20px;
     }
 
-    .auth-card{
+    .card{
       width:100%;
       max-width:430px;
       background:var(--card);
@@ -84,11 +85,6 @@
       color:var(--text);
       outline:none;
       font-size:16px;
-    }
-
-    textarea{
-      resize:none;
-      min-height:92px;
     }
 
     input:focus, textarea:focus{
@@ -176,17 +172,6 @@
       color:var(--olive);
     }
 
-    .icon-btn{
-      width:auto;
-      margin:0;
-      padding:8px 10px;
-      background:none;
-      border:none;
-      color:var(--text);
-      font-size:24px;
-      line-height:1;
-    }
-
     .page{
       flex:1;
       overflow:auto;
@@ -195,67 +180,15 @@
 
     .section{padding:16px}
 
-    .story-row{
-      display:flex;
-      gap:14px;
-      overflow:auto;
-      padding:12px 16px 10px;
-      border-bottom:1px solid var(--border);
-    }
-
-    .story{
-      min-width:72px;
-      text-align:center;
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .story-ring{
-      width:72px;
-      height:72px;
-      border-radius:50%;
-      padding:3px;
-      background:linear-gradient(135deg,var(--olive-soft),var(--olive),var(--olive-dark));
-      margin-bottom:6px;
-    }
-
-    .story-inner{
-      width:100%;
-      height:100%;
-      border-radius:50%;
-      background:var(--card2);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:var(--olive-dark);
-      font-size:26px;
-      font-weight:800;
-      border:3px solid var(--bg);
-      overflow:hidden;
-    }
-
-    .story-inner img,
-    .avatar-big img,
-    .avatar-nav img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      border-radius:50%;
-    }
-
-    .card{
+    .placeholder{
       background:var(--card);
       border:1px solid var(--border);
       border-radius:20px;
-      padding:16px;
-      margin:16px;
-    }
-
-    .placeholder{
+      padding:30px 20px;
       text-align:center;
       color:var(--muted);
-      padding:40px 20px;
       line-height:1.6;
+      margin:16px;
     }
 
     .profile-box{
@@ -263,55 +196,7 @@
       border:1px solid var(--border);
       border-radius:20px;
       padding:16px;
-      margin-bottom:14px;
-    }
-
-    .profile-top{
-      display:flex;
-      gap:16px;
-      align-items:center;
-      margin-bottom:14px;
-    }
-
-    .avatar-big{
-      width:84px;
-      height:84px;
-      border-radius:50%;
-      background:linear-gradient(135deg,var(--olive),var(--olive-dark));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:white;
-      font-size:28px;
-      font-weight:900;
-      overflow:hidden;
-      flex-shrink:0;
-    }
-
-    .profile-name{
-      font-size:22px;
-      font-weight:800;
-      color:var(--text);
-    }
-
-    .profile-username{
-      color:var(--muted);
-      margin-top:4px;
-    }
-
-    .bio{
-      color:var(--text);
-      line-height:1.6;
-      margin-top:10px;
-      white-space:pre-wrap;
-    }
-
-    .small-btn{
-      width:auto;
-      margin:0;
-      padding:10px 14px;
-      border-radius:12px;
-      font-size:14px;
+      margin:16px;
     }
 
     .bottom-nav{
@@ -347,41 +232,18 @@
       padding:0;
     }
 
-    .nav-item .nav-ico{
-      font-size:24px;
-      line-height:1;
-    }
-
     .nav-item.active{color:var(--olive-dark)}
-
-    .avatar-nav{
-      width:28px;
-      height:28px;
-      border-radius:50%;
-      background:linear-gradient(135deg,var(--olive),var(--olive-dark));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:13px;
-      font-weight:800;
-      color:white;
-      overflow:hidden;
-    }
-
-    .grid2{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
+    .nav-ico{font-size:24px}
   </style>
 </head>
 <body>
 
-  <div id="authWrap" class="auth-wrap">
-    <div class="auth-card">
+  <div id="authWrap" class="wrap">
+    <div class="card">
+
       <div id="loginView">
         <h1 class="logo">Aymane Social</h1>
-        <p class="sub">Connexion simple puis choix du pseudo</p>
+        <p class="sub">Connexion, code OTP optionnel, puis pseudo</p>
 
         <label>Email</label>
         <input id="loginEmail" type="email" placeholder="vous@exemple.com">
@@ -400,7 +262,7 @@
 
       <div id="signupView" class="hidden">
         <h1 class="logo">Inscription</h1>
-        <p class="sub">Crée ton compte puis retourne te connecter</p>
+        <p class="sub">Crée ton compte, puis confirme par code ou passe sans code</p>
 
         <label>Email</label>
         <input id="signupEmail" type="email" placeholder="vous@exemple.com">
@@ -417,6 +279,23 @@
         <div id="signupStatus" class="status">Prêt</div>
       </div>
 
+      <div id="otpView" class="hidden">
+        <h1 class="logo">Entrer le code</h1>
+        <p class="sub">Entre le code reçu par email, ou passe sans code si tu utilises juste le mot de passe</p>
+
+        <label>Email</label>
+        <input id="otpEmail" type="email" placeholder="vous@exemple.com">
+
+        <label>Code</label>
+        <input id="otpCode" type="text" placeholder="123456">
+
+        <button id="verifyCodeBtn" type="button">Valider le code</button>
+        <button id="skipCodeBtn" class="secondary" type="button">Passer sans code</button>
+        <button id="backLoginFromOtpBtn" class="secondary" type="button">Retour connexion</button>
+
+        <div id="otpStatus" class="status">Prêt</div>
+      </div>
+
       <div id="usernameView" class="hidden">
         <h1 class="logo">Choisir pseudo</h1>
         <p class="sub">Choisis un pseudo unique</p>
@@ -429,139 +308,45 @@
 
         <div id="usernameStatus" class="status">Prêt</div>
       </div>
+
     </div>
   </div>
 
   <div id="appWrap" class="app hidden">
     <div class="topbar">
-      <button class="icon-btn" type="button">＋</button>
       <div class="brand">Aymane Social</div>
-      <button id="logoutBtnTop" class="icon-btn" type="button">♡</button>
+      <button id="logoutBtn2" class="link-btn" type="button" style="text-decoration:none;">Déconnexion</button>
     </div>
 
     <div id="homePage" class="page">
-      <div class="story-row">
-        <div class="story">
-          <div class="story-ring"><div id="storyMe" class="story-inner">A</div></div>
-          <div>Votre story</div>
-        </div>
-        <div class="story">
-          <div class="story-ring"><div class="story-inner">L</div></div>
-          <div>lwa3r</div>
-        </div>
-        <div class="story">
-          <div class="story-ring"><div class="story-inner">S</div></div>
-          <div>sami</div>
-        </div>
-        <div class="story">
-          <div class="story-ring"><div class="story-inner">M</div></div>
-          <div>mehdi</div>
-        </div>
-        <div class="story">
-          <div class="story-ring"><div class="story-inner">N</div></div>
-          <div>nora</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div style="font-weight:800;margin-bottom:8px;">Accueil</div>
-        <div class="placeholder">
-          Thème olive appliqué.<br>
-          Le profil est enrichi avec photo, prénom, nom et bio.
-        </div>
-      </div>
+      <div class="placeholder">Accueil style Insta prêt.</div>
     </div>
 
     <div id="searchPage" class="page hidden">
-      <div class="section">
-        <div class="card">
-          <div style="font-weight:800;margin-bottom:10px;">Recherche</div>
-          <div class="placeholder">Onglet recherche prêt.</div>
-        </div>
-      </div>
+      <div class="placeholder">Recherche prête.</div>
     </div>
 
     <div id="messagesPage" class="page hidden">
-      <div class="section">
-        <div class="card">
-          <div style="font-weight:800;margin-bottom:10px;">Messages</div>
-          <div class="placeholder">On garde cet onglet pour la suite.</div>
-        </div>
-      </div>
+      <div class="placeholder">Messages prêts pour la prochaine étape.</div>
     </div>
 
     <div id="reelsPage" class="page hidden">
-      <div class="section">
-        <div class="card">
-          <div style="font-weight:800;margin-bottom:10px;">Reels</div>
-          <div class="placeholder">Onglet reels prêt.</div>
-        </div>
-      </div>
+      <div class="placeholder">Reels prêts.</div>
     </div>
 
     <div id="profilePage" class="page hidden">
-      <div class="section">
-        <div class="profile-box">
-          <div class="profile-top">
-            <div id="profileAvatarBig" class="avatar-big">A</div>
-            <div>
-              <div id="profileFullName" class="profile-name">Ton nom</div>
-              <div id="profileUsernameText" class="profile-username">@pseudo</div>
-            </div>
-          </div>
-          <div id="profileBioText" class="bio">Aucune bio pour le moment.</div>
-        </div>
-
-        <div class="card" style="margin:0 0 14px 0;">
-          <div class="grid2">
-            <div>
-              <label>Prénom</label>
-              <input id="firstNameInput" type="text" placeholder="Prénom">
-            </div>
-            <div>
-              <label>Nom</label>
-              <input id="lastNameInput" type="text" placeholder="Nom">
-            </div>
-          </div>
-
-          <label>Pseudo</label>
-          <input id="editUsernameInput" type="text" placeholder="Pseudo">
-
-          <label>Photo de profil (URL image)</label>
-          <input id="avatarInput" type="text" placeholder="https://...">
-
-          <label>Bio</label>
-          <textarea id="bioInput" placeholder="Ta bio..."></textarea>
-
-          <button id="saveProfileBtn" type="button">Enregistrer le profil</button>
-          <button id="logoutBtn3" class="secondary" type="button">Déconnexion</button>
-
-          <div id="homeStatus" class="status">Profil chargé</div>
-        </div>
+      <div class="profile-box">
+        <div><strong>Email :</strong> <span id="profileEmail"></span></div>
+        <div><strong>Pseudo :</strong> @<span id="profileUsername"></span></div>
       </div>
     </div>
 
     <nav class="bottom-nav">
-      <button id="navHome" class="nav-item active" type="button">
-        <div class="nav-ico">⌂</div>
-        <div>Accueil</div>
-      </button>
-      <button id="navSearch" class="nav-item" type="button">
-        <div class="nav-ico">⌕</div>
-        <div>Recherche</div>
-      </button>
-      <button id="navMessages" class="nav-item" type="button">
-        <div class="nav-ico">✉</div>
-        <div>Messages</div>
-      </button>
-      <button id="navReels" class="nav-item" type="button">
-        <div class="nav-ico">▣</div>
-        <div>Reels</div>
-      </button>
-      <button id="navProfile" class="nav-item" type="button">
-        <div id="navAvatar" class="avatar-nav">A</div>
-        <div>Profil</div>
-      </button>
+      <button id="navHome" class="nav-item active" type="button"><div class="nav-ico">⌂</div><div>Accueil</div></button>
+      <button id="navSearch" class="nav-item" type="button"><div class="nav-ico">⌕</div><div>Recherche</div></button>
+      <button id="navMessages" class="nav-item" type="button"><div class="nav-ico">✉</div><div>Messages</div></button>
+      <button id="navReels" class="nav-item" type="button"><div class="nav-ico">▣</div><div>Reels</div></button>
+      <button id="navProfile" class="nav-item" type="button"><div class="nav-ico">☺</div><div>Profil</div></button>
     </nav>
   </div>
 
@@ -578,6 +363,7 @@
 
     const loginView = document.getElementById("loginView");
     const signupView = document.getElementById("signupView");
+    const otpView = document.getElementById("otpView");
     const usernameView = document.getElementById("usernameView");
 
     const homePage = document.getElementById("homePage");
@@ -588,8 +374,8 @@
 
     const loginStatus = document.getElementById("loginStatus");
     const signupStatus = document.getElementById("signupStatus");
+    const otpStatus = document.getElementById("otpStatus");
     const usernameStatus = document.getElementById("usernameStatus");
-    const homeStatus = document.getElementById("homeStatus");
 
     function setStatus(el, text, type = "") {
       el.textContent = text || "";
@@ -602,6 +388,7 @@
       appWrap.classList.add("hidden");
       loginView.classList.add("hidden");
       signupView.classList.add("hidden");
+      otpView.classList.add("hidden");
       usernameView.classList.add("hidden");
       view.classList.remove("hidden");
     }
@@ -618,7 +405,6 @@
       messagesPage.classList.add("hidden");
       reelsPage.classList.add("hidden");
       profilePage.classList.add("hidden");
-
       document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
 
       if (tab === "home") {
@@ -641,39 +427,6 @@
         profilePage.classList.remove("hidden");
         document.getElementById("navProfile").classList.add("active");
       }
-    }
-
-    function renderAvatar(el, text, url) {
-      if (!el) return;
-      if (url && url.trim()) {
-        el.innerHTML = `<img src="${url}" alt="avatar">`;
-      } else {
-        el.textContent = (text || "A").charAt(0).toUpperCase();
-      }
-    }
-
-    function fullNameOf(profile) {
-      const first = (profile.first_name || "").trim();
-      const last = (profile.last_name || "").trim();
-      const full = `${first} ${last}`.trim();
-      return full || "Nom non renseigné";
-    }
-
-    function fillProfileUI() {
-      document.getElementById("profileFullName").textContent = fullNameOf(currentProfile);
-      document.getElementById("profileUsernameText").textContent = "@" + (currentProfile.username || "");
-      document.getElementById("profileBioText").textContent = currentProfile.bio || "Aucune bio pour le moment.";
-
-      document.getElementById("firstNameInput").value = currentProfile.first_name || "";
-      document.getElementById("lastNameInput").value = currentProfile.last_name || "";
-      document.getElementById("editUsernameInput").value = currentProfile.username || "";
-      document.getElementById("avatarInput").value = currentProfile.avatar_url || "";
-      document.getElementById("bioInput").value = currentProfile.bio || "";
-
-      const fallback = currentProfile.username || "A";
-      renderAvatar(document.getElementById("profileAvatarBig"), fallback, currentProfile.avatar_url || "");
-      renderAvatar(document.getElementById("navAvatar"), fallback, currentProfile.avatar_url || "");
-      renderAvatar(document.getElementById("storyMe"), fallback, currentProfile.avatar_url || "");
     }
 
     async function signup() {
@@ -700,11 +453,10 @@
           return;
         }
 
-        setStatus(signupStatus, "Compte créé. Connecte-toi maintenant.", "ok");
-        document.getElementById("loginEmail").value = email;
-        document.getElementById("loginPassword").value = password;
-        showAuth(loginView);
-        setStatus(loginStatus, "Compte créé. Tu peux te connecter.", "ok");
+        document.getElementById("otpEmail").value = email;
+        setStatus(signupStatus, "Compte créé. Passe à l’écran code.", "ok");
+        showAuth(otpView);
+        setStatus(otpStatus, "Entre le code reçu par email, ou clique sur Passer sans code.", "ok");
       } catch (e) {
         setStatus(signupStatus, "Erreur JS inscription : " + e.message, "err");
       }
@@ -724,22 +476,57 @@
       try {
         const { error } = await client.auth.signInWithPassword({ email, password });
 
-        if (error) {
-          setStatus(loginStatus, "Erreur connexion : " + error.message, "err");
+        if (!error) {
+          setStatus(loginStatus, "Connexion réussie.", "ok");
+          await refreshRealUser();
           return;
         }
 
-        setStatus(loginStatus, "Connexion réussie.", "ok");
-        await refreshRealUser();
+        document.getElementById("otpEmail").value = email;
+        showAuth(otpView);
+        setStatus(otpStatus, "Si tu utilises le code, entre-le. Sinon clique sur Passer sans code puis reconnecte-toi.", "ok");
       } catch (e) {
         setStatus(loginStatus, "Erreur JS connexion : " + e.message, "err");
       }
     }
 
-    async function logout() {
+    async function verifyCode() {
+      const email = document.getElementById("otpEmail").value.trim();
+      const token = document.getElementById("otpCode").value.trim();
+
+      if (!email || !token) {
+        setStatus(otpStatus, "Entre l’email et le code.", "err");
+        return;
+      }
+
+      setStatus(otpStatus, "Vérification du code...");
+
       try {
-        await client.auth.signOut();
-      } catch (e) {}
+        const { error } = await client.auth.verifyOtp({
+          email,
+          token,
+          type: "email"
+        });
+
+        if (error) {
+          setStatus(otpStatus, "Erreur code : " + error.message, "err");
+          return;
+        }
+
+        setStatus(otpStatus, "Code validé.", "ok");
+        await refreshRealUser();
+      } catch (e) {
+        setStatus(otpStatus, "Erreur JS code : " + e.message, "err");
+      }
+    }
+
+    function skipCode() {
+      showAuth(loginView);
+      setStatus(loginStatus, "Mode sans code. Connecte-toi normalement avec email + mot de passe.", "ok");
+    }
+
+    async function logout() {
+      try { await client.auth.signOut(); } catch (e) {}
       currentUser = null;
       currentProfile = null;
       showAuth(loginView);
@@ -750,9 +537,6 @@
       const { data, error } = await client.auth.getUser();
 
       if (error || !data.user) {
-        await client.auth.signOut();
-        currentUser = null;
-        currentProfile = null;
         showAuth(loginView);
         setStatus(loginStatus, "Session invalide. Reconnecte-toi.", "err");
         return;
@@ -766,31 +550,28 @@
       showAuth(usernameView);
       setStatus(usernameStatus, "Recherche du profil...");
 
-      try {
-        const { data, error } = await client
-          .from("profiles")
-          .select("*")
-          .eq("id", currentUser.id)
-          .maybeSingle();
+      const { data, error } = await client
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .maybeSingle();
 
-        if (error) {
-          setStatus(usernameStatus, "Erreur profil : " + error.message, "err");
-          return;
-        }
-
-        if (!data) {
-          currentProfile = null;
-          document.getElementById("usernameInput").value = "";
-          setStatus(usernameStatus, "Profil absent. Choisis un pseudo.", "ok");
-          return;
-        }
-
-        currentProfile = data;
-        fillProfileUI();
-        showApp();
-      } catch (e) {
-        setStatus(usernameStatus, "Erreur JS profil : " + e.message, "err");
+      if (error) {
+        setStatus(usernameStatus, "Erreur profil : " + error.message, "err");
+        return;
       }
+
+      if (!data) {
+        currentProfile = null;
+        document.getElementById("usernameInput").value = "";
+        setStatus(usernameStatus, "Profil absent. Choisis un pseudo.", "ok");
+        return;
+      }
+
+      currentProfile = data;
+      document.getElementById("profileEmail").textContent = currentUser.email || "";
+      document.getElementById("profileUsername").textContent = currentProfile.username || "";
+      showApp();
     }
 
     async function saveUsername() {
@@ -798,11 +579,6 @@
 
       if (!username) {
         setStatus(usernameStatus, "Entre un pseudo.", "err");
-        return;
-      }
-
-      if (username.length < 3) {
-        setStatus(usernameStatus, "Le pseudo doit contenir au moins 3 caractères.", "err");
         return;
       }
 
@@ -814,11 +590,7 @@
             .from("profiles")
             .insert({
               id: currentUser.id,
-              username: username,
-              first_name: "",
-              last_name: "",
-              bio: "",
-              avatar_url: ""
+              username: username
             });
 
           if (error) {
@@ -828,7 +600,7 @@
         } else {
           const { error } = await client
             .from("profiles")
-            .update({ username: username })
+            .update({ username })
             .eq("id", currentUser.id);
 
           if (error) {
@@ -837,83 +609,24 @@
           }
         }
 
-        const { data } = await client
-          .from("profiles")
-          .select("*")
-          .eq("id", currentUser.id)
-          .single();
-
-        currentProfile = data;
-        fillProfileUI();
-        showApp();
+        await loadMyProfile();
       } catch (e) {
         setStatus(usernameStatus, "Erreur JS pseudo : " + e.message, "err");
       }
     }
 
-    async function saveFullProfile() {
-      const first_name = document.getElementById("firstNameInput").value.trim();
-      const last_name = document.getElementById("lastNameInput").value.trim();
-      const username = document.getElementById("editUsernameInput").value.trim().toLowerCase();
-      const avatar_url = document.getElementById("avatarInput").value.trim();
-      const bio = document.getElementById("bioInput").value.trim();
-
-      if (!username) {
-        setStatus(homeStatus, "Le pseudo est obligatoire.", "err");
-        return;
-      }
-
-      setStatus(homeStatus, "Enregistrement du profil...");
-
-      try {
-        const { error } = await client
-          .from("profiles")
-          .update({
-            first_name,
-            last_name,
-            username,
-            avatar_url,
-            bio
-          })
-          .eq("id", currentUser.id);
-
-        if (error) {
-          setStatus(homeStatus, "Erreur profil : " + error.message, "err");
-          return;
-        }
-
-        const { data } = await client
-          .from("profiles")
-          .select("*")
-          .eq("id", currentUser.id)
-          .single();
-
-        currentProfile = data;
-        fillProfileUI();
-        setStatus(homeStatus, "Profil enregistré.", "ok");
-      } catch (e) {
-        setStatus(homeStatus, "Erreur JS profil : " + e.message, "err");
-      }
-    }
-
-    document.getElementById("goSignupBtn").addEventListener("click", () => {
-      showAuth(signupView);
-      setStatus(signupStatus, "Écran inscription.", "ok");
-    });
-
-    document.getElementById("backLoginBtn").addEventListener("click", () => {
-      showAuth(loginView);
-      setStatus(loginStatus, "Écran connexion.", "ok");
-    });
+    document.getElementById("goSignupBtn").addEventListener("click", () => showAuth(signupView));
+    document.getElementById("backLoginBtn").addEventListener("click", () => showAuth(loginView));
+    document.getElementById("backLoginFromOtpBtn").addEventListener("click", () => showAuth(loginView));
 
     document.getElementById("signupBtn").addEventListener("click", signup);
     document.getElementById("loginBtn").addEventListener("click", login);
+    document.getElementById("verifyCodeBtn").addEventListener("click", verifyCode);
+    document.getElementById("skipCodeBtn").addEventListener("click", skipCode);
     document.getElementById("saveUsernameBtn").addEventListener("click", saveUsername);
-    document.getElementById("saveProfileBtn").addEventListener("click", saveFullProfile);
 
     document.getElementById("logoutBtn1").addEventListener("click", logout);
-    document.getElementById("logoutBtn3").addEventListener("click", logout);
-    document.getElementById("logoutBtnTop").addEventListener("click", logout);
+    document.getElementById("logoutBtn2").addEventListener("click", logout);
 
     document.getElementById("navHome").addEventListener("click", () => switchTab("home"));
     document.getElementById("navSearch").addEventListener("click", () => switchTab("search"));
@@ -922,14 +635,11 @@
     document.getElementById("navProfile").addEventListener("click", () => switchTab("profile"));
 
     async function init() {
-      try {
-        await client.auth.signOut();
-      } catch (e) {}
-
+      try { await client.auth.signOut(); } catch (e) {}
       currentUser = null;
       currentProfile = null;
       showAuth(loginView);
-      setStatus(loginStatus, "Session réinitialisée. Connecte-toi.", "ok");
+      setStatus(loginStatus, "Commence par connexion ou inscription.", "ok");
     }
 
     init();
