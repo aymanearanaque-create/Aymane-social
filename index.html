@@ -3,117 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AymaneGramm</title>
+    <title>Aymane Social</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* === VARIABLES & RESET === */
         :root {
-            --primary: #6B705C; /* Un vert olive plus moderne et doux */
-            --primary-light: #A5A58D;
-            --primary-bg: #F0EFEB;
-            --bg-color: #F8F9FA;
-            --card-bg: #FFFFFF;
-            --text-dark: #212529;
-            --text-muted: #6C757D;
-            --border-color: rgba(0, 0, 0, 0.08);
-            --input-bg: #F1F3F5;
-            --nav-height: 70px;
+            --primary: #0095f6; /* Bleu Instagram */
+            --primary-light: #e0f1ff;
+            --bg-color: #fafafa;
+            --card-bg: #ffffff;
+            --text-dark: #262626;
+            --text-muted: #8e8e8e;
+            --border-color: #dbdbdb;
+            --input-bg: #efefef;
+            --nav-height: 50px;
             --top-height: 60px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
-            --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
-            --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+            --radius-md: 8px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100%; height: 100dvh; background-color: #E9ECEF; display: flex; justify-content: center; overflow: hidden; color: var(--text-dark); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; height: 100dvh; background-color: #dbdbdb; display: flex; justify-content: center; overflow: hidden; color: var(--text-dark); }
 
         /* === APP CONTAINER === */
-        #app-container { width: 100%; max-width: 430px; height: 100%; height: 100dvh; background-color: var(--bg-color); position: relative; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-md); }
+        #app-container { width: 100%; max-width: 430px; height: 100%; height: 100dvh; background-color: var(--card-bg); position: relative; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* === ANIMATIONS & NOTIFS === */
-        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        #status-bar { position: absolute; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150%); padding: 14px 24px; background: rgba(33, 37, 41, 0.95); color: white; border-radius: 30px; font-size: 14px; font-weight: 500; z-index: 9999; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(10px); white-space: nowrap; box-shadow: var(--shadow-md); }
+        /* === NOTIFS === */
+        #status-bar { position: absolute; top: 15px; left: 50%; transform: translateX(-50%) translateY(-150%); padding: 12px 20px; background: rgba(38, 38, 38, 0.9); color: white; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 9999; transition: transform 0.3s; white-space: nowrap; }
         #status-bar.visible { transform: translateX(-50%) translateY(0); }
-        #status-bar.error { background: #E63946; }
+        #status-bar.error { background: #ed4956; }
 
         /* === SCREENS === */
-        .screen { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--bg-color); }
-        .screen.active { display: flex; animation: fadeSlideUp 0.4s ease-out; }
+        .screen { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--card-bg); }
+        .screen.active { display: flex; }
 
-        /* === AUTH & SETUP === */
-        .auth-container { padding: 40px 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: var(--card-bg); }
-        .auth-logo { font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; text-align: center; color: var(--text-dark); }
-        .auth-logo span { color: var(--primary); }
-        .auth-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; text-align: center; }
-        .auth-subtitle { font-size: 15px; color: var(--text-muted); margin-bottom: 40px; text-align: center; line-height: 1.5; }
-
-        input, textarea { width: 100%; padding: 18px; margin-bottom: 16px; border: 2px solid transparent; border-radius: var(--radius-md); background: var(--input-bg); font-size: 16px; outline: none; transition: all 0.3s ease; color: var(--text-dark); }
-        input:focus, textarea:focus { border-color: var(--primary-light); background: var(--card-bg); box-shadow: 0 0 0 4px var(--primary-bg); }
-        .otp-input { font-size: 36px; letter-spacing: 16px; text-align: center; font-weight: 700; padding: 20px; font-family: monospace; }
-
-        button { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-sm); }
-        button:active { transform: scale(0.97); background: #5a5e4d; }
-        button.secondary { background: var(--primary-bg); color: var(--primary); box-shadow: none; margin-top: 12px; }
-        button.text-only { background: transparent; color: var(--text-muted); box-shadow: none; margin-top: 8px; font-weight: 500; }
+        /* === AUTH === */
+        .auth-container { padding: 40px 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .auth-logo { font-size: 32px; font-family: cursive; font-weight: bold; margin-bottom: 30px; }
+        input, textarea { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--card-bg); font-size: 14px; outline: none; }
+        input:focus, textarea:focus { border-color: var(--text-muted); }
+        button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 600; cursor: pointer; }
+        button.secondary { background: transparent; color: var(--primary); border: 1px solid var(--border-color); }
+        button.text-only { background: transparent; color: var(--text-muted); font-weight: 500; margin-top: 15px; }
 
         /* === MAIN APP === */
-        #top-bar { height: var(--top-height); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; font-weight: 800; font-size: 22px; color: var(--text-dark); flex-shrink: 0; z-index: 10; letter-spacing: -0.5px; }
-        #top-bar span { color: var(--primary); }
-        #content-area { flex-grow: 1; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+        #top-bar { height: var(--top-height); background: var(--card-bg); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 16px; font-weight: 700; font-size: 24px; font-family: cursive; flex-shrink: 0; z-index: 10; justify-content: space-between;}
+        #content-area { flex-grow: 1; overflow-y: auto; background: var(--card-bg); }
+        
+        #bottom-nav { height: var(--nav-height); background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
+        .nav-item { cursor: pointer; padding: 10px; color: var(--text-dark); transition: transform 0.2s; }
+        .nav-item:active { transform: scale(0.9); }
+        .nav-item svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; }
+        .nav-item.active svg { fill: currentColor; }
 
-        #bottom-nav { height: var(--nav-height); background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); z-index: 10; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; width: 25%; height: 100%; transition: all 0.3s ease; }
-        .nav-item.active { color: var(--primary); }
-        .nav-icon { width: 26px; height: 26px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .nav-item.active .nav-icon { transform: scale(1.2); stroke-width: 2.5; }
-        
-        .tab-content { display: none; padding: 20px; animation: fadeSlideUp 0.3s ease; }
+        .tab-content { display: none; padding: 16px; animation: fadeIn 0.2s ease; }
         .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* === PROFIL === */
+        .profile-header { display: flex; align-items: center; margin-bottom: 16px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: var(--input-bg); flex-shrink: 0; }
+        .avatar.large { width: 80px; height: 80px; margin-right: 20px; }
         
-        /* PROFILES & USERS */
-        .user-row { display: flex; align-items: center; padding: 14px 16px; background: var(--card-bg); border-radius: var(--radius-md); margin-bottom: 12px; box-shadow: var(--shadow-sm); cursor: pointer; transition: transform 0.2s; border: 1px solid transparent; }
-        .user-row:active { transform: scale(0.98); border-color: var(--primary-bg); }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 16px; flex-shrink: 0; background: var(--input-bg); border: 2px solid var(--card-bg); box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
-        .avatar.large { width: 96px; height: 96px; margin: 0 auto 16px auto; display: block; border: 4px solid var(--card-bg); box-shadow: var(--shadow-md);}
+        .profile-stats-container { flex-grow: 1; display: flex; justify-content: space-around; text-align: center; }
+        .stat-num { font-weight: 700; font-size: 16px; }
+        .stat-label { font-size: 13px; color: var(--text-dark); }
         
-        .user-info { flex-grow: 1; overflow: hidden; }
-        .user-info .username { font-weight: 700; font-size: 16px; color: var(--text-dark); margin-bottom: 4px; }
-        .user-info .fullname { font-size: 14px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .profile-bio { font-size: 14px; margin-bottom: 16px; line-height: 1.4; }
+        .profile-bio strong { display: block; margin-bottom: 2px; }
+
+        .edit-profile-btn { width: 100%; padding: 8px; background: var(--input-bg); color: var(--text-dark); font-weight: 600; border-radius: var(--radius-md); text-align: center; cursor: pointer; margin-bottom: 20px; font-size: 14px;}
         
-        .profile-header { text-align: center; margin-bottom: 24px; padding: 20px 10px; background: var(--card-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
-        .profile-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-        .profile-stats { display: flex; justify-content: center; gap: 40px; margin: 20px 0; padding: 20px 0; border-top: 1px solid var(--border-color); }
-        .stat-box { text-align: center; }
-        .stat-num { font-weight: 800; font-size: 20px; color: var(--text-dark); }
-        .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* SEARCH / USERS */
+        .search-bar { position: relative; margin-bottom: 16px; }
+        .search-bar input { background: var(--input-bg); border: none; border-radius: 10px; padding-left: 36px; }
+        .search-bar svg { position: absolute; left: 10px; top: 12px; width: 16px; height: 16px; color: var(--text-muted); }
         
-        .edit-card { background: var(--card-bg); padding: 24px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-top: 16px; }
-        .edit-card h4 { margin-bottom: 20px; font-size: 18px; font-weight: 700; color: var(--text-dark);}
-        
-        .change-photo-btn { font-size: 14px; color: var(--primary); font-weight: 700; cursor: pointer; display: inline-block; margin-bottom: 20px; padding: 8px 16px; background: var(--primary-bg); border-radius: 20px; }
+        .user-row { display: flex; align-items: center; padding: 8px 0; cursor: pointer; }
+        .user-row .avatar { margin-right: 12px; width: 50px; height: 50px; }
+        .user-row .user-info { flex-grow: 1; }
+        .user-row .username { font-weight: 600; font-size: 14px; }
+        .user-row .fullname { font-size: 14px; color: var(--text-muted); }
 
         /* OVERLAYS */
-        .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; }
-        .overlay.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--card-bg); z-index: 200; display: none; flex-direction: column; }
+        .overlay.active { display: flex; }
+        .overlay-header { height: 50px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 16px; font-weight: 600; font-size: 16px; }
+        .back-btn { cursor: pointer; margin-right: 15px; display: flex; align-items: center; }
+        .overlay-content { flex-grow: 1; overflow-y: auto; padding: 16px; }
         
-        .overlay-header { height: var(--top-height); background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 16px; font-weight: 700; font-size: 18px; flex-shrink: 0; }
-        .back-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 10px; border-radius: 50%; background: var(--input-bg); transition: background 0.2s; }
-        .back-btn:active { background: #e2e6ea; }
-        .overlay-content { flex-grow: 1; overflow-y: auto; padding: 20px;}
-
-        /* CHAT */
-        .chat-container { display: flex; flex-direction: column; height: 100%; background: var(--bg-color); }
-        .messages-area { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-        .msg-bubble { max-width: 75%; padding: 14px 18px; border-radius: 20px; font-size: 15px; line-height: 1.5; word-wrap: break-word; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .msg-sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
-        .msg-received { align-self: flex-start; background: var(--card-bg); color: var(--text-dark); border-bottom-left-radius: 4px; }
-        .chat-input-area { display: flex; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom)); background: var(--card-bg); border-top: 1px solid var(--border-color); flex-shrink: 0; align-items: center; }
-        .chat-input-area input { margin-bottom: 0; border-radius: 24px; padding: 14px 20px; flex-grow: 1; margin-right: 12px; border: 1px solid var(--border-color); background: var(--input-bg); }
-        .chat-input-area button { width: 48px; height: 48px; border-radius: 50%; padding: 0; display: flex; justify-content: center; align-items: center; background: var(--primary); box-shadow: var(--shadow-sm); }
-        .chat-input-area button svg { width: 22px; height: 22px; stroke: white; fill: none; }
+        /* Grid Post (Design Fake pour l'instant) */
+        .post-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+        .post-square { aspect-ratio: 1; background: var(--input-bg); }
     </style>
 </head>
 <body>
@@ -122,148 +102,144 @@
     <div id="status-bar"></div>
 
     <div id="auth-screen" class="screen active">
-        
-        <div class="auth-container" id="view-landing">
-            <div class="auth-logo">Aymane<span>Social</span></div>
-            <div class="auth-subtitle">Connecte-toi avec le monde,<br>simplement.</div>
-            <button onclick="switchAuthView('view-login')">Se connecter</button>
-            <button class="secondary" onclick="switchAuthView('view-signup')">Créer un compte</button>
-        </div>
-
-        <div class="auth-container" id="view-login" style="display: none;">
-            <div class="auth-title">Bon retour 👋</div>
-            <div class="auth-subtitle">Connecte-toi à ton compte</div>
-            <input type="email" id="login-email" placeholder="Adresse email" />
+        <div class="auth-container" id="view-login">
+            <div class="auth-logo">AymaneSocial</div>
+            <input type="email" id="login-email" placeholder="Email" />
             <input type="password" id="login-password" placeholder="Mot de passe" />
-            <button onclick="login()">Connexion</button>
-            <button class="text-only" onclick="switchAuthView('view-landing')">Annuler</button>
+            <button onclick="login()">Se connecter</button>
+            <div style="margin: 20px 0; color: var(--text-muted); font-size: 14px;">OU</div>
+            <button class="text-only" onclick="switchAuthView('view-signup')" style="color: var(--primary); font-weight: 600;">Créer un nouveau compte</button>
         </div>
 
         <div class="auth-container" id="view-signup" style="display: none;">
-            <div class="auth-title">Rejoins-nous 🚀</div>
-            <div class="auth-subtitle">Crée ton compte avec ton email</div>
-            <input type="email" id="signup-email" placeholder="Adresse email valide" />
-            <input type="password" id="signup-password" placeholder="Créer un mot de passe fort" />
+            <div class="auth-logo">AymaneSocial</div>
+            <input type="email" id="signup-email" placeholder="Email" />
+            <input type="password" id="signup-password" placeholder="Mot de passe" />
             <button onclick="startSignup()">S'inscrire</button>
-            <button class="text-only" onclick="switchAuthView('view-landing')">Annuler</button>
+            <button class="text-only" onclick="switchAuthView('view-login')">Retour à la connexion</button>
         </div>
 
         <div class="auth-container" id="view-otp" style="display: none;">
-            <div class="auth-title">Vérification ✉️</div>
-            <div class="auth-subtitle" id="otp-subtitle">Un code à 6 chiffres a été envoyé à ton adresse email.</div>
-            <input type="text" id="otp-code" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-            <button onclick="verifyOtp()">Vérifier le code</button>
-            <button class="text-only" onclick="switchAuthView('view-landing')">Annuler</button>
+            <div class="auth-logo">Vérification</div>
+            <p style="text-align: center; font-size: 14px; margin-bottom: 20px;">Un code à 6 chiffres a été envoyé à ton email.</p>
+            <input type="text" id="otp-code" placeholder="000000" maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 10px;" />
+            <button onclick="verifyOtp()">Vérifier</button>
         </div>
     </div>
 
     <div id="setup-profile-screen" class="screen">
         <div class="auth-container">
-            <div class="auth-title" style="font-size: 28px;">Bienvenue ! 🎉</div>
-            <div class="auth-subtitle">Choisis un pseudo unique pour que tes amis puissent te trouver.</div>
-            <input type="text" id="setup-username" placeholder="Pseudo (ex: aymane_pro)" />
-            <button onclick="saveUsername()">Commencer l'aventure</button>
+            <div class="auth-logo" style="font-family: sans-serif; font-size: 24px;">Ton Profil</div>
+            <input type="text" id="setup-username" placeholder="Nom d'utilisateur (ex: aymane_pro)" />
+            <button onclick="saveUsername()">Continuer</button>
         </div>
     </div>
 
     <div id="main-app" class="screen">
-        <header id="top-bar">Aymane<span>Social</span></header>
+        <header id="top-bar">
+            <span>AymaneSocial</span>
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </header>
         
         <main id="content-area">
             <div id="tab-accueil" class="tab-content active">
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; color: var(--text-muted); text-align: center;">
-                    <svg viewBox="0 0 24 24" style="width:64px; height:64px; stroke:var(--border-color); fill:none; stroke-width:1.5; margin-bottom: 16px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    <h3 style="color:var(--text-dark); margin:0 0 8px; font-size:22px;">Ton Fil d'Actualité</h3>
-                    <p style="font-size: 15px;">Découvre les nouveautés de tes amis.</p>
-                </div>
+                <p style="text-align:center; margin-top:50px; color:var(--text-muted);">Bienvenue sur ton fil d'actualité.</p>
             </div>
 
             <div id="tab-recherche" class="tab-content">
-                <div style="position: relative; margin-bottom: 24px;">
-                    <svg viewBox="0 0 24 24" style="position:absolute; left:18px; top:18px; width:20px; height:20px; stroke:var(--text-muted); fill:none; stroke-width:2;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" id="search-input" placeholder="Chercher un ami..." oninput="searchUsers()" style="border-radius:30px; padding-left: 48px; margin-bottom: 0; background: var(--card-bg); box-shadow: var(--shadow-sm); border: none;">
+                <div class="search-bar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="search-input" placeholder="Rechercher" oninput="searchUsers()">
                 </div>
                 <div id="search-results"></div>
             </div>
 
-            <div id="tab-messages" class="tab-content">
-                <h3 style="margin-bottom: 24px; font-size: 24px; font-weight: 800;">Messages</h3>
-                <div id="conversations-list"><p style="text-align:center; color:var(--text-muted); margin-top: 40px; font-size: 15px;">Aucune conversation en cours.</p></div>
-            </div>
-
             <div id="tab-profil" class="tab-content">
                 <div class="profile-header">
-                    <img id="my-avatar-preview" class="avatar large" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23eaeaea'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
-                    
-                    <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
-                    <div class="change-photo-btn" onclick="document.getElementById('avatar-upload').click()">Changer ma photo</div>
-
-                    <div class="profile-name" id="my-profile-username">@pseudo</div>
-                    <div style="color: var(--text-muted); margin-top: 8px; font-size: 14px;" id="my-profile-bio">Ma bio...</div>
-                    
-                    <div class="profile-stats">
-                        <div class="stat-box">
-                            <div class="stat-num" id="my-stat-followers">0</div><div class="stat-label">Abonnés</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-num" id="my-stat-following">0</div><div class="stat-label">Abonnements</div>
-                        </div>
+                    <img id="my-avatar-preview" class="avatar large" src="">
+                    <div class="profile-stats-container">
+                        <div><div class="stat-num">0</div><div class="stat-label">Posts</div></div>
+                        <div onclick="alert('Bientôt la liste !')"><div class="stat-num" id="my-stat-followers">0</div><div class="stat-label">Abonnés</div></div>
+                        <div><div class="stat-num" id="my-stat-following">0</div><div class="stat-label">Suivis</div></div>
                     </div>
                 </div>
 
-                <div class="edit-card">
-                    <h4>Paramètres du profil</h4>
-                    <input type="text" id="edit-username" placeholder="Pseudo">
-                    <textarea id="edit-bio" placeholder="Ajoute une petite bio sympa..." rows="3"></textarea>
-                    <button onclick="saveFullProfile()">Enregistrer les modifs</button>
-                    <button class="secondary" style="background: #FFE3E3; color: #E63946; margin-top: 24px;" onclick="logout()">Se déconnecter</button>
+                <div class="profile-bio">
+                    <strong id="my-profile-username">pseudo</strong>
+                    <span id="my-profile-bio"></span>
+                </div>
+
+                <div class="edit-profile-btn" onclick="openOverlay('edit-profile-overlay')">Modifier le profil</div>
+
+                <div class="post-grid">
+                    <div class="post-square"></div><div class="post-square"></div><div class="post-square"></div>
                 </div>
             </div>
         </main>
 
         <nav id="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('accueil', this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>
-            <div class="nav-item" onclick="switchTab('recherche', this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-            <div class="nav-item" onclick="switchTab('messages', this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
-            <div class="nav-item" onclick="switchTab('profil', this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+            <div class="nav-item active" onclick="switchTab('accueil', this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>
+            <div class="nav-item" onclick="switchTab('recherche', this)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+            <div class="nav-item" onclick="alert('Fonctionnalité de post à venir !')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg></div>
+            <div class="nav-item" onclick="switchTab('profil', this)">
+                <img id="nav-my-avatar" class="avatar" style="width:26px; height:26px; border: 1px solid var(--border-color); margin:0;" src="">
+            </div>
         </nav>
+    </div>
+
+    <div id="edit-profile-overlay" class="overlay">
+        <header class="overlay-header">
+            <div class="back-btn" onclick="closeOverlay('edit-profile-overlay')"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></div>
+            <div style="flex-grow:1; text-align:center; font-weight: 600;">Modifier le profil</div>
+            <div style="color:var(--primary); font-weight:600; cursor:pointer;" onclick="saveFullProfile()">Terminer</div>
+        </header>
+        <div class="overlay-content" style="display:flex; flex-direction:column; align-items:center;">
+            
+            <img id="edit-avatar-preview" class="avatar large" style="margin: 20px 0 10px 0;" src="">
+            <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+            <div style="color:var(--primary); font-weight:600; font-size:14px; margin-bottom: 20px; cursor:pointer;" onclick="document.getElementById('avatar-upload').click()">Modifier la photo de profil</div>
+
+            <div style="width: 100%; text-align: left; margin-bottom: 5px; font-size: 13px; color: var(--text-muted); font-weight: 600;">Nom d'utilisateur</div>
+            <input type="text" id="edit-username" placeholder="Nom d'utilisateur" style="border:none; border-bottom:1px solid var(--border-color); border-radius:0; background:transparent; padding-left:0;">
+            
+            <div style="width: 100%; text-align: left; margin-top:15px; margin-bottom: 5px; font-size: 13px; color: var(--text-muted); font-weight: 600;">Bio</div>
+            <textarea id="edit-bio" placeholder="Bio..." rows="3" style="border:none; border-bottom:1px solid var(--border-color); border-radius:0; background:transparent; padding-left:0; resize:none;"></textarea>
+            
+            <button class="text-only" style="color: #ed4956; margin-top: 40px;" onclick="logout()">Se déconnecter</button>
+        </div>
     </div>
 
     <div id="public-profile-overlay" class="overlay">
         <header class="overlay-header">
-            <div class="back-btn" onclick="closeOverlay('public-profile-overlay')"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></div>
-            <div style="flex-grow:1; text-align:center; margin-right:50px;">Profil</div>
+            <div class="back-btn" onclick="closeOverlay('public-profile-overlay')"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></div>
+            <div id="public-header-username" style="flex-grow:1; text-align:center; font-weight: 600; margin-right: 39px;"></div>
         </header>
-        <main class="overlay-content">
+        <div class="overlay-content">
             <div class="profile-header">
                 <img id="public-avatar" class="avatar large" src="">
-                <div class="profile-name" id="public-username"></div>
-                <div style="color: var(--text-muted); margin-top: 8px; font-size: 15px;" id="public-bio"></div>
-                <div class="profile-stats">
-                    <div class="stat-box"><div class="stat-num" id="public-stat-followers">0</div><div class="stat-label">Abonnés</div></div>
-                    <div class="stat-box"><div class="stat-num" id="public-stat-following">0</div><div class="stat-label">Abonnements</div></div>
-                </div>
-                <div style="display:flex; gap:12px; justify-content:center; margin-top:24px;">
-                    <button id="btn-follow" onclick="toggleFollow()" style="flex:1;">S'abonner</button>
-                    <button class="secondary" onclick="openConversationFromProfile()" style="flex:1; margin-top:0;">Message</button>
+                <div class="profile-stats-container">
+                    <div><div class="stat-num">0</div><div class="stat-label">Posts</div></div>
+                    <div><div class="stat-num" id="public-stat-followers">0</div><div class="stat-label">Abonnés</div></div>
+                    <div><div class="stat-num" id="public-stat-following">0</div><div class="stat-label">Suivis</div></div>
                 </div>
             </div>
-        </main>
-    </div>
 
-    <div id="chat-overlay" class="overlay">
-        <header class="overlay-header">
-            <div class="back-btn" onclick="closeOverlay('chat-overlay')"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></div>
-            <div id="chat-header-name" style="font-size:18px; font-weight:700;"></div>
-        </header>
-        <div class="chat-container">
-            <div class="messages-area" id="chat-messages-area"></div>
-            <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Écris un message..." onkeypress="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+            <div class="profile-bio">
+                <strong id="public-username-bold"></strong>
+                <span id="public-bio"></span>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-bottom: 20px;">
+                <button id="btn-follow" onclick="toggleFollow()" style="flex:1; padding:8px; border-radius:8px;">S'abonner</button>
+                <button class="secondary" style="flex:1; padding:8px; border-radius:8px; color:var(--text-dark); border-color:var(--border-color); background:var(--input-bg);">Message</button>
+            </div>
+
+            <div class="post-grid">
+                <div class="post-square"></div><div class="post-square"></div>
             </div>
         </div>
     </div>
+
 </div>
 
 <script>
@@ -276,10 +252,11 @@
 
     let currentUser = null;
     let myProfile = null;
-    let currentChatUserId = null; 
-    let pendingEmail = ""; // Sauvegarde l'email pour la vérification OTP
+    let currentPublicProfileId = null; 
+    let pendingEmail = "";
     
-    const DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23eaeaea'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+    // Avatar par défaut (un petit bonhomme gris basique)
+    const DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23dbdbdb'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
 
     // UI Helpers
     function setStatus(msg, isError = false) {
@@ -308,69 +285,48 @@
     function closeOverlay(id) { document.getElementById(id).classList.remove('active'); }
 
     // ==========================================
-    // AUTHENTIFICATION PAR EMAIL
+    // AUTHENTIFICATION (EMAIL)
     // ==========================================
     async function login() {
         const email = document.getElementById('login-email').value.trim();
         const pwd = document.getElementById('login-password').value;
-        if (!email || !pwd) return setStatus("Remplissez tous les champs", true);
+        if (!email || !pwd) return setStatus("Remplis tout", true);
 
-        const { error } = await sb.auth.signInWithPassword({ email: email, password: pwd });
+        const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
         if (error) setStatus("Erreur : " + error.message, true);
     }
 
     async function startSignup() {
         const email = document.getElementById('signup-email').value.trim();
         const pwd = document.getElementById('signup-password').value;
-        if (!email || !pwd) return setStatus("Remplissez tous les champs", true);
+        if (!email || !pwd) return setStatus("Remplis tout", true);
 
-        const { data, error } = await sb.auth.signUp({ email: email, password: pwd });
+        const { data, error } = await sb.auth.signUp({ email, password: pwd });
 
         if (error) {
             setStatus("Erreur : " + error.message, true);
-        } else if (data.user && data.user.identities && data.user.identities.length === 0) {
-            setStatus("Cet email est déjà utilisé", true);
         } else if (!data.session) {
-            // L'utilisateur est créé mais doit confirmer son email
             pendingEmail = email;
             switchAuthView('view-otp');
             setStatus("Email de vérification envoyé !");
         } else {
-            // Si la confirmation email n'est pas requise dans Supabase
             await loadMyProfile();
         }
     }
 
     async function verifyOtp() {
         const token = document.getElementById('otp-code').value.trim();
-        if (token.length < 6) return setStatus("Le code doit faire 6 chiffres", true);
+        if (token.length < 6) return setStatus("Code à 6 chiffres", true);
 
-        // Type 'signup' est spécifiquement pour la vérification initiale par email
-        const { data, error } = await sb.auth.verifyOtp({
-            email: pendingEmail,
-            token: token,
-            type: 'signup'
-        });
-
-        if (error) {
-            setStatus("Code incorrect : " + error.message, true);
-        } else {
-            setStatus("Email vérifié avec succès !");
-            await refreshRealUser(data.session);
-        }
+        const { data, error } = await sb.auth.verifyOtp({ email: pendingEmail, token: token, type: 'signup' });
+        if (error) setStatus("Code incorrect", true);
+        else await refreshRealUser(data.session);
     }
 
-    async function logout() { 
-        await sb.auth.signOut(); 
-        document.getElementById('login-email').value = '';
-        document.getElementById('login-password').value = '';
-        document.getElementById('signup-email').value = '';
-        document.getElementById('signup-password').value = '';
-        document.getElementById('otp-code').value = '';
-    }
+    async function logout() { await sb.auth.signOut(); window.location.reload(); }
 
     // ==========================================
-    // INITIALISATION & PROFIL
+    // CHARGEMENT PROFIL
     // ==========================================
     async function init() {
         const { data: { session } } = await sb.auth.getSession();
@@ -380,10 +336,8 @@
 
     async function refreshRealUser(session) {
         if (!session) {
-            currentUser = null;
-            myProfile = null;
-            showScreen('auth-screen');
-            switchAuthView('view-landing');
+            currentUser = null; myProfile = null;
+            showScreen('auth-screen'); switchAuthView('view-login');
             return;
         }
         currentUser = session.user;
@@ -393,47 +347,51 @@
     async function loadMyProfile() {
         if (!currentUser) return;
         const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-        if (error || !data) {
-            showScreen('setup-profile-screen');
-        } else { 
-            myProfile = data; 
-            showApp(); 
-        }
+        if (error || !data) showScreen('setup-profile-screen');
+        else { myProfile = data; showApp(); }
     }
 
     async function saveUsername() {
         const username = document.getElementById('setup-username').value.trim();
         if (!username) return setStatus("Pseudo requis", true);
-        const { error } = await sb.from('profiles').insert([{ id: currentUser.id, username }]);
-        if (error) setStatus("Erreur ou pseudo déjà pris", true); 
-        else await loadMyProfile();
+        const { error } = await sb.from('profiles').insert([{ id: currentUser.id, username, avatar_url: DEFAULT_AVATAR }]);
+        if (error) setStatus("Pseudo déjà pris", true); else await loadMyProfile();
     }
 
     function showApp() { 
         showScreen('main-app'); 
-        document.getElementById('my-profile-username').textContent = '@' + myProfile.username;
-        document.getElementById('my-profile-bio').textContent = myProfile.bio || 'Aucune bio pour le moment.';
+        
+        // MAJ Interface Profil
+        document.getElementById('my-profile-username').textContent = myProfile.username;
+        document.getElementById('my-profile-bio').textContent = myProfile.bio || '';
+        
+        const avatarToUse = myProfile.avatar_url || DEFAULT_AVATAR;
+        document.getElementById('my-avatar-preview').src = avatarToUse;
+        document.getElementById('nav-my-avatar').src = avatarToUse;
+        
+        // MAJ Interface Edit
         document.getElementById('edit-username').value = myProfile.username;
         document.getElementById('edit-bio').value = myProfile.bio || '';
-        document.getElementById('my-avatar-preview').src = myProfile.avatar_url || DEFAULT_AVATAR;
+        document.getElementById('edit-avatar-preview').src = avatarToUse;
+
         refreshMyStats();
     }
 
     // ==========================================
-    // GESTION DE LA PHOTO (BASE64)
+    // MODIFIER PROFIL & PHOTO SANS URL (BASE64)
     // ==========================================
     function handlePhotoUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
-
         if(file.size > 2 * 1024 * 1024) return setStatus("L'image est trop grande (max 2Mo)", true);
 
         const reader = new FileReader();
         reader.onload = function(e) {
             const base64Image = e.target.result;
-            document.getElementById('my-avatar-preview').src = base64Image;
+            // On met à jour l'aperçu dans la page d'édition
+            document.getElementById('edit-avatar-preview').src = base64Image;
+            // On le garde en mémoire
             myProfile.avatar_url = base64Image;
-            setStatus("Photo prête ! Pense à enregistrer en bas.");
         };
         reader.readAsDataURL(file);
     }
@@ -442,8 +400,11 @@
         const newUsername = document.getElementById('edit-username').value.trim();
         const newBio = document.getElementById('edit-bio').value.trim();
         
-        if (!newUsername) return setStatus("Le pseudo ne peut pas être vide", true);
+        if (!newUsername) return setStatus("Pseudo vide", true);
 
+        setStatus("Enregistrement...");
+        
+        // On envoie username, bio ET l'image (convertie en texte invisible Base64)
         const { error } = await sb.from('profiles').update({ 
             username: newUsername, 
             bio: newBio,
@@ -453,100 +414,97 @@
         if (error) {
             setStatus("Erreur lors de la sauvegarde", true);
         } else {
+            myProfile.username = newUsername;
+            myProfile.bio = newBio;
+            showApp(); // Rafraichit l'affichage
+            closeOverlay('edit-profile-overlay');
             setStatus("Profil mis à jour !");
-            document.getElementById('my-profile-username').textContent = '@' + newUsername;
-            document.getElementById('my-profile-bio').textContent = newBio || 'Aucune bio pour le moment.';
         }
     }
 
     // ==========================================
-    // RECHERCHE & PROFIL PUBLIC
+    // RECHERCHE D'UTILISATEURS
     // ==========================================
     async function searchUsers() {
         const query = document.getElementById('search-input').value.trim();
         const resultsContainer = document.getElementById('search-results');
         
-        if (query.length < 2) {
-            resultsContainer.innerHTML = '';
-            return;
-        }
+        if (query.length < 1) { resultsContainer.innerHTML = ''; return; }
 
         const { data, error } = await sb.from('profiles').select('*').ilike('username', `%${query}%`).limit(15);
         if (error) return;
 
         resultsContainer.innerHTML = '';
-        if(data.length === 0) {
-            resultsContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted); margin-top:20px;">Aucun utilisateur trouvé.</p>';
-            return;
-        }
+        if(data.length === 0) return resultsContainer.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-muted);">Aucun résultat.</p>';
 
         data.forEach(user => {
             const div = document.createElement('div');
             div.className = 'user-row';
             div.onclick = () => openPublicProfile(user);
-            const avatarSrc = user.avatar_url || DEFAULT_AVATAR;
             
             div.innerHTML = `
-                <img class="avatar" src="${avatarSrc}">
+                <img class="avatar" src="${user.avatar_url || DEFAULT_AVATAR}">
                 <div class="user-info">
-                    <div class="username">@${user.username}</div>
-                    <div class="fullname">${user.bio ? user.bio.substring(0, 35) + '...' : 'Nouveau membre'}</div>
+                    <div class="username">${user.username}</div>
+                    <div class="fullname">${user.bio ? user.bio.substring(0, 30) + '...' : ''}</div>
                 </div>
             `;
             resultsContainer.appendChild(div);
         });
     }
 
+    // ==========================================
+    // PROFIL PUBLIC & FOLLOWERS
+    // ==========================================
     async function openPublicProfile(user) {
-        currentChatUserId = user.id; 
-        document.getElementById('public-username').textContent = '@' + user.username;
-        document.getElementById('public-bio').textContent = user.bio || 'Aucune bio.';
+        if (user.id === currentUser.id) {
+            switchTab('profil', document.querySelectorAll('.nav-item')[3]);
+            return;
+        }
+
+        currentPublicProfileId = user.id; 
+        document.getElementById('public-header-username').textContent = user.username;
+        document.getElementById('public-username-bold').textContent = user.username;
+        document.getElementById('public-bio').textContent = user.bio || '';
         document.getElementById('public-avatar').src = user.avatar_url || DEFAULT_AVATAR;
         
         openOverlay('public-profile-overlay');
         refreshPublicStats(user.id);
 
-        if(user.id === currentUser.id) {
-            document.getElementById('btn-follow').style.display = 'none';
-            return;
-        } else {
-            document.getElementById('btn-follow').style.display = 'block';
-        }
-
-        const { data } = await sb.from('follows')
-            .select('*')
-            .eq('follower_id', currentUser.id)
-            .eq('following_id', user.id)
-            .single();
-
+        // Vérifier si je suis déjà abonné
+        const { data } = await sb.from('follows').select('*').eq('follower_id', currentUser.id).eq('following_id', user.id).single();
         const btn = document.getElementById('btn-follow');
+        
         if (data) {
-            btn.textContent = "Abonné";
+            btn.textContent = "Suivi(e)";
             btn.className = "secondary";
         } else {
             btn.textContent = "S'abonner";
             btn.className = "";
+            btn.style.background = "var(--primary)";
+            btn.style.color = "white";
         }
     }
 
-    // ==========================================
-    // FOLLOWERS
-    // ==========================================
     async function toggleFollow() {
         const btn = document.getElementById('btn-follow');
-        const isFollowing = btn.textContent === "Abonné";
+        const isFollowing = btn.textContent === "Suivi(e)";
 
         if (isFollowing) {
-            await sb.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', currentChatUserId);
+            // Se désabonner
+            await sb.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', currentPublicProfileId);
             btn.textContent = "S'abonner";
             btn.className = "";
+            btn.style.background = "var(--primary)";
+            btn.style.color = "white";
         } else {
-            await sb.from('follows').insert([{ follower_id: currentUser.id, following_id: currentChatUserId }]);
-            btn.textContent = "Abonné";
+            // S'abonner
+            await sb.from('follows').insert([{ follower_id: currentUser.id, following_id: currentPublicProfileId }]);
+            btn.textContent = "Suivi(e)";
             btn.className = "secondary";
         }
         
-        refreshPublicStats(currentChatUserId);
+        refreshPublicStats(currentPublicProfileId);
         refreshMyStats(); 
     }
 
@@ -563,29 +521,6 @@
         const { count: followingCount } = await sb.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', currentUser.id);
         document.getElementById('my-stat-followers').textContent = followersCount || 0;
         document.getElementById('my-stat-following').textContent = followingCount || 0;
-    }
-
-    // ==========================================
-    // CHAT (Visuel)
-    // ==========================================
-    function openConversationFromProfile() {
-        closeOverlay('public-profile-overlay');
-        document.getElementById('chat-header-name').textContent = document.getElementById('public-username').textContent;
-        document.getElementById('chat-messages-area').innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size: 13px; margin-top:20px;">Début de la conversation sécurisée</p>';
-        openOverlay('chat-overlay');
-    }
-
-    function sendMessage() {
-        const input = document.getElementById('chat-input');
-        const text = input.value.trim();
-        if (!text) return;
-        const messagesArea = document.getElementById('chat-messages-area');
-        const bubble = document.createElement('div');
-        bubble.className = 'msg-bubble msg-sent';
-        bubble.textContent = text;
-        messagesArea.appendChild(bubble);
-        input.value = ''; 
-        messagesArea.scrollTop = messagesArea.scrollHeight;
     }
 
     window.onload = init;
