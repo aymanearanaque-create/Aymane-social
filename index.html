@@ -3,61 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AymaneGramm</title>
+    <title>AymaneSocial</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- THÈME OLIVE & RESET --- */
+        /* ==========================================
+           1. THEME OLIVE MINIMALISTE & VARIABLES
+           ========================================== */
         :root {
-            --olive: #556B2F; /* Vert Olive stylé */
-            --bg: #f8f9fa;
-            --border: #e0e0e0;
-            --text: #262626;
+            --olive-dark: #3b4d20;
+            --olive-main: #556B2F;
+            --olive-light: #809E4B;
+            --bg-tint: #f4f7f2; /* Fond olive très clair */
+            --white: #ffffff;
+            --text-main: #1a1a1a;
+            --text-muted: #737373;
+            --border: #dcdedd;
+            --shadow: 0 4px 12px rgba(85, 107, 47, 0.08);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; justify-content: center; height: 100vh; overflow: hidden; }
-        
-        #app { width: 100%; max-width: 480px; background: white; height: 100%; display: flex; flex-direction: column; position: relative; }
-        
-        /* --- HEADER --- */
-        header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: white; z-index: 10; }
-        .logo { font-size: 24px; font-weight: 700; color: var(--olive); letter-spacing: -0.5px; }
-        
-        /* --- STORIES --- */
-        .stories-container { display: flex; gap: 15px; padding: 15px; overflow-x: auto; border-bottom: 1px solid var(--border); background: white; flex-shrink: 0; }
-        .stories-container::-webkit-scrollbar { display: none; }
-        .story { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; min-width: 70px; }
-        .story-img-wrapper { width: 68px; height: 68px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, var(--olive), #9acd32); }
-        .story img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid white; background: #ccc; }
-        .story span { font-size: 12px; font-weight: 400; }
 
-        /* --- FEED (POSTS) --- */
-        .feed { flex-grow: 1; overflow-y: auto; padding-bottom: 70px; background: var(--bg); }
-        .post { background: white; margin-bottom: 15px; border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); }
-        .post-header { display: flex; align-items: center; padding: 12px 15px; gap: 10px; font-weight: 600; font-size: 14px; }
-        .post-header img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-        .post-image { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #eee; }
-        .post-actions { padding: 10px 15px; display: flex; gap: 15px; }
-        .post-actions svg { width: 24px; height: 24px; cursor: pointer; }
-        .post-caption { padding: 0 15px 15px; font-size: 14px; line-height: 1.4; }
-        .post-caption span { font-weight: 600; margin-right: 5px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: #e9ece6; 
+            color: var(--text-main); 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            overflow: hidden; 
+        }
 
-        /* --- NAVIGATION --- */
-        nav { position: absolute; bottom: 0; width: 100%; height: 60px; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 10; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { cursor: pointer; color: var(--text); padding: 10px; }
-        .btn-add { background: var(--olive); color: white; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        
-        /* --- MODAL POST --- */
-        .modal { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100; flex-direction: column; }
-        .modal.active { display: flex; }
-        .modal-header { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border); font-weight: 600; }
-        .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; resize: none; font-size: 14px; }
-        
-        /* UTILITAIRES */
+        #app { 
+            width: 100%; 
+            max-width: 480px; 
+            height: 100%; 
+            background: var(--bg-tint); 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        /* ==========================================
+           2. COMPOSANTS GLOBAUX
+           ========================================== */
         .hidden { display: none !important; }
-        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; display: none; z-index: 1000; }
+        .screen { flex-grow: 1; overflow-y: auto; display: none; padding-bottom: 70px; background: var(--bg-tint); }
+        .screen.active { display: block; animation: fadeIn 0.3s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .btn { 
+            background: var(--olive-main); color: var(--white); 
+            border: none; padding: 14px; border-radius: 12px; 
+            font-weight: 600; font-size: 15px; cursor: pointer; 
+            width: 100%; transition: 0.2s; 
+        }
+        .btn:active { transform: scale(0.98); background: var(--olive-dark); }
+        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border); }
+        
+        input, textarea { 
+            width: 100%; padding: 14px; border: 1px solid var(--border); 
+            border-radius: 12px; margin-bottom: 12px; font-size: 14px; 
+            background: var(--white); transition: border 0.3s;
+        }
+        input:focus, textarea:focus { border-color: var(--olive-main); outline: none; }
+
+        /* ==========================================
+           3. AUTHENTIFICATION
+           ========================================== */
+        .auth-wrapper { 
+            display: flex; flex-direction: column; justify-content: center; 
+            height: 100%; padding: 30px; background: var(--white);
+        }
+        .auth-logo { 
+            font-size: 36px; font-weight: 700; color: var(--olive-main); 
+            text-align: center; margin-bottom: 10px; letter-spacing: -1px;
+        }
+        .auth-subtitle { text-align: center; color: var(--text-muted); margin-bottom: 40px; font-size: 14px; }
+
+        /* ==========================================
+           4. HEADER & NAVIGATION (Instagram Style)
+           ========================================== */
+        header { 
+            padding: 15px 20px; display: flex; justify-content: space-between; 
+            align-items: center; background: var(--white); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .logo-text { font-size: 22px; font-weight: 700; color: var(--olive-main); }
+        
+        nav { 
+            position: absolute; bottom: 0; width: 100%; height: 65px; 
+            background: var(--white); border-top: 1px solid var(--border); 
+            display: flex; justify-content: space-around; align-items: center; z-index: 20;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-icon { cursor: pointer; padding: 10px; color: var(--text-main); transition: 0.2s; }
+        .nav-icon svg { width: 26px; height: 26px; }
+        .nav-icon:active { transform: scale(0.9); color: var(--olive-main); }
+
+        /* ==========================================
+           5. STORIES & FEED
+           ========================================== */
+        .stories-container { 
+            display: flex; gap: 15px; padding: 15px 20px; overflow-x: auto; 
+            background: var(--white); border-bottom: 1px solid var(--border); 
+        }
+        .stories-container::-webkit-scrollbar { display: none; }
+        .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+        .story-ring { 
+            width: 70px; height: 70px; border-radius: 50%; padding: 3px; 
+            background: linear-gradient(45deg, var(--olive-main), #b4d374); 
+        }
+        .story-ring img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--white); object-fit: cover; }
+        .story-name { font-size: 11px; font-weight: 600; color: var(--text-muted); max-width: 65px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+
+        .post { background: var(--white); margin-bottom: 10px; border-bottom: 1px solid var(--border); }
+        .post-header { display: flex; align-items: center; padding: 12px 15px; gap: 10px; }
+        .post-header img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
+        .post-header-name { font-weight: 600; font-size: 14px; }
+        
+        .post-image { width: 100%; max-height: 500px; object-fit: cover; }
+        
+        .post-actions { padding: 12px 15px; display: flex; gap: 15px; }
+        .post-actions svg { width: 24px; height: 24px; cursor: pointer; }
+        
+        .post-caption { padding: 0 15px 15px; font-size: 14px; line-height: 1.5; }
+        .post-caption strong { font-weight: 600; margin-right: 5px; }
+
+        /* ==========================================
+           6. PROFIL
+           ========================================== */
+        .profile-header { padding: 20px; background: var(--white); border-bottom: 1px solid var(--border); }
+        .profile-top { display: flex; align-items: center; gap: 20px; margin-bottom: 15px; }
+        .profile-avatar-wrapper { position: relative; width: 85px; height: 85px; cursor: pointer; }
+        .profile-avatar-wrapper img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
+        .profile-avatar-wrapper .edit-badge { position: absolute; bottom: 0; right: 0; background: var(--olive-main); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 2px solid white; font-size: 12px; }
+        
+        .profile-stats { display: flex; flex-grow: 1; justify-content: space-around; text-align: center; }
+        .profile-stats div { display: flex; flex-direction: column; font-size: 13px; color: var(--text-muted); }
+        .profile-stats strong { font-size: 18px; color: var(--text-main); font-weight: 700; }
+        
+        .profile-bio h2 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .profile-bio p { font-size: 14px; color: var(--text-main); white-space: pre-wrap; margin-bottom: 15px;}
+        
+        .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--bg-tint); }
+        .profile-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+
+        /* ==========================================
+           7. MODALES & OVERLAYS
+           ========================================== */
+        .overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg-tint); z-index: 100; display: none; flex-direction: column; 
+        }
+        .overlay.active { display: flex; animation: fadeIn 0.2s ease; }
+        .ov-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 20px; background: var(--white); border-bottom: 1px solid var(--border); 
+            font-weight: 600; font-size: 16px;
+        }
+        .ov-header .close { cursor: pointer; color: var(--text-muted); }
+        .ov-header .action { cursor: pointer; color: var(--olive-main); font-weight: 700; }
+
+        .upload-placeholder { 
+            width: 100%; aspect-ratio: 1/1; background: var(--white); 
+            border: 2px dashed var(--border); border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; 
+            color: var(--text-muted); cursor: pointer; overflow: hidden; position: relative;
+        }
+
+        #toast { 
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); 
+            background: rgba(38, 38, 38, 0.9); color: white; padding: 12px 24px; 
+            border-radius: 30px; font-size: 14px; font-weight: 600; z-index: 1000; 
+            display: none; box-shadow: var(--shadow); white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -66,139 +188,197 @@
 <input type="file" id="file-input" accept="image/*" class="hidden">
 
 <div id="app">
-    <header>
-        <div class="logo">AymaneGramm</div>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-    </header>
-
-    <div class="stories-container" id="stories-list">
-        <div class="story" onclick="triggerUpload('story')">
-            <div class="story-img-wrapper" style="background: #e0e0e0;">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aymane" id="my-avatar">
-            </div>
-            <span>Ta story</span>
+    <div id="screen-auth" class="screen active">
+        <div class="auth-wrapper">
+            <div class="auth-logo">AymaneSocial</div>
+            <p class="auth-subtitle">Connecte-toi ou inscris-toi pour continuer</p>
+            <input type="email" id="auth-email" placeholder="Adresse e-mail">
+            <input type="password" id="auth-password" placeholder="Mot de passe">
+            <button class="btn" onclick="handleAuth()">Connexion / Inscription</button>
+            <p style="text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-muted);">
+                Si ton compte n'existe pas, il sera créé automatiquement de manière sécurisée.
+            </p>
         </div>
-        </div>
-
-    <div class="feed" id="feed-list">
-        <p style="text-align: center; margin-top: 50px; color: #888;">Chargement des posts...</p>
     </div>
 
-    <nav>
-        <div class="nav-item" onclick="location.reload()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <header id="main-header" class="hidden">
+        <div class="logo-text">AymaneSocial</div>
+        <div style="cursor:pointer; color: var(--text-main);" onclick="showOverlay('ov-messages')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
         </div>
-        <div class="nav-item">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </header>
+
+    <div id="screen-home" class="screen">
+        <div class="stories-container" id="stories-list">
+            <div class="story-item" onclick="triggerUpload('story')">
+                <div class="story-ring" style="background: var(--border);">
+                    <img src="https://ui-avatars.com/api/?name=Moi&background=efefef&color=556B2F" id="my-story-avatar">
+                </div>
+                <span class="story-name">Ta story</span>
+            </div>
+            </div>
+        <div id="feed-list" style="padding-bottom: 20px;"></div>
+    </div>
+
+    <div id="screen-search" class="screen">
+        <div style="padding: 20px;">
+            <input type="text" id="search-input" placeholder="Rechercher des amis (ex: aymane)..." oninput="searchUsers()" style="background:var(--white);">
+            <div id="search-results" style="margin-top: 15px; background:var(--white); border-radius:12px; overflow:hidden;"></div>
         </div>
-        <div class="btn-add" onclick="openPostModal()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+
+    <div id="screen-profile" class="screen">
+        <div class="profile-header">
+            <div class="profile-top">
+                <div class="profile-avatar-wrapper" onclick="triggerUpload('avatar')">
+                    <img src="https://ui-avatars.com/api/?name=User" id="prof-avatar">
+                    <div class="edit-badge">✎</div>
+                </div>
+                <div class="profile-stats">
+                    <div><strong id="stat-posts">0</strong> posts</div>
+                    <div><strong id="stat-followers">0</strong> abonnés</div>
+                    <div><strong id="stat-following">0</strong> suivis</div>
+                </div>
+            </div>
+            <div class="profile-bio">
+                <h2 id="prof-username">@Utilisateur</h2>
+                <p id="prof-bio-text">Bienvenue sur mon profil AymaneSocial.</p>
+                <button class="btn btn-outline" style="padding: 8px; font-size:13px;" onclick="showOverlay('ov-edit-profile')">Modifier profil</button>
+            </div>
         </div>
-        <div class="nav-item">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div class="profile-grid" id="prof-grid"></div>
+    </div>
+
+    <nav id="main-nav" class="hidden">
+        <div class="nav-icon" onclick="switchScreen('home')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </div>
+        <div class="nav-icon" onclick="switchScreen('search')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div class="nav-icon" onclick="showOverlay('ov-create-post')" style="color: var(--olive-main);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="nav-icon" onclick="switchScreen('profile')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
     </nav>
 
-    <div id="modal-post" class="modal">
-        <div class="modal-header">
-            <span style="cursor:pointer;" onclick="closeModal()">Annuler</span>
+    <div id="ov-create-post" class="overlay">
+        <div class="ov-header">
+            <span class="close" onclick="hideOverlay('ov-create-post')">Annuler</span>
             <span>Nouveau Post</span>
-            <span style="color:var(--olive); cursor:pointer;" onclick="publishPost()">Partager</span>
+            <span class="action" onclick="publishPost()">Publier</span>
         </div>
-        <div class="modal-body">
-            <div style="width: 100%; aspect-ratio: 1/1; background: #eee; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden;" onclick="triggerUpload('post')">
-                <span id="post-placeholder" style="color: #888;">Appuie pour choisir une photo</span>
-                <img id="post-preview" src="" class="hidden" style="width: 100%; height: 100%; object-fit: cover;">
+        <div style="padding: 20px;">
+            <div class="upload-placeholder" onclick="triggerUpload('post')">
+                <span id="post-ph">Appuyer pour ajouter une photo</span>
+                <img id="post-preview" class="hidden" style="width:100%; height:100%; object-fit:cover;">
             </div>
-            <textarea id="post-caption" rows="3" placeholder="Écris une légende (ex: 1er poste ta3i letss goo)..."></textarea>
+            <textarea id="post-caption" rows="4" placeholder="Écris une légende..." style="margin-top:20px; border:none; border-bottom:1px solid var(--border); border-radius:0; background:transparent;"></textarea>
         </div>
     </div>
+
+    <div id="ov-edit-profile" class="overlay">
+        <div class="ov-header">
+            <span class="close" onclick="hideOverlay('ov-edit-profile')">Annuler</span>
+            <span>Modifier Profil</span>
+            <span class="action" onclick="saveProfile()">Enregistrer</span>
+        </div>
+        <div style="padding: 20px;">
+            <label style="font-size:12px; color:var(--text-muted); margin-bottom:5px; display:block;">Nom d'utilisateur</label>
+            <input type="text" id="edit-username" placeholder="Pseudo">
+            <label style="font-size:12px; color:var(--text-muted); margin-bottom:5px; display:block; margin-top:10px;">Biographie</label>
+            <textarea id="edit-bio" rows="4" placeholder="Ta biographie"></textarea>
+        </div>
+    </div>
+
+    <div id="ov-messages" class="overlay">
+        <div class="ov-header">
+            <span class="close" onclick="hideOverlay('ov-messages')">Retour</span>
+            <span>Boîte de réception</span>
+            <span></span>
+        </div>
+        <div id="msg-list" style="padding: 20px; text-align:center; color:var(--text-muted);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="60" height="60" style="margin-bottom:15px; opacity:0.5;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            <p>La messagerie sera connectée aux autres utilisateurs bientôt.</p>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    // --- CONFIGURATION SUPABASE ---
+    // ==========================================
+    // CONFIGURATION SUPABASE
+    // ==========================================
     const SURL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
     const SKEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
     const supabase = window.supabase.createClient(SURL, SKEY);
 
-    // Utilisateur fictif pour le test (On remplace l'auth complexe pour que ça marche direct)
-    const mockUser = {
-        id: "test-user-id", // À remplacer par user.id si tu mets un système de login
-        username: "Aymane_Pro",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Aymane"
-    };
-
+    let currentUser = null;
+    let uploadTarget = ''; 
     let tempBase64 = null;
-    let uploadMode = ''; // 'post' ou 'story'
 
-    // --- INITIALISATION ---
-    async function init() {
-        loadPosts();
-        loadStories();
+    // ==========================================
+    // FONCTIONS UTILITAIRES
+    // ==========================================
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen-' + id).classList.add('active');
+        if (id === 'home') { loadFeed(); loadStories(); }
+        if (id === 'profile') loadMyProfile();
+    }
+    function showOverlay(id) { document.getElementById(id).classList.add('active'); }
+    function hideOverlay(id) { document.getElementById(id).classList.remove('active'); tempBase64 = null; }
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg; t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
     }
 
-    // --- RECUPERATION DES POSTS ---
-    async function loadPosts() {
-        const feed = document.getElementById('feed-list');
-        // On va chercher les posts dans la base de données
-        const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+    // ==========================================
+    // AUTHENTIFICATION INTELLIGENTE
+    // ==========================================
+    async function handleAuth() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        if (!email || !password) return toast("Remplis tous les champs");
+
+        toast("Connexion en cours...");
+        let { data, error } = await supabase.auth.signInWithPassword({ email, password });
         
         if (error) {
-            console.error(error);
-            feed.innerHTML = `<p style="text-align: center; color: red;">Erreur: ${error.message}</p>`;
-            return;
+            toast("Création du compte...");
+            const res = await supabase.auth.signUp({ email, password });
+            if (res.error) return toast("Erreur: " + res.error.message);
+            data = res.data;
+            // Créer le profil initial avec un pseudo généré
+            const pseudo = email.split('@')[0] + Math.floor(Math.random()*100);
+            await supabase.from('profiles').insert([{ 
+                id: data.user.id, 
+                username: pseudo,
+                avatar_url: `https://ui-avatars.com/api/?name=${pseudo}&background=556B2F&color=fff`
+            }]);
         }
 
-        feed.innerHTML = '';
-        if (data.length === 0) {
-            feed.innerHTML = '<p style="text-align: center; padding: 40px; color: #888;">Sois le premier à poster !</p>';
-        }
-
-        data.forEach(post => {
-            // Affichage avec la légende (caption) !
-            feed.innerHTML += `
-                <div class="post">
-                    <div class="post-header">
-                        <img src="${mockUser.avatar}" alt="avatar">
-                        <span>${mockUser.username}</span>
-                    </div>
-                    <img src="${post.image_url}" class="post-image" alt="Post">
-                    <div class="post-actions">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                    </div>
-                    <div class="post-caption">
-                        <span>${mockUser.username}</span> ${post.caption || ''}
-                    </div>
-                </div>
-            `;
-        });
+        currentUser = data.user;
+        initApp();
     }
 
-    // --- RECUPERATION DES STORIES ---
-    async function loadStories() {
-        const container = document.getElementById('stories-list');
-        const { data } = await supabase.from('stories').select('*').order('created_at', { ascending: false });
-        
-        // On garde la story de l'utilisateur (le premier élément) et on efface le reste
-        const myStoryHTML = container.firstElementChild.outerHTML;
-        container.innerHTML = myStoryHTML;
-
-        data?.forEach((story, index) => {
-            container.innerHTML += `
-                <div class="story">
-                    <div class="story-img-wrapper">
-                        <img src="${story.image_url}">
-                    </div>
-                    <span>Story ${index + 1}</span>
-                </div>
-            `;
-        });
+    async function initApp() {
+        document.getElementById('screen-auth').classList.remove('active');
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('main-nav').classList.remove('hidden');
+        await loadMyProfile();
+        switchScreen('home');
+        toast("Bienvenue sur AymaneSocial !");
     }
 
-    // --- GESTION UPLOAD IMAGE (BASE64) ---
-    function triggerUpload(mode) {
-        uploadMode = mode;
+    // ==========================================
+    // GESTION DES IMAGES (SANS URL MANUELLE)
+    // ==========================================
+    function triggerUpload(target) {
+        uploadTarget = target;
         document.getElementById('file-input').click();
     }
 
@@ -206,79 +386,160 @@
         const file = e.target.files[0];
         if (!file) return;
 
+        // Limiter la taille pour ne pas saturer la DB (facultatif mais pro)
+        if(file.size > 3000000) return toast("L'image est trop lourde (Max 3MB)");
+
         const reader = new FileReader();
-        reader.onloadend = function() {
+        reader.onloadend = async function() {
             tempBase64 = reader.result;
             
-            if (uploadMode === 'post') {
+            if (uploadTarget === 'post') {
                 document.getElementById('post-preview').src = tempBase64;
                 document.getElementById('post-preview').classList.remove('hidden');
-                document.getElementById('post-placeholder').classList.add('hidden');
-            } else if (uploadMode === 'story') {
-                publishStory(tempBase64);
+                document.getElementById('post-ph').classList.add('hidden');
+            } else if (uploadTarget === 'avatar') {
+                document.getElementById('prof-avatar').src = tempBase64;
+                await supabase.from('profiles').update({ avatar_url: tempBase64 }).eq('id', currentUser.id);
+                toast("Photo de profil mise à jour !");
+            } else if (uploadTarget === 'story') {
+                toast("Publication de la story...");
+                await supabase.from('stories').insert([{ user_id: currentUser.id, image_url: tempBase64 }]);
+                toast("Story publiée !");
+                loadStories();
             }
         };
-        reader.readAsDataURL(file); // Convertit l'image en texte pour éviter l'erreur d'URL
+        reader.readAsDataURL(file);
     });
 
-    // --- PUBLIER UN POST ---
+    // ==========================================
+    // LOGIQUE METIER (POSTS, STORIES, PROFIL)
+    // ==========================================
     async function publishPost() {
-        if (!tempBase64) return showToast("Veuillez sélectionner une image !");
+        if (!tempBase64) return toast("Choisis une photo !");
+        const caption = document.getElementById('post-caption').value;
         
-        const captionText = document.getElementById('post-caption').value;
-        showToast("Publication en cours...");
-
-        // On insère l'image ET la caption dans la table 'posts'
-        const { error } = await supabase.from('posts').insert([
-            { image_url: tempBase64, caption: captionText }
-        ]);
-
-        if (error) {
-            console.error(error);
-            showToast("Erreur: " + error.message);
-        } else {
-            showToast("Publié avec succès !");
-            closeModal();
-            loadPosts(); // On recharge le feed
-        }
-    }
-
-    // --- PUBLIER UNE STORY ---
-    async function publishStory(base64Image) {
-        showToast("Ajout à la story...");
-        const { error } = await supabase.from('stories').insert([
-            { image_url: base64Image }
-        ]);
+        toast("Publication...");
+        const { error } = await supabase.from('posts').insert([{ user_id: currentUser.id, image_url: tempBase64, caption }]);
         
-        if (!error) {
-            showToast("Story ajoutée !");
-            loadStories();
-        }
-    }
-
-    // --- UTILITAIRES ---
-    function openPostModal() {
-        document.getElementById('modal-post').classList.add('active');
-    }
-    
-    function closeModal() {
-        document.getElementById('modal-post').classList.remove('active');
-        document.getElementById('post-preview').classList.add('hidden');
-        document.getElementById('post-placeholder').classList.remove('hidden');
+        if (error) return toast("Erreur SQL: " + error.message);
+        
+        toast("Post publié avec succès !");
+        hideOverlay('ov-create-post');
         document.getElementById('post-caption').value = '';
-        tempBase64 = null;
+        document.getElementById('post-preview').classList.add('hidden');
+        document.getElementById('post-ph').classList.remove('hidden');
+        if(document.getElementById('screen-home').classList.contains('active')) loadFeed();
     }
 
-    function showToast(msg) {
-        const toast = document.getElementById('toast');
-        toast.innerText = msg;
-        toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 3000);
+    async function loadFeed() {
+        const { data } = await supabase.from('posts').select('*, profiles(username, avatar_url)').order('created_at', { ascending: false });
+        const feed = document.getElementById('feed-list');
+        feed.innerHTML = '';
+        
+        if (!data || data.length === 0) {
+            feed.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">Aucun post pour le moment. Sois le premier !</div>'; return;
+        }
+
+        data.forEach(p => {
+            const user = p.profiles || { username: 'Inconnu', avatar_url: 'https://ui-avatars.com/api/?name=?' };
+            feed.innerHTML += `
+                <div class="post">
+                    <div class="post-header">
+                        <img src="${user.avatar_url}">
+                        <span class="post-header-name">${user.username}</span>
+                    </div>
+                    <img src="${p.image_url}" class="post-image">
+                    <div class="post-actions">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    </div>
+                    <div class="post-caption">
+                        <strong>${user.username}</strong> ${p.caption || ''}
+                    </div>
+                </div>
+            `;
+        });
     }
 
-    // Lancement au démarrage
-    init();
+    async function loadStories() {
+        const { data } = await supabase.from('stories').select('*, profiles(username, avatar_url)').order('created_at', { ascending: false });
+        const container = document.getElementById('stories-list');
+        const myStoryBtn = container.children[0].outerHTML;
+        container.innerHTML = myStoryBtn;
 
+        data?.forEach(s => {
+            const user = s.profiles || { username: 'User' };
+            container.innerHTML += `
+                <div class="story-item">
+                    <div class="story-ring"><img src="${s.image_url}"></div>
+                    <span class="story-name">${user.username}</span>
+                </div>
+            `;
+        });
+    }
+
+    async function loadMyProfile() {
+        const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+        if (!data) return;
+        
+        document.getElementById('prof-username').innerText = "@" + data.username;
+        document.getElementById('prof-bio-text').innerText = data.bio || "Ajoute une bio...";
+        if (data.avatar_url) {
+            document.getElementById('prof-avatar').src = data.avatar_url;
+            document.getElementById('my-story-avatar').src = data.avatar_url;
+        }
+
+        document.getElementById('edit-username').value = data.username;
+        document.getElementById('edit-bio').value = data.bio || "";
+
+        const posts = await supabase.from('posts').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+        document.getElementById('stat-posts').innerText = posts.data ? posts.data.length : 0;
+        
+        const grid = document.getElementById('prof-grid');
+        grid.innerHTML = '';
+        posts.data?.forEach(p => grid.innerHTML += `<img src="${p.image_url}">`);
+        
+        // Count Followers (Simplifié)
+        const followers = await supabase.from('follows').select('*', { count: 'exact' }).eq('following_id', currentUser.id);
+        const following = await supabase.from('follows').select('*', { count: 'exact' }).eq('follower_id', currentUser.id);
+        document.getElementById('stat-followers').innerText = followers.count || 0;
+        document.getElementById('stat-following').innerText = following.count || 0;
+    }
+
+    async function saveProfile() {
+        const username = document.getElementById('edit-username').value;
+        const bio = document.getElementById('edit-bio').value;
+        await supabase.from('profiles').update({ username, bio }).eq('id', currentUser.id);
+        toast("Profil mis à jour !");
+        hideOverlay('ov-edit-profile');
+        loadMyProfile();
+    }
+
+    async function searchUsers() {
+        const query = document.getElementById('search-input').value;
+        if(query.length < 2) return;
+        
+        const { data } = await supabase.from('profiles').select('*').ilike('username', `%${query}%`).neq('id', currentUser.id);
+        const res = document.getElementById('search-results');
+        res.innerHTML = '';
+        
+        data?.forEach(u => {
+            res.innerHTML += `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border-bottom:1px solid var(--border);">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name='+u.username}" style="width:45px; height:45px; border-radius:50%; object-fit:cover;">
+                        <strong style="font-size:14px;">${u.username}</strong>
+                    </div>
+                    <button class="btn" style="width:auto; padding:8px 16px; border-radius:20px; font-size:12px;" onclick="followUser('${u.id}')">S'abonner</button>
+                </div>
+            `;
+        });
+    }
+
+    async function followUser(userId) {
+        await supabase.from('follows').insert([{ follower_id: currentUser.id, following_id: userId }]);
+        toast("Abonnement réussi !");
+    }
 </script>
 </body>
 </html>
