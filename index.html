@@ -3,515 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AymaneGramm</title>
+    <title>AymaneGramm Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* ==========================================================================
-           VARIABLES & THÈME AYMANEGRAMM (Olive rgb(128,128,0))
-           ========================================================================== */
+        /* --- THÈME OLIVE & CONFIGURATION CSS --- */
         :root {
-            --primary: rgb(128, 128, 0); 
-            --primary-dark: rgb(100, 100, 0);
-            --primary-light: rgba(128, 128, 0, 0.1);
-            --bg-color: #fafafa;
-            --card-bg: #ffffff;
-            --text-main: #262626;
-            --text-muted: #8e8e8e;
-            --border-light: #dbdbdb;
-            --nav-h: 50px;
-            --top-h: 60px;
-            --radius-sm: 8px;
-            --transition: all 0.2s ease;
+            --olive: rgb(128, 128, 0);
+            --olive-dark: rgb(100, 100, 0);
+            --olive-light: rgba(128, 128, 0, 0.1);
+            --bg: #fafafa;
+            --border: #dbdbdb;
+            --text: #262626;
+            --white: #ffffff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body, html { height: 100%; width: 100%; background-color: #fafafa; display: flex; justify-content: center; overflow: hidden; color: var(--text-main); }
-        
-        #app-wrapper { width: 100%; max-width: 428px; height: 100%; height: 100dvh; background: var(--card-bg); position: relative; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid var(--border-light); border-right: 1px solid var(--border-light); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); overflow: hidden; height: 100vh; width: 100vw; display: flex; justify-content: center; }
 
-        /* ==========================================================================
-           UI COMPONENTS
-           ========================================================================== */
-        input, textarea { width: 100%; padding: 12px 16px; margin-bottom: 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); background: #fafafa; font-size: 14px; color: var(--text-main); }
-        input:focus, textarea:focus { outline: none; border-color: var(--text-muted); }
-        
-        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; transition: var(--transition); }
-        button:hover { background: var(--primary-dark); }
-        button.secondary { background: transparent; color: var(--text-main); border: 1px solid var(--border-light); }
-        button.text-only { background: transparent; color: var(--primary); padding: 0; width: auto; }
-        
-        .avatar { border-radius: 50%; object-fit: cover; background: #efefef; }
-        .avatar-sm { width: 32px; height: 32px; }
-        .avatar-md { width: 56px; height: 56px; }
-        .avatar-lg { width: 86px; height: 86px; }
+        #app-container {
+            width: 100%; max-width: 450px; height: 100%; background: var(--white);
+            position: relative; display: flex; flex-direction: column;
+            border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+        }
 
-        .toast { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: #262626; color: white; padding: 12px 20px; border-radius: 8px; font-size: 14px; z-index: 10000; display: none; }
+        /* --- HEADER & NAVIGATION --- */
+        header {
+            height: 60px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 16px; flex-shrink: 0; background: var(--white); z-index: 10;
+        }
+        .logo { font-size: 22px; font-weight: 800; color: var(--olive); letter-spacing: -1px; }
 
-        /* ==========================================================================
-           LAYOUT (HEADER, NAV, SCREENS)
-           ========================================================================== */
-        .screen { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--card-bg); }
-        .screen.active { display: flex; }
+        nav {
+            height: 60px; border-top: 1px solid var(--border);
+            display: flex; justify-content: space-around; align-items: center;
+            background: var(--white); padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-icon { cursor: pointer; color: var(--text); transition: 0.2s; }
+        .nav-icon.active { color: var(--olive); }
 
-        .app-header { height: var(--top-h); background: var(--card-bg); border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex-shrink: 0; z-index: 50; }
-        .app-title { font-size: 22px; font-weight: 700; font-family: cursive; letter-spacing: -0.5px; } /* Style Insta */
-        
-        .bottom-nav { height: var(--nav-h); background: var(--card-bg); border-top: 1px solid var(--border-light); display: flex; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 50; padding-bottom: env(safe-area-inset-bottom);}
-        .nav-item { cursor: pointer; padding: 10px; color: var(--text-main); transition: transform 0.1s; }
-        .nav-item:active { transform: scale(0.9); }
-        .nav-item svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; }
-        .nav-item.active svg { stroke-width: 3; }
-        
-        #content-area { flex-grow: 1; overflow-y: auto; overflow-x: hidden; }
-        #content-area::-webkit-scrollbar { display: none; }
-        .tab-content { display: none; padding-bottom: 20px; min-height: 100%; }
-        .tab-content.active { display: block; }
+        /* --- ÉCRANS --- */
+        .screen { flex-grow: 1; overflow-y: auto; display: none; padding-bottom: 20px; }
+        .screen.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ==========================================================================
-           STORIES (FONCTIONNELLES)
-           ========================================================================== */
-        .stories-bar { display: flex; gap: 15px; padding: 12px 16px; overflow-x: auto; border-bottom: 1px solid var(--border-light); background: var(--card-bg); }
-        .stories-bar::-webkit-scrollbar { display: none; }
-        .story-item { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; cursor: pointer; position: relative; }
-        .story-ring { padding: 2px; background: linear-gradient(45deg, var(--primary), #eab308); border-radius: 50%; }
-        .story-ring.viewed { background: var(--border-light); }
-        .story-ring img { width: 60px; height: 60px; border: 2px solid var(--card-bg); border-radius: 50%; display: block; }
-        .story-name { font-size: 11px; color: var(--text-main); max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .add-story-btn { position: absolute; bottom: 18px; right: 0; background: var(--primary); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--card-bg); font-weight: bold; font-size: 12px; }
+        /* --- STORIES --- */
+        .stories-container {
+            display: flex; gap: 12px; padding: 15px; border-bottom: 1px solid var(--border);
+            overflow-x: auto; scrollbar-width: none;
+        }
+        .story { display: flex; flex-direction: column; align-items: center; min-width: 70px; gap: 5px; }
+        .story-circle {
+            width: 66px; height: 66px; border-radius: 50%; padding: 2px;
+            background: linear-gradient(45deg, var(--olive), #f09433);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .story-circle img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+        .story span { font-size: 11px; max-width: 65px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* Story Viewer Fullscreen */
-        #story-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; flex-direction: column; }
-        .story-viewer-header { padding: 20px 16px; display: flex; align-items: center; gap: 10px; color: white; position: absolute; top: 0; width: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent); }
-        .story-viewer-close { margin-left: auto; cursor: pointer; font-size: 24px; }
-        .story-viewer-img { width: 100%; height: 100%; object-fit: contain; }
+        /* --- POSTS --- */
+        .post { margin-bottom: 20px; border-bottom: 1px solid #eee; }
+        .post-header { display: flex; align-items: center; padding: 10px 15px; gap: 10px; }
+        .post-header img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .post-img { width: 100%; aspect-ratio: 1/1; background: #efefef; object-fit: cover; }
+        .post-info { padding: 12px 15px; }
+        .post-user { font-weight: 700; font-size: 14px; margin-right: 5px; }
+        .post-cap { font-size: 14px; line-height: 1.4; }
 
-        /* ==========================================================================
-           POSTS FEED
-           ========================================================================== */
-        .post-card { background: var(--card-bg); margin-bottom: 12px; border-bottom: 1px solid var(--border-light); }
-        .post-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; }
-        .post-user { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; cursor: pointer; }
-        .post-img-box { width: 100%; aspect-ratio: 1; background: #efefef; display: flex; align-items: center; justify-content: center; }
-        .post-img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .post-actions { padding: 10px 16px 6px; display: flex; gap: 16px; }
-        .action-icon { width: 24px; height: 24px; fill: none; stroke: var(--text-main); stroke-width: 2; cursor: pointer; }
-        .post-likes { padding: 0 16px; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-        .post-caption { padding: 0 16px; font-size: 14px; line-height: 1.4; margin-bottom: 4px; }
-        .post-date { padding: 0 16px 12px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+        /* --- PROFILE --- */
+        .prof-top { padding: 20px 15px; display: flex; align-items: center; gap: 25px; }
+        .prof-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
+        .prof-details { flex-grow: 1; }
+        .prof-user { font-size: 20px; font-weight: 600; margin-bottom: 10px; }
+        .prof-edit-btn { 
+            padding: 8px; width: 100%; border: 1px solid var(--border); 
+            border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+        }
 
-        /* ==========================================================================
-           MESSAGERIE (NOUVEAU)
-           ========================================================================== */
-        .chat-list-item { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; transition: background 0.2s; }
-        .chat-list-item:hover { background: #fafafa; }
-        .chat-info { margin-left: 12px; flex-grow: 1; }
-        .chat-name { font-weight: 600; font-size: 14px; }
-        .chat-preview { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+        /* --- MESSAGERIE --- */
+        .chat-item { display: flex; align-items: center; padding: 15px; gap: 15px; cursor: pointer; }
+        .chat-item:active { background: #f0f0f0; }
 
-        #chat-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--card-bg); z-index: 1000; display: none; flex-direction: column; transform: translateX(100%); transition: transform 0.3s; }
-        #chat-window.active { display: flex; transform: translateX(0); }
-        .chat-header { height: var(--top-h); border-bottom: 1px solid var(--border-light); display: flex; align-items: center; padding: 0 16px; gap: 15px; font-weight: 600; }
-        .chat-messages { flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #fafafa; }
-        .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
-        .msg-received { background: #efefef; color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; }
-        .msg-sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .chat-input-area { padding: 12px 16px; border-top: 1px solid var(--border-light); display: flex; gap: 10px; align-items: center; background: var(--card-bg); }
-        .chat-input-area input { margin: 0; border-radius: 20px; padding: 10px 16px; }
-
-        /* ==========================================================================
-           AUTH & OVERLAYS
-           ========================================================================== */
-        .auth-container { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
-        .auth-logo { font-family: cursive; font-size: 36px; margin-bottom: 30px; }
-        
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--card-bg); z-index: 900; display: none; flex-direction: column; transform: translateY(100%); transition: transform 0.3s; }
+        /* --- MODALES & OVERLAYS --- */
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 100; display: none; flex-direction: column;
+            transform: translateY(100%); transition: 0.3s ease-in-out;
+        }
         .overlay.active { display: flex; transform: translateY(0); }
-        .overlay-header { height: var(--top-h); border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-weight: 600; }
-        .overlay-content { padding: 16px; overflow-y: auto; }
+        .ov-header { height: 60px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
         
-        /* Profile Grid */
-        .profile-header { padding: 16px; display: flex; align-items: center; gap: 20px; }
-        .profile-stats { display: flex; gap: 20px; flex-grow: 1; justify-content: center; }
-        .stat-box { text-align: center; }
-        .stat-num { font-weight: 700; font-size: 16px; }
-        .stat-lbl { font-size: 13px; color: var(--text-main); }
-        .post-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-        .grid-item { aspect-ratio: 1; background: #efefef; }
-        .grid-item img { width: 100%; height: 100%; object-fit: cover; }
+        /* --- BUTTONS & INPUTS --- */
+        input, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; background: #fafafa; }
+        .btn-primary { background: var(--olive); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; width: 100%; cursor: pointer; }
+        
+        .upload-zone {
+            width: 100%; aspect-ratio: 1/1; border: 2px dashed var(--border); 
+            border-radius: 12px; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; cursor: pointer; margin-bottom: 20px;
+        }
+        .preview-img { width: 100%; height: 100%; object-fit: cover; display: none; border-radius: 10px; }
+
+        #toast {
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: #333; color: white; padding: 10px 20px; border-radius: 20px;
+            font-size: 13px; z-index: 1000; display: none;
+        }
     </style>
 </head>
 <body>
 
-<div id="toast" class="toast">Message</div>
+<div id="toast">Message</div>
+<input type="file" id="file-input" accept="image/*" style="display:none">
 
-<div id="app-wrapper">
-    
-    <div id="screen-auth" class="screen active">
-        <div class="auth-container" id="view-login">
-            <div class="auth-logo">AymaneGramm</div>
-            <input type="email" id="login-email" placeholder="Adresse e-mail" />
-            <input type="password" id="login-pwd" placeholder="Mot de passe" />
-            <button onclick="login()">Se connecter</button>
-            <div style="margin-top:20px; font-size:14px;">Vous n'avez pas de compte ? <span style="color:var(--primary); font-weight:600; cursor:pointer;" onclick="toggleAuth('view-signup')">Inscrivez-vous</span></div>
-        </div>
-
-        <div class="auth-container" id="view-signup" style="display: none;">
-            <div class="auth-logo">AymaneGramm</div>
-            <input type="email" id="signup-email" placeholder="Adresse e-mail" />
-            <input type="password" id="signup-pwd" placeholder="Créer un mot de passe" />
-            <button onclick="signup()">S'inscrire</button>
-            <div style="margin-top:20px; font-size:14px;">Vous avez un compte ? <span style="color:var(--primary); font-weight:600; cursor:pointer;" onclick="toggleAuth('view-login')">Connectez-vous</span></div>
-        </div>
-
-        <div class="auth-container" id="view-setup" style="display: none;">
-            <div class="auth-logo">Bienvenue</div>
-            <p style="margin-bottom: 20px; text-align:center; font-size:14px; color:var(--text-muted);">Crée ton profil pour commencer</p>
-            <input type="text" id="setup-username" placeholder="Nom d'utilisateur" />
-            <button onclick="saveInitialProfile()">Continuer</button>
-        </div>
+<div id="app-container">
+    <div id="screen-auth" class="screen active" style="display: flex; flex-direction: column; justify-content: center; padding: 40px;">
+        <h1 class="logo" style="text-align: center; font-size: 35px; margin-bottom: 30px;">AymaneGramm</h1>
+        <input type="email" id="auth-email" placeholder="Email">
+        <input type="password" id="auth-pwd" placeholder="Mot de passe">
+        <button class="btn-primary" onclick="handleAuth()">Se connecter / S'inscrire</button>
     </div>
 
-    <div id="screen-app" class="screen">
-        
-        <div class="app-header">
-            <div class="app-title">AymaneGramm</div>
-            <div style="display: flex; gap: 15px;">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" onclick="switchTab('messages')"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+    <div id="main-app" style="display:none; flex-direction: column; height: 100%;">
+        <header>
+            <div class="logo">AymaneGramm</div>
+            <div onclick="openOverlay('ov-messages')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            </div>
+        </header>
+
+        <div id="screen-home" class="screen active">
+            <div class="stories-container" id="list-stories">
+                <div class="story" onclick="triggerUpload('story')">
+                    <div class="story-circle" style="background: var(--border)"><img src="https://via.placeholder.com/100" id="my-story-img"></div>
+                    <span>Votre story</span>
+                </div>
+                <div id="other-stories" style="display: flex; gap: 12px;"></div>
+            </div>
+            <div id="feed">
+                <p style="text-align:center; padding:50px; color:#888;">Chargement du fil d'actualité...</p>
             </div>
         </div>
-        
-        <main id="content-area">
-            
-            <div id="tab-home" class="tab-content active">
-                <div class="stories-bar" id="stories-container">
-                    </div>
-                <div id="feed-container">
-                    <p style="text-align:center; padding: 40px; color:var(--text-muted);">Chargement du fil d'actualité...</p>
-                </div>
-            </div>
 
-            <div id="tab-search" class="tab-content">
-                <div style="padding: 16px;">
-                    <input type="text" id="search-input" placeholder="Rechercher des utilisateurs..." oninput="searchUsers()" style="border-radius: 8px; background:#efefef; border:none;">
-                </div>
+        <div id="screen-search" class="screen">
+            <div style="padding: 15px;">
+                <input type="text" placeholder="Rechercher un utilisateur..." oninput="searchUsers(this.value)">
                 <div id="search-results"></div>
             </div>
+        </div>
 
-            <div id="tab-messages" class="tab-content">
-                <div style="padding: 16px; font-weight:700; font-size:18px;">Messages</div>
-                <div id="chat-list-container">
-                    <p style="text-align:center; padding: 20px; color:var(--text-muted); font-size:14px;">Recherche un utilisateur pour lui envoyer un message.</p>
+        <div id="screen-profile" class="screen">
+            <div class="prof-top">
+                <img src="" id="user-avatar" class="prof-avatar">
+                <div class="prof-details">
+                    <div class="prof-user" id="user-name">Utilisateur</div>
+                    <button class="prof-edit-btn" onclick="openOverlay('ov-edit-profile')">Modifier le profil</button>
                 </div>
             </div>
+            <div id="user-posts-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;"></div>
+        </div>
 
-            <div id="tab-profile" class="tab-content">
-                <div class="profile-header">
-                    <img id="my-avatar" class="avatar avatar-lg" src="https://via.placeholder.com/150">
-                    <div class="profile-stats">
-                        <div class="stat-box"><div class="stat-num" id="my-posts-count">0</div><div class="stat-lbl">posts</div></div>
-                        <div class="stat-box"><div class="stat-num">0</div><div class="stat-lbl">abonnés</div></div>
-                    </div>
-                </div>
-                <div style="padding: 0 16px 16px;">
-                    <div style="font-weight: 600; font-size: 14px;" id="my-username">Nom utilisateur</div>
-                    <div style="font-size: 14px; margin-top: 4px;" id="my-bio">Biographie...</div>
-                    <button class="secondary" style="margin-top: 12px; padding: 6px;" onclick="openOverlay('ov-edit-profile')">Modifier le profil</button>
-                    <button class="secondary" style="margin-top: 8px; padding: 6px; color:red; border-color:red;" onclick="logout()">Déconnexion</button>
-                </div>
-                <div class="post-grid" id="my-grid"></div>
-            </div>
-
-        </main>
-
-        <nav class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('home', this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>
-            <div class="nav-item" onclick="switchTab('search', this)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-            <div class="nav-item" onclick="openOverlay('ov-create')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg></div>
-            <div class="nav-item" onclick="switchTab('profile', this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+        <nav>
+            <div class="nav-icon active" onclick="showTab('home', this)"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+            <div class="nav-icon" onclick="showTab('search', this)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <div class="nav-icon" onclick="openOverlay('ov-post')"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+            <div class="nav-icon" onclick="showTab('profile', this)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         </nav>
     </div>
 
-    <div id="ov-create" class="overlay">
-        <div class="overlay-header">
-            <span onclick="closeOverlay('ov-create')" style="cursor:pointer;">Annuler</span>
-            <span>Nouveau Post</span>
-            <span style="color:var(--primary); cursor:pointer;" onclick="submitPost()">Partager</span>
+    <div id="ov-post" class="overlay">
+        <div class="ov-header">
+            <span onclick="closeOverlay('ov-post')">Annuler</span>
+            <span style="font-weight:700">Nouveau Post</span>
+            <span style="color:var(--olive); font-weight:700" onclick="publishPost()">Partager</span>
         </div>
-        <div class="overlay-content">
-            <input type="file" id="file-post" accept="image/*" style="display:none;" onchange="previewImage(event, 'post-preview')">
-            <div style="width:100%; aspect-ratio:1; background:#efefef; display:flex; align-items:center; justify-content:center; cursor:pointer; margin-bottom:15px;" onclick="document.getElementById('file-post').click()">
-                <img id="post-preview" style="width:100%; height:100%; object-fit:cover; display:none;">
-                <span id="post-hint" style="color:var(--text-muted);">Toucher pour ajouter une photo</span>
+        <div style="padding: 20px;">
+            <div class="upload-zone" onclick="triggerUpload('post')">
+                <div id="post-placeholder">Toucher pour ajouter une photo</div>
+                <img id="post-preview" class="preview-img">
             </div>
-            <textarea id="post-caption" placeholder="Écrivez une légende..." rows="3" style="border:none; background:transparent; padding:0;"></textarea>
+            <textarea id="post-caption" placeholder="Écrire une légende..." rows="4"></textarea>
         </div>
     </div>
 
-    <div id="chat-window">
-        <div class="chat-header">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" onclick="closeChat()" style="cursor:pointer;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            <img id="chat-avatar" class="avatar avatar-sm" src="">
-            <span id="chat-title">Utilisateur</span>
+    <div id="ov-edit-profile" class="overlay">
+        <div class="ov-header">
+            <span onclick="closeOverlay('ov-edit-profile')">Annuler</span>
+            <span style="font-weight:700">Modifier Profil</span>
+            <span style="color:var(--olive); font-weight:700" onclick="saveProfile()">Enregistrer</span>
         </div>
-        <div class="chat-messages" id="chat-messages-container"></div>
-        <div class="chat-input-area">
-            <input type="text" id="chat-input" placeholder="Votre message...">
-            <button class="text-only" onclick="sendChatMessage()" style="font-weight:700;">Envoyer</button>
+        <div style="padding: 20px; text-align: center;">
+            <img src="" id="edit-avatar-preview" class="prof-avatar" style="margin-bottom: 10px;">
+            <p style="color:var(--olive); font-size: 14px; margin-bottom: 20px; cursor: pointer;" onclick="triggerUpload('avatar')">Changer la photo</p>
+            <input type="text" id="edit-username" placeholder="Nom d'utilisateur">
         </div>
     </div>
 
-    <div id="story-viewer">
-        <div class="story-viewer-header">
-            <img id="sv-avatar" class="avatar avatar-sm" src="">
-            <span id="sv-name" style="font-weight:600; font-size:14px;">Nom</span>
-            <div class="story-viewer-close" onclick="closeStory()">×</div>
+    <div id="ov-messages" class="overlay">
+        <div class="ov-header">
+            <span onclick="closeOverlay('ov-messages')">Retour</span>
+            <span style="font-weight:700">Direct</span>
+            <div style="width:40px"></div>
         </div>
-        <img id="sv-image" class="story-viewer-img" src="">
+        <div id="messages-list">
+             <p style="text-align:center; padding:50px; color:#888;">Recherchez un utilisateur pour discuter.</p>
+        </div>
     </div>
-
-    <input type="file" id="file-story" accept="image/*" style="display:none;" onchange="uploadStory(event)">
-
 </div>
 
 <script>
-    // TES CLÉS SUPABASE (Inchangées)
-    const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // CONFIG SUPABASE
+    const SURL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
+    const SKEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
+    const supabase = window.supabase.createClient(SURL, SKEY);
 
-    let currentUser = null;
-    let userProfile = null;
-    let activePostImage = null;
-    let currentChatUserId = null;
-
-    const DEF_AV = "https://via.placeholder.com/150";
-
-    function showMsg(m) { const t=document.getElementById('toast'); t.innerText=m; t.style.display='block'; setTimeout(()=>t.style.display='none',3000); }
-    function switchTab(tab, el) { 
-        document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active')); 
-        document.getElementById('tab-'+tab).classList.add('active');
-        if(el) { document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); el.classList.add('active'); }
-        if(tab==='home') { loadFeed(); loadStories(); }
-        if(tab==='profile') loadMyProfile();
-        if(tab==='messages') loadChatList();
-    }
-    function openOverlay(id) { document.getElementById(id).classList.add('active'); }
-    function closeOverlay(id) { document.getElementById(id).classList.remove('active'); }
-    function toggleAuth(id) { document.querySelectorAll('.auth-container').forEach(c=>c.style.display='none'); document.getElementById(id).style.display='flex'; }
+    let user = null;
+    let tempImg = null;
+    let currentUploadType = '';
 
     // AUTH
-    async function login() {
-        const e = document.getElementById('login-email').value, p = document.getElementById('login-pwd').value;
-        const { error } = await sb.auth.signInWithPassword({ email: e, password: p });
-        if(error) showMsg(error.message);
+    async function handleAuth() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-pwd').value;
+        
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+            const { data: logData, error: logErr } = await supabase.auth.signInWithPassword({ email, password });
+            if (logErr) return toast("Erreur: " + logErr.message);
+            user = logData.user;
+        } else {
+            user = data.user;
+            await supabase.from('profiles').insert([{ id: user.id, username: email.split('@')[0] }]);
+        }
+        startApp();
     }
-    async function signup() {
-        const e = document.getElementById('signup-email').value, p = document.getElementById('signup-pwd').value;
-        const { data, error } = await sb.auth.signUp({ email: e, password: p });
-        if(error) showMsg(error.message); else showMsg("Vérifiez vos emails !");
-    }
-    async function logout() { await sb.auth.signOut(); window.location.reload(); }
 
-    window.onload = async () => {
-        sb.auth.onAuthStateChange((e, session) => { if(session) checkUser(); else { document.getElementById('screen-auth').classList.add('active'); document.getElementById('screen-app').classList.remove('active'); }});
-        const { data } = await sb.auth.getSession(); if(data.session) checkUser();
+    async function startApp() {
+        document.getElementById('screen-auth').style.display = 'none';
+        document.getElementById('main-app').style.display = 'flex';
+        loadProfile();
+        loadFeed();
+        loadStories();
+    }
+
+    // GESTION IMAGES (Conversion Base64 pour éviter URLs)
+    function triggerUpload(type) {
+        currentUploadType = type;
+        document.getElementById('file-input').click();
+    }
+
+    document.getElementById('file-input').onchange = function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function() {
+            tempImg = reader.result;
+            if (currentUploadType === 'post') {
+                document.getElementById('post-preview').src = tempImg;
+                document.getElementById('post-preview').style.display = 'block';
+                document.getElementById('post-placeholder').style.display = 'none';
+            } else if (currentUploadType === 'avatar') {
+                document.getElementById('edit-avatar-preview').src = tempImg;
+            } else if (currentUploadType === 'story') {
+                uploadStory(tempImg);
+            }
+        };
+        reader.readAsDataURL(file);
     };
 
-    async function checkUser() {
-        const { data: { user } } = await sb.auth.getUser(); currentUser = user;
-        const { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
-        if(!data) { toggleAuth('view-setup'); } 
-        else { userProfile = data; document.getElementById('screen-auth').classList.remove('active'); document.getElementById('screen-app').classList.add('active'); loadFeed(); loadStories(); }
-    }
-
-    async function saveInitialProfile() {
-        const u = document.getElementById('setup-username').value;
-        if(!u) return showMsg("Entrez un pseudo");
-        const { error } = await sb.from('profiles').insert([{ id: currentUser.id, username: u, avatar_url: DEF_AV }]);
-        if(!error) checkUser();
-    }
-
-    // UTILITAIRE IMAGE (Base64)
-    function processImg(file, cb) {
-        if(!file) return; const r = new FileReader();
-        r.onload = e => {
-            const img = new Image(); img.onload = () => {
-                const cvs = document.createElement('canvas'); let w=img.width, h=img.height;
-                if(w>800){h*=800/w; w=800;} cvs.width=w; cvs.height=h;
-                cvs.getContext('2d').drawImage(img,0,0,w,h); cb(cvs.toDataURL('image/jpeg', 0.8));
-            }; img.src = e.target.result;
-        }; r.readAsDataURL(file);
-    }
-
-    function previewImage(e, imgId) {
-        processImg(e.target.files[0], base64 => {
-            activePostImage = base64;
-            const img = document.getElementById(imgId); img.src = base64; img.style.display = 'block';
-            document.getElementById('post-hint').style.display = 'none';
-        });
-    }
-
-    // POSTS
-    async function submitPost() {
-        if(!activePostImage) return showMsg("Ajoutez une photo");
+    // LOGIQUE PUBLICATION (Table posts avec colonnes caption et image_url)
+    async function publishPost() {
+        if (!tempImg) return toast("Choisis une image !");
         const cap = document.getElementById('post-caption').value;
-        // ATTENTION: C'est ici que ça plante si tu n'as pas créé la colonne 'caption' !
-        const { error } = await sb.from('posts').insert([{ user_id: currentUser.id, image_url: activePostImage, caption: cap }]);
-        if(error) return showMsg("Erreur DB: " + error.message);
         
-        closeOverlay('ov-create'); document.getElementById('post-caption').value=''; activePostImage=null;
-        document.getElementById('post-preview').style.display='none'; document.getElementById('post-hint').style.display='block';
-        loadFeed(); showMsg("Publié !");
+        toast("Publication...");
+        const { error } = await supabase.from('posts').insert([
+            { user_id: user.id, image_url: tempImg, caption: cap }
+        ]);
+
+        if (error) {
+            console.error(error);
+            toast("Erreur DB: As-tu ajouté la colonne 'caption' ?");
+        } else {
+            toast("Publié !");
+            closeOverlay('ov-post');
+            loadFeed();
+        }
     }
 
     async function loadFeed() {
-        const c = document.getElementById('feed-container'); c.innerHTML = '<p style="padding:20px;text-align:center;">Chargement...</p>';
-        const { data, error } = await sb.from('posts').select(`*, profiles(username, avatar_url)`).order('created_at', {ascending:false});
-        if(error || data.length===0) return c.innerHTML = '<p style="padding:40px;text-align:center;color:#8e8e8e;">Aucun post pour le moment.</p>';
+        const { data, error } = await supabase.from('posts').select('*, profiles(username, avatar_url)').order('created_at', { ascending: false });
+        const feed = document.getElementById('feed');
+        feed.innerHTML = '';
         
-        c.innerHTML = '';
+        if (data.length === 0) feed.innerHTML = '<p style="text-align:center; padding:50px; color:#888;">Aucune story pour le moment</p>';
+
         data.forEach(p => {
-            const u = p.profiles || {username:'?', avatar_url:DEF_AV};
-            c.innerHTML += `
-            <div class="post-card">
-                <div class="post-header">
-                    <div class="post-user"><img class="avatar avatar-sm" src="${u.avatar_url||DEF_AV}"> ${u.username}</div>
+            feed.innerHTML += `
+                <div class="post">
+                    <div class="post-header">
+                        <img src="${p.profiles.avatar_url || 'https://via.placeholder.com/50'}">
+                        <span style="font-weight:700">${p.profiles.username}</span>
+                    </div>
+                    <img class="post-img" src="${p.image_url}">
+                    <div class="post-info">
+                        <span class="post-user">${p.profiles.username}</span>
+                        <span class="post-cap">${p.caption || ''}</span>
+                    </div>
                 </div>
-                <div class="post-img-box"><img src="${p.image_url}" loading="lazy"></div>
-                <div class="post-actions"><svg class="action-icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
-                <div class="post-likes">0 J'aime</div>
-                ${p.caption ? `<div class="post-caption"><b>${u.username}</b> ${p.caption}</div>` : ''}
-            </div>`;
+            `;
         });
     }
 
-    // STORIES (Nouvelle fonction)
+    // PROFIL & STORIES
+    async function loadProfile() {
+        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+        document.getElementById('user-name').innerText = data.username;
+        document.getElementById('user-avatar').src = data.avatar_url || 'https://via.placeholder.com/150';
+        document.getElementById('edit-avatar-preview').src = data.avatar_url || 'https://via.placeholder.com/150';
+        document.getElementById('edit-username').value = data.username;
+    }
+
+    async function saveProfile() {
+        const username = document.getElementById('edit-username').value;
+        await supabase.from('profiles').update({ username, avatar_url: tempImg || undefined }).eq('id', user.id);
+        toast("Profil mis à jour");
+        loadProfile();
+        closeOverlay('ov-edit-profile');
+    }
+
+    async function uploadStory(img) {
+        toast("Ajout à la story...");
+        await supabase.from('stories').insert([{ user_id: user.id, image_url: img }]);
+        loadStories();
+    }
+
     async function loadStories() {
-        const c = document.getElementById('stories-container');
-        // Toujours afficher le bouton pour ajouter SA propre story
-        let html = `
-            <div class="story-item" onclick="document.getElementById('file-story').click()">
-                <div class="story-ring viewed"><img src="${userProfile?.avatar_url || DEF_AV}"></div>
-                <div class="add-story-btn">+</div>
-                <span class="story-name">Votre story</span>
-            </div>
-        `;
-
-        // Récupérer les stories (Il faut la table `stories` !)
-        const { data, error } = await sb.from('stories').select('*, profiles(username, avatar_url)').order('created_at', {ascending:false});
-        
-        if(!error && data && data.length > 0) {
-            // Grouper par utilisateur (basique)
-            const usersWithStories = [];
-            data.forEach(s => { if(!usersWithStories.find(u => u.user_id === s.user_id)) usersWithStories.push(s); });
-            
-            usersWithStories.forEach(s => {
-                if(s.user_id !== currentUser.id) {
-                    html += `
-                    <div class="story-item" onclick="viewStory('${s.image_url}', '${s.profiles.username}', '${s.profiles.avatar_url}')">
-                        <div class="story-ring"><img src="${s.profiles.avatar_url||DEF_AV}"></div>
-                        <span class="story-name">${s.profiles.username}</span>
-                    </div>`;
-                }
-            });
-        } else {
-            html += `<div style="display:flex; align-items:center; margin-left:10px; font-size:12px; color:var(--text-muted);">Aucune story pour le moment</div>`;
-        }
-        c.innerHTML = html;
-    }
-
-    function uploadStory(e) {
-        processImg(e.target.files[0], async (base64) => {
-            showMsg("Upload de la story...");
-            const { error } = await sb.from('stories').insert([{ user_id: currentUser.id, image_url: base64 }]);
-            if(error) showMsg("Erreur DB Story. As-tu créé la table ?"); else { showMsg("Story ajoutée !"); loadStories(); }
+        const { data } = await supabase.from('stories').select('*, profiles(username, avatar_url)');
+        const container = document.getElementById('other-stories');
+        container.innerHTML = '';
+        data?.forEach(s => {
+            container.innerHTML += `
+                <div class="story">
+                    <div class="story-circle"><img src="${s.image_url}"></div>
+                    <span>${s.profiles.username}</span>
+                </div>
+            `;
         });
     }
 
-    function viewStory(img, name, avatar) {
-        document.getElementById('sv-image').src = img;
-        document.getElementById('sv-name').innerText = name;
-        document.getElementById('sv-avatar').src = avatar || DEF_AV;
-        document.getElementById('story-viewer').style.display = 'flex';
-        // Auto-close après 5s
-        setTimeout(closeStory, 5000);
-    }
-    function closeStory() { document.getElementById('story-viewer').style.display = 'none'; }
-
-    // MESSAGERIE (Nouvelle fonction)
-    async function searchUsers() {
-        const q = document.getElementById('search-input').value;
-        const res = document.getElementById('search-results');
-        if(q.length < 2) return res.innerHTML = '';
-        const { data } = await sb.from('profiles').select('*').ilike('username', `%${q}%`).limit(10);
-        res.innerHTML = '';
-        data.forEach(u => {
-            res.innerHTML += `
-            <div class="chat-list-item" onclick="openChat('${u.id}', '${u.username}', '${u.avatar_url}')">
-                <img class="avatar avatar-sm" src="${u.avatar_url||DEF_AV}">
-                <div class="chat-info"><div class="chat-name">${u.username}</div></div>
-            </div>`;
-        });
+    // UI HELPERS
+    function showTab(tab, el) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
+        document.getElementById('screen-' + tab).classList.add('active');
+        el.classList.add('active');
     }
 
-    // Afficher la liste des conversations (simplifié)
-    async function loadChatList() {
-        // Dans une vraie app, on fetcherait les derniers messages. Ici on affiche juste un message pour utiliser la recherche.
-    }
-
-    function openChat(id, name, avatar) {
-        currentChatUserId = id;
-        document.getElementById('chat-title').innerText = name;
-        document.getElementById('chat-avatar').src = avatar || DEF_AV;
-        document.getElementById('chat-window').classList.add('active');
-        loadMessages();
-    }
-    function closeChat() { document.getElementById('chat-window').classList.remove('active'); currentChatUserId = null; }
-
-    async function loadMessages() {
-        const c = document.getElementById('chat-messages-container'); c.innerHTML = 'Chargement...';
-        // Faut la table `messages` !
-        const { data, error } = await sb.from('messages')
-            .select('*')
-            .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChatUserId}),and(sender_id.eq.${currentChatUserId},receiver_id.eq.${currentUser.id})`)
-            .order('created_at', {ascending: true});
-            
-        c.innerHTML = '';
-        if(error) return c.innerHTML = '<div style="text-align:center; color:red; font-size:12px;">Erreur DB. As-tu créé la table messages ?</div>';
-        
-        data.forEach(m => {
-            const isMe = m.sender_id === currentUser.id;
-            c.innerHTML += `<div class="msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}">${m.content}</div>`;
-        });
-        c.scrollTop = c.scrollHeight;
-    }
-
-    async function sendChatMessage() {
-        const input = document.getElementById('chat-input');
-        const txt = input.value.trim();
-        if(!txt || !currentChatUserId) return;
-        input.value = '';
-        
-        // Optimistic UI
-        const c = document.getElementById('chat-messages-container');
-        c.innerHTML += `<div class="msg-bubble msg-sent">${txt}</div>`;
-        c.scrollTop = c.scrollHeight;
-
-        await sb.from('messages').insert([{ sender_id: currentUser.id, receiver_id: currentChatUserId, content: txt }]);
-    }
-
-    // PROFIL
-    async function loadMyProfile() {
-        document.getElementById('my-username').innerText = userProfile.username;
-        document.getElementById('my-avatar').src = userProfile.avatar_url || DEF_AV;
-        
-        const { data, count } = await sb.from('posts').select('*', {count: 'exact'}).eq('user_id', currentUser.id).order('created_at', {ascending:false});
-        document.getElementById('my-posts-count').innerText = count || 0;
-        
-        const grid = document.getElementById('my-grid'); grid.innerHTML = '';
-        if(data) data.forEach(p => { grid.innerHTML += `<div class="grid-item"><img src="${p.image_url}"></div>`; });
+    function openOverlay(id) { document.getElementById(id).classList.add('active'); }
+    function closeOverlay(id) { document.getElementById(id).classList.remove('active'); tempImg = null; }
+    function toast(m) {
+        const t = document.getElementById('toast');
+        t.innerText = m; t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
     }
 </script>
+
 </body>
 </html>
