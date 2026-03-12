@@ -52,7 +52,6 @@
         input, textarea { width: 100%; padding: 16px; margin-bottom: 16px; border: 1px solid transparent; border-radius: var(--radius-md); background: var(--input-bg); font-size: 15px; outline: none; transition: all 0.2s; }
         input:focus, textarea:focus { border-color: var(--primary); background: var(--card-bg); box-shadow: 0 0 0 4px var(--primary-light); }
         
-        /* Input spécifique pour le code OTP */
         .otp-input { font-size: 32px; letter-spacing: 12px; text-align: center; font-weight: 700; padding: 20px; font-family: monospace; }
 
         button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
@@ -75,7 +74,7 @@
         .nav-icon { width: 24px; height: 24px; transition: transform 0.2s; }
         .nav-item.active .nav-icon { transform: scale(1.15); }
         
-        /* === TABS, LISTS, PROFILES, CHAT (Styles identiques à ton code clean) === */
+        /* === TABS & PROFILES === */
         .tab-content { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         .user-row { display: flex; align-items: center; padding: 12px 16px; background: var(--card-bg); border-radius: var(--radius-md); margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); cursor: pointer; }
@@ -102,6 +101,7 @@
         .back-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 10px; border-radius: 50%; background: var(--input-bg); }
         .overlay-content { flex-grow: 1; overflow-y: auto; padding: 20px;}
 
+        /* === CHAT === */
         .chat-container { display: flex; flex-direction: column; height: 100%; background: var(--card-bg); }
         .messages-area { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
         .msg-bubble { max-width: 75%; padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.4; word-wrap: break-word; }
@@ -179,14 +179,18 @@
             <div id="tab-recherche" class="tab-content">
                 <div style="position: relative; margin-bottom: 20px;">
                     <svg viewBox="0 0 24 24" style="position:absolute; left:16px; top:16px; width:18px; height:18px; stroke:var(--text-muted); fill:none; stroke-width:2;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" id="search-input" placeholder="Rechercher..." oninput="searchUsers()" style="border-radius:24px; padding-left: 44px; margin-bottom: 0;">
+                    <input type="text" id="search-input" placeholder="Tapez pour chercher..." oninput="searchUsers()" style="border-radius:24px; padding-left: 44px; margin-bottom: 0;">
                 </div>
-                <div id="search-results"></div>
+                <div id="search-results">
+                    <p style="text-align:center; color:var(--text-muted); margin-top: 20px;">Commencez à taper un pseudo...</p>
+                </div>
             </div>
 
             <div id="tab-messages" class="tab-content">
                 <h3 style="margin-bottom: 20px; font-size: 22px;">Messages</h3>
-                <div id="conversations-list"></div>
+                <div id="conversations-list">
+                    <p style="text-align:center; color:var(--text-muted); margin-top: 20px;">Aucun message pour le moment.</p>
+                </div>
             </div>
 
             <div id="tab-profil" class="tab-content">
@@ -195,10 +199,10 @@
                     <div class="profile-name" id="my-profile-username">@pseudo</div>
                     
                     <div class="profile-stats">
-                        <div class="stat-box" onclick="listPeople('followers', currentUser.id)">
+                        <div class="stat-box" onclick="listPeople('followers')">
                             <div class="stat-num" id="my-stat-followers">0</div><div class="stat-label">Abonnés</div>
                         </div>
-                        <div class="stat-box" onclick="listPeople('following', currentUser.id)">
+                        <div class="stat-box" onclick="listPeople('following')">
                             <div class="stat-num" id="my-stat-following">0</div><div class="stat-label">Abonnements</div>
                         </div>
                     </div>
@@ -229,14 +233,15 @@
         </header>
         <main class="overlay-content">
             <div class="profile-header">
-                <img id="public-avatar" class="avatar large" src="">
+                <img id="public-avatar" class="avatar large" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23eaeaea'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
                 <div class="profile-name" id="public-username"></div>
+                <div style="color: var(--text-muted); margin-top: 5px;" id="public-bio"></div>
                 <div class="profile-stats">
                     <div class="stat-box"><div class="stat-num" id="public-stat-followers">0</div><div class="stat-label">Abonnés</div></div>
                     <div class="stat-box"><div class="stat-num" id="public-stat-following">0</div><div class="stat-label">Abonnements</div></div>
                 </div>
                 <div style="display:flex; gap:12px; justify-content:center; margin-top:20px;">
-                    <button id="btn-follow" onclick="toggleFollow()" style="flex:1;"></button>
+                    <button id="btn-follow" onclick="toggleFollow()" style="flex:1;">S'abonner</button>
                     <button class="secondary" onclick="openConversationFromProfile()" style="flex:1; margin-top:0;">Message</button>
                 </div>
             </div>
@@ -249,7 +254,8 @@
             <div id="chat-header-name" style="font-size:16px; font-weight:600;"></div>
         </header>
         <div class="chat-container">
-            <div class="messages-area" id="chat-messages-area"></div>
+            <div class="messages-area" id="chat-messages-area">
+                </div>
             <div class="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key==='Enter') sendMessage()">
                 <button onclick="sendMessage()"><svg viewBox="0 0 24 24" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
@@ -268,58 +274,65 @@
 
     let currentUser = null;
     let myProfile = null;
+    let currentChatUserId = null; // Utilisé pour savoir avec qui on parle
     
     // Variables pour l'état d'authentification
-    let currentAuthIdentifier = ""; // stocke l'email ou le téléphone en cours de vérif
+    let currentAuthIdentifier = ""; 
     let isPhoneVerification = false;
     let isAddingOptionalPhone = false;
 
-    // Utilitaires UI
+    // ==========================================
+    // UTILITAIRES UI
+    // ==========================================
     function setStatus(msg, isError = false) {
         const bar = document.getElementById('status-bar');
         bar.textContent = msg; bar.className = isError ? 'error visible' : 'visible';
         setTimeout(() => { bar.className = ''; }, 3500);
     }
+    
     function showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
     }
+    
     function switchAuthView(viewId) {
         document.querySelectorAll('.auth-container').forEach(el => el.style.display = 'none');
         document.getElementById(viewId).style.display = 'flex';
-        
-        // Reset inputs
         if(viewId === 'view-login' || viewId === 'view-signup') {
             document.getElementById('otp-code').value = '';
         }
     }
-    function escapeHtml(unsafe) { return (unsafe||'').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+    
+    function switchTab(tabId, navElement) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+        if (navElement) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            navElement.classList.add('active');
+        }
+    }
+    
+    function openOverlay(id) { document.getElementById(id).classList.add('active'); }
+    function closeOverlay(id) { document.getElementById(id).classList.remove('active'); }
 
     // ==========================================
     // FLUX D'AUTHENTIFICATION AVANCÉ
     // ==========================================
     
-    // 1. Connexion Standard (Email ou Téléphone)
     async function login() {
         const identifier = document.getElementById('login-id').value.trim();
         const password = document.getElementById('login-password').value;
         if (!identifier || !password) return setStatus("Remplissez tous les champs", true);
 
-        let error;
-        if (identifier.includes('@')) {
-            const res = await sb.auth.signInWithPassword({ email: identifier, password });
-            error = res.error;
-        } else {
-            // Suppose que c'est un téléphone si pas de @
-            const res = await sb.auth.signInWithPassword({ phone: identifier, password });
-            error = res.error;
-        }
+        const isEmail = identifier.includes('@');
+        const { error } = isEmail ? 
+            await sb.auth.signInWithPassword({ email: identifier, password }) : 
+            await sb.auth.signInWithPassword({ phone: identifier, password });
 
         if (error) setStatus(error.message, true);
-        // Si succès, onAuthStateChange s'en occupe
+        else setStatus("Connexion réussie !");
     }
 
-    // 2. Démarrer l'inscription
     async function startSignup() {
         const identifier = document.getElementById('signup-id').value.trim();
         const password = document.getElementById('signup-password').value;
@@ -329,24 +342,24 @@
         isPhoneVerification = !identifier.includes('@');
         isAddingOptionalPhone = false;
 
-        let error;
-        if (!isPhoneVerification) {
-            const res = await sb.auth.signUp({ email: identifier, password });
-            error = res.error;
-        } else {
-            const res = await sb.auth.signUp({ phone: identifier, password });
-            error = res.error;
-        }
+        const { data, error } = isPhoneVerification ? 
+            await sb.auth.signUp({ phone: identifier, password }) : 
+            await sb.auth.signUp({ email: identifier, password });
 
         if (error) {
             setStatus(error.message, true);
         } else {
-            document.getElementById('otp-subtitle').textContent = `Code envoyé à ${identifier}`;
-            switchAuthView('view-otp');
+            // Si la session est déjà là, ça veut dire que l'OTP est désactivé côté Supabase
+            if (data.session) {
+                setStatus("Inscription réussie !");
+                refreshRealUser(data.session);
+            } else {
+                document.getElementById('otp-subtitle').textContent = `Code envoyé à ${identifier}`;
+                switchAuthView('view-otp');
+            }
         }
     }
 
-    // 3. Vérifier l'OTP (Email ou Téléphone)
     async function verifyOtp() {
         const token = document.getElementById('otp-code').value;
         if (token.length !== 6) return setStatus("Le code doit faire 6 chiffres", true);
@@ -354,31 +367,24 @@
         const type = isPhoneVerification ? 'sms' : (isAddingOptionalPhone ? 'phone_change' : 'signup');
         const payload = { token, type };
         
-        if (isPhoneVerification || isAddingOptionalPhone) {
-            payload.phone = currentAuthIdentifier;
-        } else {
-            payload.email = currentAuthIdentifier;
-        }
+        if (isPhoneVerification || isAddingOptionalPhone) payload.phone = currentAuthIdentifier;
+        else payload.email = currentAuthIdentifier;
 
-        const { data, error } = await sb.auth.verifyOtp(payload);
+        const { error } = await sb.auth.verifyOtp(payload);
         
         if (error) {
             setStatus("Code invalide", true);
         } else {
             setStatus("Vérification réussie !");
-            
-            // Si on vient de s'inscrire par email, on propose d'ajouter un tel
             if (!isPhoneVerification && !isAddingOptionalPhone && type === 'signup') {
                 switchAuthView('view-add-phone');
             } else {
-                // Sinon on a fini, on rafraichit la session
                 const { data: { session } } = await sb.auth.getSession();
                 refreshRealUser(session);
             }
         }
     }
 
-    // 4. Ajouter un téléphone optionnel (après Signup Email)
     async function addOptionalPhone() {
         const phone = document.getElementById('optional-phone').value.trim();
         if(!phone) return setStatus("Numéro invalide", true);
@@ -396,16 +402,17 @@
         }
     }
 
-    // 5. Ignorer l'étape du téléphone
     async function skipPhoneStep() {
         const { data: { session } } = await sb.auth.getSession();
         refreshRealUser(session);
     }
 
-    async function logout() { await sb.auth.signOut(); }
+    async function logout() { 
+        await sb.auth.signOut(); 
+    }
 
     // ==========================================
-    // INITIALISATION APP
+    // GESTION DU PROFIL
     // ==========================================
     async function init() {
         const { data: { session } } = await sb.auth.getSession();
@@ -428,15 +435,41 @@
     async function loadMyProfile() {
         if (!currentUser) return;
         const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-        if (error || !data) showScreen('setup-profile-screen');
-        else { myProfile = data; showApp(); }
+        if (error || !data) {
+            showScreen('setup-profile-screen');
+        } else { 
+            myProfile = data; 
+            showApp(); 
+        }
     }
 
     async function saveUsername() {
         const username = document.getElementById('setup-username').value.trim();
         if (!username) return setStatus("Pseudo requis", true);
         const { error } = await sb.from('profiles').insert([{ id: currentUser.id, username }]);
-        if (error) setStatus("Pseudo déjà pris", true); else await loadMyProfile();
+        if (error) setStatus("Pseudo déjà pris ou erreur", true); 
+        else {
+            setStatus("Profil créé !");
+            await loadMyProfile();
+        }
+    }
+
+    async function saveFullProfile() {
+        const newUsername = document.getElementById('edit-username').value.trim();
+        const newBio = document.getElementById('edit-bio').value.trim();
+        
+        if (!newUsername) return setStatus("Le pseudo ne peut pas être vide", true);
+
+        const { error } = await sb.from('profiles').update({ username: newUsername, bio: newBio }).eq('id', currentUser.id);
+        
+        if (error) {
+            setStatus("Erreur lors de la sauvegarde", true);
+        } else {
+            setStatus("Profil mis à jour !");
+            myProfile.username = newUsername;
+            myProfile.bio = newBio;
+            document.getElementById('my-profile-username').textContent = '@' + newUsername;
+        }
     }
 
     function showApp() { 
@@ -446,18 +479,113 @@
         document.getElementById('edit-bio').value = myProfile.bio || '';
     }
 
-    // Navigation des onglets
-    function switchTab(tabId, navElement) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.getElementById('tab-' + tabId).classList.add('active');
-        if (navElement) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            navElement.classList.add('active');
+    // ==========================================
+    // FONCTIONNALITÉS SOCIALES (Membres, Chat)
+    // ==========================================
+
+    // Fonction de recherche basique
+    async function searchUsers() {
+        const query = document.getElementById('search-input').value.trim();
+        const resultsContainer = document.getElementById('search-results');
+        
+        if (query.length < 2) {
+            resultsContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted); margin-top: 20px;">Tapez au moins 2 lettres...</p>';
+            return;
+        }
+
+        // Remplace 'profiles' par le nom exact de ta table dans Supabase
+        const { data, error } = await sb.from('profiles').select('*').ilike('username', `%${query}%`).limit(10);
+        
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        resultsContainer.innerHTML = '';
+        if (data.length === 0) {
+            resultsContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted); margin-top: 20px;">Aucun utilisateur trouvé.</p>';
+        } else {
+            data.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'user-row';
+                // Ouvre le profil public au clic
+                div.onclick = () => openPublicProfile(user);
+                
+                div.innerHTML = `
+                    <div class="avatar"></div>
+                    <div class="user-info">
+                        <div class="username">@${user.username}</div>
+                        <div class="fullname">${user.bio ? user.bio.substring(0, 30) + '...' : 'Membre Aymane Social'}</div>
+                    </div>
+                `;
+                resultsContainer.appendChild(div);
+            });
         }
     }
-    
-    function openOverlay(id) { document.getElementById(id).classList.add('active'); }
-    function closeOverlay(id) { document.getElementById(id).classList.remove('active'); }
+
+    // Ouvrir le profil d'un autre utilisateur
+    function openPublicProfile(user) {
+        currentChatUserId = user.id; // Prépare l'ID pour le bouton message
+        document.getElementById('public-username').textContent = '@' + user.username;
+        document.getElementById('public-bio').textContent = user.bio || '';
+        
+        // Simuler les abonnés (à remplacer par de vraies requêtes à ta table "followers" plus tard)
+        document.getElementById('public-stat-followers').textContent = Math.floor(Math.random() * 100); 
+        document.getElementById('public-stat-following').textContent = Math.floor(Math.random() * 50);
+
+        openOverlay('public-profile-overlay');
+    }
+
+    // Fonctionnalité pour la liste d'abonnés (Placeholder)
+    function listPeople(type) {
+        setStatus(`Affichage des ${type === 'followers' ? 'abonnés' : 'abonnements'}... (À venir)`);
+    }
+
+    // Bouton S'abonner (Placeholder)
+    function toggleFollow() {
+        const btn = document.getElementById('btn-follow');
+        if (btn.textContent === "S'abonner") {
+            btn.textContent = "Abonné";
+            btn.className = "secondary";
+            setStatus("Vous êtes abonné !");
+        } else {
+            btn.textContent = "S'abonner";
+            btn.className = "";
+        }
+    }
+
+    // Ouvrir la fenêtre de chat depuis un profil
+    function openConversationFromProfile() {
+        closeOverlay('public-profile-overlay');
+        const username = document.getElementById('public-username').textContent;
+        document.getElementById('chat-header-name').textContent = username;
+        document.getElementById('chat-messages-area').innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size: 13px;">Début de la conversation</p>';
+        openOverlay('chat-overlay');
+    }
+
+    // Envoyer un message (Simulation UI pour le moment)
+    function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const messagesArea = document.getElementById('chat-messages-area');
+        
+        // Créer la bulle de message envoyée
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bubble msg-sent';
+        bubble.textContent = text;
+        
+        messagesArea.appendChild(bubble);
+        input.value = ''; // Vider le champ
+        
+        // Faire défiler vers le bas
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+
+        /* Plus tard, ajoute ici le code pour envoyer à Supabase :
+           await sb.from('messages').insert([{ sender_id: currentUser.id, receiver_id: currentChatUserId, content: text }])
+        */
+    }
 
     window.onload = init;
 </script>
