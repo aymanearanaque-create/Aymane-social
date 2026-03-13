@@ -155,11 +155,10 @@
 
     <script>
         // ==========================================
-        // 1. CONFIGURATION SUPABASE (CRUCIAL !)
+        // 1. CONFIGURATION SUPABASE AVEC TES CLES
         // ==========================================
-        // REMPLACE CES DEUX LIGNES PAR TES VRAIES CLES SINON RIEN NE MARCHE
-        const SUPABASE_URL = "TON_URL_SUPABASE_ICI";
-        const SUPABASE_KEY = "TA_CLE_ANON_SUPABASE_ICI";
+        const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let currentUser = null;
@@ -193,22 +192,27 @@
         // 3. AUTHENTIFICATION (LOGIN / REGISTER)
         // ==========================================
         
-        // Vérifie si on est déjà connecté au lancement
         async function checkSession() {
-            const { data } = await supabase.auth.getSession();
-            if (data && data.session) {
-                currentUser = data.session.user;
-                startApp();
+            try {
+                const { data, error } = await supabase.auth.getSession();
+                if (data && data.session) {
+                    currentUser = data.session.user;
+                    startApp();
+                }
+            } catch (err) {
+                console.error("Erreur de session:", err);
             }
         }
         checkSession();
 
-        // Fonction de connexion
         async function loginUser() {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             
-            if (!email || !password) return alert("Remplis l'email et le mot de passe !");
+            if (!email || !password) {
+                alert("Veuillez remplir l'email et le mot de passe.");
+                return;
+            }
 
             toggleLoader(true);
             
@@ -218,8 +222,7 @@
                 toggleLoader(false);
 
                 if (error) {
-                    // On affiche L'ERREUR EXACTE de Supabase à l'écran pour comprendre ce qui bloque
-                    alert("Erreur de connexion : " + error.message);
+                    alert("Erreur Supabase : " + error.message);
                     return;
                 }
 
@@ -229,39 +232,51 @@
                 
             } catch (err) {
                 toggleLoader(false);
-                alert("Erreur critique. As-tu bien mis tes clés Supabase dans le code ?");
+                alert("Erreur critique lors de la connexion. Vérifie la console.");
+                console.error(err);
             }
         }
 
-        // Fonction d'inscription
         async function registerUser() {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             
-            if (!email || !password) return alert("Remplis l'email et le mot de passe !");
-            if (password.length < 6) return alert("Le mot de passe doit faire 6 caractères minimum.");
-
-            toggleLoader(true);
-            
-            const { data, error } = await supabase.auth.signUp({ email, password });
-            
-            toggleLoader(false);
-
-            if (error) {
-                alert("Erreur d'inscription : " + error.message);
+            if (!email || !password) {
+                alert("Veuillez remplir l'email et le mot de passe pour créer un compte.");
+                return;
+            }
+            if (password.length < 6) {
+                alert("Le mot de passe doit faire au moins 6 caractères.");
                 return;
             }
 
-            // Création automatique du profil dans la base de données
-            const username = email.split('@')[0] + Math.floor(Math.random() * 100);
-            await supabase.from('profiles').insert([{ 
-                id: data.user.id, 
-                username: username,
-                avatar_url: `https://ui-avatars.com/api/?name=${username}&background=556B2F&color=fff`
-            }]);
+            toggleLoader(true);
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                
+                toggleLoader(false);
 
-            alert("Compte créé avec succès ! Si un email de confirmation t'a été envoyé, va cliquer dessus, puis connecte-toi.");
-            document.getElementById('auth-password').value = '';
+                if (error) {
+                    alert("Erreur d'inscription Supabase : " + error.message);
+                    return;
+                }
+
+                // Création auto du profil
+                const username = email.split('@')[0] + Math.floor(Math.random() * 100);
+                await supabase.from('profiles').insert([{ 
+                    id: data.user.id, 
+                    username: username,
+                    avatar_url: `https://ui-avatars.com/api/?name=${username}&background=556B2F&color=fff`
+                }]);
+
+                alert("Compte créé avec succès ! Tu peux maintenant te connecter.");
+                document.getElementById('auth-password').value = '';
+            } catch (err) {
+                toggleLoader(false);
+                alert("Erreur critique lors de l'inscription. Vérifie la console.");
+                console.error(err);
+            }
         }
 
         async function logoutUser() {
@@ -295,7 +310,6 @@
             }
         }
 
-        // PUBLICATION D'UN POST (Avec conversion Image en Base64)
         async function publishPost() {
             const fileInput = document.getElementById('post-file');
             const caption = document.getElementById('post-caption').value;
@@ -310,7 +324,7 @@
             toggleLoader(true);
 
             reader.onloadend = async function() {
-                const base64Image = reader.result; // L'image est transformée en texte
+                const base64Image = reader.result;
 
                 const { error } = await supabase.from('posts').insert([{ 
                     user_id: currentUser.id, 
