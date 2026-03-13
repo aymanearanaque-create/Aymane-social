@@ -3,386 +3,1080 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AymaneSocial Pro</title>
+    <title>Aymane Social</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- DESIGN SYSTEM (Thème Olive) --- */
-        :root { --primary: #556B2F; --bg: #fafafa; --border: #dbdbdb; --text: #262626; --light: #efefef; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; justify-content: center; }
-        #app { width: 100%; max-width: 500px; height: 100%; background: white; display: flex; flex-direction: column; position: relative; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
-        
-        /* --- UTILITAIRES --- */
-        .hidden { display: none !important; }
-        .screen { flex-grow: 1; overflow-y: auto; display: none; padding-bottom: 60px; }
-        .screen.active { display: block; }
-        .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; }
-        .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; background: var(--bg); }
-        
-        /* --- HEADER & NAV --- */
-        header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: white; z-index: 10; font-weight: 700; font-size: 20px; color: var(--primary); }
-        nav { position: absolute; bottom: 0; width: 100%; height: 60px; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 20; }
-        .nav-icon { cursor: pointer; padding: 10px; }
-        
-        /* --- AUTH SCREEN --- */
-        .auth-container { padding: 40px 20px; display: flex; flex-direction: column; justify-content: center; height: 100%; }
-        .auth-container h1 { text-align: center; color: var(--primary); margin-bottom: 30px; font-size: 32px; }
+        /* === VARIABLES & RESET === */
+        :root {
+            --primary: #808000; /* Olive */
+            --primary-light: #f2f2e6;
+            --primary-dark: #666600;
+            --bg-color: #faf9f5; /* Ivoire / Beige très clair */
+            --card-bg: #ffffff;
+            --text-dark: #262626;
+            --text-muted: #8e8e8e;
+            --border-color: #efefef;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --nav-height: 65px;
+            --top-height: 55px;
+        }
 
-        /* --- HOME (STORIES & FEED) --- */
-        .stories { display: flex; gap: 15px; padding: 15px; overflow-x: auto; border-bottom: 1px solid var(--border); }
-        .story-circle { width: 66px; height: 66px; border-radius: 50%; padding: 2px; background: linear-gradient(45deg, var(--primary), #9acd32); cursor: pointer; }
-        .story-circle img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid white; object-fit: cover; }
-        
-        .post { border-bottom: 1px solid var(--border); }
-        .post-header { display: flex; align-items: center; padding: 10px 15px; gap: 10px; font-weight: 600; }
-        .post-header img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-        .post-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
-        .post-info { padding: 10px 15px; font-size: 14px; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* --- PROFILE --- */
-        .profile-header { padding: 20px 15px; display: flex; align-items: center; gap: 20px; }
-        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
-        .profile-stats { display: flex; gap: 20px; text-align: center; flex-grow: 1; }
-        .profile-stats div span { display: block; font-weight: 700; font-size: 16px; }
-        .profile-bio { padding: 0 15px 15px; font-size: 14px; }
-        .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-        .profile-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        html, body {
+            height: 100%;
+            height: 100dvh; /* S'adapte dynamiquement à la barre d'URL mobile */
+            background-color: #e0e0e0; /* Fond externe sur desktop */
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            color: var(--text-dark);
+        }
 
-        /* --- OVERLAYS --- */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100; display: none; flex-direction: column; }
-        .overlay.active { display: flex; }
-        .ov-header { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border); font-weight: 600; background: white; }
-        
-        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 1000; display: none; }
+        /* === APP CONTAINER (Mobile Simulation) === */
+        #app-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            height: 100dvh;
+            background-color: var(--bg-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.15);
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        /* === NOTIFICATIONS === */
+        #status-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-150%);
+            padding: 12px 24px;
+            background: rgba(38, 38, 38, 0.9);
+            color: white;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 9999;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            white-space: nowrap;
+        }
+        #status-bar.visible { transform: translateX(-50%) translateY(0); }
+        #status-bar.error { background: rgba(231, 76, 60, 0.9); }
+
+        /* === SCREENS === */
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            background: var(--bg-color);
+        }
+        .screen.active { display: flex; animation: fadeIn 0.4s ease; }
+
+        /* === AUTH & SETUP === */
+        .auth-container {
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: var(--card-bg);
+        }
+        .auth-logo {
+            font-family: 'Segoe UI', cursive, sans-serif;
+            color: var(--primary);
+            font-size: 38px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: #fafafa;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            background: transparent;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s, opacity 0.2s;
+            box-shadow: 0 4px 12px rgba(128, 128, 0, 0.2);
+        }
+        button:active { transform: scale(0.97); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        button.secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            box-shadow: none;
+            margin-top: 10px;
+        }
+        button.secondary:active { background: var(--primary-light); }
+        .auth-switch {
+            margin-top: 25px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .auth-switch span {
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* === MAIN APP STRUCTURE === */
+        #top-bar {
+            height: var(--top-height);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-weight: 700;
+            font-size: 22px;
+            color: var(--text-dark);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        #top-bar span { color: var(--primary); margin-left: 5px; }
+       
+        #content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            background: var(--bg-color);
+            position: relative;
+        }
+
+        #bottom-nav {
+            height: var(--nav-height);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-shrink: 0;
+            padding-bottom: env(safe-area-inset-bottom); /* Support iPhone notch */
+            z-index: 10;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 20%;
+            transition: color 0.2s;
+            padding: 5px 0;
+        }
+        .nav-item.active {
+            color: var(--primary);
+        }
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            transition: transform 0.2s;
+        }
+        .nav-item.active .nav-icon { transform: scale(1.1); }
+        .nav-label { font-size: 10px; font-weight: 500; }
+
+        /* === TABS & LISTS === */
+        .tab-content {
+            display: none;
+            padding: 20px 15px;
+            animation: fadeIn 0.3s ease;
+        }
+        .tab-content.active { display: block; }
+
+        .user-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid transparent;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .user-row:active {
+            transform: scale(0.98);
+            background: #fafafa;
+        }
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid var(--primary-light);
+            flex-shrink: 0;
+        }
+        .avatar.large { width: 90px; height: 90px; margin: 0 auto 15px auto; display: block; border-width: 3px; }
+        .user-info { flex-grow: 1; overflow: hidden; }
+        .user-info .username { font-weight: 600; font-size: 15px; color: var(--text-dark); margin-bottom: 2px; }
+        .user-info .fullname { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-small { width: auto; padding: 6px 16px; font-size: 13px; border-radius: 20px; box-shadow: none; margin: 0;}
+
+        /* === PROFILE === */
+        .profile-header { text-align: center; margin-bottom: 25px; padding: 10px; }
+        .profile-name { font-size: 20px; font-weight: 700; color: var(--text-dark); }
+        .profile-bio { font-size: 14px; color: var(--text-dark); margin-top: 10px; line-height: 1.4; padding: 0 10px;}
+       
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+            padding: 15px 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .stat-box { text-align: center; cursor: pointer; }
+        .stat-num { font-weight: 700; font-size: 18px; color: var(--primary); }
+        .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+        .profile-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
+
+        .edit-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-top: 10px;
+        }
+        .edit-card h4 { margin-bottom: 20px; color: var(--primary); font-size: 16px;}
+        .file-input-wrapper {
+            position: relative; overflow: hidden; display: inline-block; width: 100%; margin-bottom: 15px;
+        }
+        .file-input-wrapper input[type=file] {
+            font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%;
+        }
+        .file-input-btn {
+            border: 1px dashed var(--primary); color: var(--primary); background: var(--primary-light);
+            padding: 12px; border-radius: 12px; text-align: center; font-weight: 600; font-size: 14px; pointer-events: none;
+        }
+
+        /* === MODALS / OVERLAYS === */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-color);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+        }
+        .overlay.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); }
+       
+        .overlay-header {
+            height: var(--top-height);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            font-weight: 600;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .back-btn { font-size: 24px; cursor: pointer; margin-right: 15px; color: var(--text-dark); transition: transform 0.2s; }
+        .back-btn:active { transform: translateX(-3px); }
+        .overlay-content { flex-grow: 1; overflow-y: auto; padding: 20px 15px; }
+
+        /* === CHAT === */
+        .chat-container { display: flex; flex-direction: column; height: 100%; }
+        .messages-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f5f5f0;
+        }
+        .msg-bubble {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 15px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            animation: fadeIn 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .msg-sent {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .msg-received {
+            align-self: flex-start;
+            background: var(--card-bg);
+            color: var(--text-dark);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+        .chat-input-area {
+            display: flex;
+            padding: 12px 15px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        .chat-input-area input {
+            margin-bottom: 0;
+            border-radius: 24px;
+            padding: 12px 20px;
+            flex-grow: 1;
+            margin-right: 12px;
+            border: 1px solid var(--border-color);
+            background: #f5f5f5;
+        }
+        .chat-input-area button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        /* === PLACEHOLDERS === */
+        .placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80%; color: var(--text-muted); text-align: center; padding: 0 20px; }
+        .placeholder-icon { font-size: 56px; margin-bottom: 15px; opacity: 0.8; }
+        .placeholder h3 { color: var(--text-dark); margin-bottom: 8px; font-size: 20px; }
     </style>
 </head>
 <body>
 
-<div id="toast">Message</div>
-<input type="file" id="file-input" accept="image/*" class="hidden">
+<div id="app-container">
+    <div id="status-bar"></div>
 
-<div id="app">
-    <div id="screen-auth" class="screen active">
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container" id="login-form">
+            <div class="auth-logo">Aymane<span>Social</span></div>
+            <input type="email" id="login-email" placeholder="Email" autocomplete="email" />
+            <input type="password" id="login-password" placeholder="Mot de passe" />
+            <button onclick="login()">Se connecter</button>
+            <div class="auth-switch">Pas encore membre ? <span onclick="toggleAuthForm('signup')">S'inscrire</span></div>
+        </div>
+        <div class="auth-container" id="signup-form" style="display: none;">
+            <div class="auth-logo">Aymane<span>Social</span></div>
+            <input type="email" id="signup-email" placeholder="Email" autocomplete="email" />
+            <input type="password" id="signup-password" placeholder="Mot de passe" />
+            <button onclick="signup()">Créer mon compte</button>
+            <div class="auth-switch">Déjà un compte ? <span onclick="toggleAuthForm('login')">Se connecter</span></div>
+        </div>
+    </div>
+
+    <div id="setup-profile-screen" class="screen">
         <div class="auth-container">
-            <h1>AymaneSocial</h1>
-            <input type="email" id="auth-email" placeholder="Email">
-            <input type="password" id="auth-password" placeholder="Mot de passe">
-            <button class="btn" onclick="handleAuth()">Connexion / Inscription</button>
-            <p style="text-align: center; margin-top: 15px; font-size: 12px; color: #888;">Si le compte n'existe pas, il sera créé.</p>
+            <div class="auth-logo" style="font-size: 28px;">Bienvenue !</div>
+            <p style="margin-bottom:25px; text-align:center; color:var(--text-muted); font-size:15px;">Veuillez choisir un identifiant unique pour continuer.</p>
+            <input type="text" id="setup-username" placeholder="Pseudo (ex: aymane99)" />
+            <button onclick="saveUsername()">Commencer</button>
+            <button class="secondary" onclick="logout()" style="margin-top: 15px;">Déconnexion</button>
         </div>
     </div>
 
-    <header id="main-header" class="hidden">
-        <span>AymaneSocial</span>
-        <span style="cursor:pointer;" onclick="showOverlay('ov-messages')">💬</span>
-    </header>
-
-    <div id="screen-home" class="screen">
-        <div class="stories" id="stories-list">
-            <div style="text-align: center;">
-                <div class="story-circle" onclick="triggerUpload('story')">
-                    <img src="https://via.placeholder.com/150" id="my-story-avatar">
+    <div id="main-app" class="screen">
+        <header id="top-bar">Aymane<span>Social</span></header>
+       
+        <main id="content-area">
+            <div id="tab-accueil" class="tab-content active">
+                <div class="placeholder">
+                    <div class="placeholder-icon">✨</div>
+                    <h3>Bienvenue sur ton fil</h3>
+                    <p>Découvre les nouveautés, recherche des amis et commence à échanger.</p>
                 </div>
-                <span style="font-size: 12px;">Ta story</span>
             </div>
+
+            <div id="tab-recherche" class="tab-content">
+                <input type="text" id="search-input" placeholder="🔍 Rechercher un utilisateur..." oninput="searchUsers()" style="border-radius:24px; padding-left: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: none;">
+                <div id="search-results"></div>
             </div>
-        <div id="feed-list"></div>
+
+            <div id="tab-messages" class="tab-content">
+                <h3 style="margin-bottom: 20px; font-size: 20px;">Messages</h3>
+                <div id="conversations-list"></div>
+            </div>
+
+            <div id="tab-reels" class="tab-content">
+                <div class="placeholder">
+                    <div class="placeholder-icon">🎬</div>
+                    <h3>Reels</h3>
+                    <p>Les vidéos courtes arrivent très bientôt.</p>
+                </div>
+            </div>
+
+            <div id="tab-profil" class="tab-content">
+                <div class="profile-header">
+                    <img id="my-avatar-preview" class="avatar large" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23eaeaea'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
+                    <div class="profile-name" id="my-profile-username">@pseudo</div>
+                    <div class="profile-bio" id="my-profile-bio-text"></div>
+                   
+                    <div class="profile-stats">
+                        <div class="stat-box" onclick="listPeople('followers', currentUser.id)">
+                            <div class="stat-num" id="my-stat-followers">0</div>
+                            <div class="stat-label">Abonnés</div>
+                        </div>
+                        <div class="stat-box" onclick="listPeople('following', currentUser.id)">
+                            <div class="stat-num" id="my-stat-following">0</div>
+                            <div class="stat-label">Abonnements</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-card">
+                    <h4>Modifier mes informations</h4>
+                   
+                    <div class="file-input-wrapper">
+                        <div class="file-input-btn">📸 Changer la photo de profil</div>
+                        <input type="file" id="edit-avatar-file" accept="image/*">
+                    </div>
+
+                    <input type="text" id="edit-username" placeholder="Pseudo">
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="edit-firstname" placeholder="Prénom">
+                        <input type="text" id="edit-lastname" placeholder="Nom">
+                    </div>
+                    <textarea id="edit-bio" placeholder="Bio..." rows="3"></textarea>
+                   
+                    <button onclick="saveFullProfile()">Enregistrer</button>
+                    <button class="secondary" onclick="logout()">Déconnexion</button>
+                </div>
+            </div>
+        </main>
+
+        <nav id="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('accueil', this)">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Accueil</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('recherche', this)">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-label">Recherche</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('messages', this)">
+                <div class="nav-icon">💬</div>
+                <div class="nav-label">Messages</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('reels', this)">
+                <div class="nav-icon">▶️</div>
+                <div class="nav-label">Reels</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('profil', this)">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profil</div>
+            </div>
+        </nav>
     </div>
 
-    <div id="screen-search" class="screen">
-        <div style="padding: 15px;">
-            <input type="text" id="search-input" placeholder="Rechercher un utilisateur..." oninput="searchUsers()">
-            <div id="search-results" style="margin-top: 15px;"></div>
-        </div>
+    <div id="public-profile-overlay" class="overlay">
+        <header class="overlay-header">
+            <div class="back-btn" onclick="closeOverlay('public-profile-overlay')">←</div>
+            <div style="flex-grow:1; text-align:center; margin-right:24px;" id="public-top-title">Profil</div>
+        </header>
+        <main class="overlay-content">
+            <div class="profile-header">
+                <img id="public-avatar" class="avatar large" src="">
+                <div class="profile-name" id="public-username"></div>
+                <p id="public-fullname" style="color:var(--text-muted); font-size:14px; margin-top:5px;"></p>
+                <p class="profile-bio" id="public-bio"></p>
+               
+                <div class="profile-stats">
+                    <div class="stat-box" onclick="listPeople('followers', currentPublicProfileId)">
+                        <div class="stat-num" id="public-stat-followers">0</div>
+                        <div class="stat-label">Abonnés</div>
+                    </div>
+                    <div class="stat-box" onclick="listPeople('following', currentPublicProfileId)">
+                        <div class="stat-num" id="public-stat-following">0</div>
+                        <div class="stat-label">Abonnements</div>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button id="btn-follow" onclick="toggleFollow()" style="width:140px;"></button>
+                    <button class="secondary" onclick="openConversationFromProfile()" style="width:140px; margin-top:0;">Message</button>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <div id="screen-profile" class="screen">
-        <div class="profile-header">
-            <img src="https://via.placeholder.com/150" class="profile-avatar" id="prof-avatar" onclick="triggerUpload('avatar')">
-            <div class="profile-stats">
-                <div><span id="stat-posts">0</span>Posts</div>
-                <div><span id="stat-followers">0</span>Abonnés</div>
-                <div><span id="stat-following">0</span>Abonnements</div>
+    <div id="chat-overlay" class="overlay">
+        <header class="overlay-header">
+            <div class="back-btn" onclick="closeOverlay('chat-overlay')">←</div>
+            <div style="display:flex; align-items:center; flex-grow:1;">
+                <img id="chat-header-avatar" class="avatar" style="width:34px; height:34px; border-width:1px;" src="">
+                <div id="chat-header-name" style="font-size:16px; font-weight:600;"></div>
+            </div>
+        </header>
+        <div class="chat-container">
+            <div class="messages-area" id="chat-messages-area">
+                </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Votre message..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()">➤</button>
             </div>
         </div>
-        <div class="profile-bio">
-            <strong id="prof-username">Utilisateur</strong>
-            <p id="prof-bio-text">Bio...</p>
-            <button class="btn btn-outline" style="margin-top: 10px;" onclick="showOverlay('ov-edit-profile')">Modifier le profil</button>
-        </div>
-        <div class="profile-grid" id="prof-grid"></div>
     </div>
 
-    <nav id="main-nav" class="hidden">
-        <div class="nav-icon" onclick="switchScreen('home')">🏠</div>
-        <div class="nav-icon" onclick="switchScreen('search')">🔍</div>
-        <div class="nav-icon" onclick="showOverlay('ov-create-post')" style="font-size: 24px; color: var(--primary);">➕</div>
-        <div class="nav-icon" onclick="switchScreen('profile')">👤</div>
-    </nav>
-
-    <div id="ov-create-post" class="overlay">
-        <div class="ov-header">
-            <span onclick="hideOverlay('ov-create-post')">Annuler</span>
-            <span>Nouveau Post</span>
-            <span style="color:var(--primary);" onclick="publishPost()">Partager</span>
-        </div>
-        <div style="padding: 15px;">
-            <div style="width:100%; aspect-ratio:1/1; background:var(--light); display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="triggerUpload('post')">
-                <span id="post-ph">Toucher pour choisir une photo</span>
-                <img id="post-preview" class="hidden" style="width:100%; height:100%; object-fit:cover;">
-            </div>
-            <textarea id="post-caption" rows="3" placeholder="Écrire une légende..." style="margin-top:15px; border:none; outline:none;"></textarea>
-        </div>
-    </div>
-
-    <div id="ov-edit-profile" class="overlay">
-        <div class="ov-header">
-            <span onclick="hideOverlay('ov-edit-profile')">Annuler</span>
-            <span>Modifier Profil</span>
-            <span style="color:var(--primary);" onclick="saveProfile()">Enregistrer</span>
-        </div>
-        <div style="padding: 15px;">
-            <input type="text" id="edit-username" placeholder="Nom d'utilisateur">
-            <textarea id="edit-bio" rows="3" placeholder="Biographie"></textarea>
-        </div>
-    </div>
-
-    <div id="ov-messages" class="overlay">
-        <div class="ov-header">
-            <span onclick="hideOverlay('ov-messages')">Retour</span>
-            <span>Messages directs</span>
-            <span></span>
-        </div>
-        <div id="msg-list" style="padding: 15px;">
-            <p style="text-align:center; color:#888;">Recherchez un utilisateur pour discuter.</p>
-        </div>
+    <div id="list-overlay" class="overlay">
+        <header class="overlay-header">
+            <div class="back-btn" onclick="closeOverlay('list-overlay')">←</div>
+            <div style="flex-grow:1; text-align:center; margin-right:24px;" id="list-title">Liste</div>
+        </header>
+        <main class="overlay-content" id="list-content">
+            </main>
     </div>
 
 </div>
 
 <script>
-    // --- 1. CONFIGURATION SUPABASE ---
-    const SURL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
-    const SKEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
-    const supabase = window.supabase.createClient(SURL, SKEY);
+    // ==========================================
+    // INITIALISATION SUPABASE
+    // ==========================================
+    const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // Variables globales d'état
     let currentUser = null;
-    let currentProfile = null;
-    let uploadTarget = ''; // 'post', 'story', ou 'avatar'
-    let tempBase64 = null;
+    let myProfile = null;
+    let currentPublicProfileId = null;
+    let isFollowingCurrentPublic = false;
+    let currentChatUserId = null;
+    let chatInterval = null;
 
-    // --- 2. AUTHENTIFICATION ---
-    async function handleAuth() {
-        const email = document.getElementById('auth-email').value;
-        const password = document.getElementById('auth-password').value;
-        
-        if (!email || !password) return toast("Remplis tous les champs");
+    const DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23eaeaea'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
 
-        toast("Connexion...");
-        // Tentative de connexion
-        let { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        
-        // Si échec, tentative d'inscription
-        if (error) {
-            const res = await supabase.auth.signUp({ email, password });
-            if (res.error) return toast("Erreur: " + res.error.message);
-            data = res.data;
-            // Création automatique du profil
-            await supabase.from('profiles').insert([{ id: data.user.id, username: email.split('@')[0] }]);
+    // ==========================================
+    // UTILITAIRES & UI
+    // ==========================================
+    function setStatus(msg, isError = false) {
+        const bar = document.getElementById('status-bar');
+        bar.textContent = msg;
+        bar.className = isError ? 'error visible' : 'visible';
+        setTimeout(() => { bar.className = ''; }, 3500);
+    }
+
+    function escapeHtml(unsafe) {
+        if (!unsafe) return '';
+        return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    function renderAvatar(url) {
+        return url ? escapeHtml(url) : DEFAULT_AVATAR;
+    }
+
+    function fullNameOf(first, last) {
+        const f = first || '';
+        const l = last || '';
+        return escapeHtml((f + ' ' + l).trim());
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function showAuth() { showScreen('auth-screen'); }
+    function showApp() { showScreen('main-app'); switchTab('accueil', document.querySelector('.nav-item')); }
+   
+    function toggleAuthForm(type) {
+        document.getElementById('login-form').style.display = type === 'login' ? 'flex' : 'none';
+        document.getElementById('signup-form').style.display = type === 'signup' ? 'flex' : 'none';
+    }
+
+    function switchTab(tabId, navElement) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+       
+        if (navElement) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            navElement.classList.add('active');
         }
 
-        currentUser = data.user;
-        initApp();
+        if (tabId === 'profil') fillProfileUI();
+        if (tabId === 'messages') loadConversations();
     }
 
-    // --- 3. INITIALISATION DE L'APP ---
-    async function initApp() {
-        document.getElementById('screen-auth').classList.remove('active');
-        document.getElementById('main-header').classList.remove('hidden');
-        document.getElementById('main-nav').classList.remove('hidden');
-        
-        await loadMyProfile();
-        switchScreen('home');
+    function openOverlay(id) { document.getElementById(id).classList.add('active'); }
+    function closeOverlay(id) {
+        document.getElementById(id).classList.remove('active');
+        if(id === 'chat-overlay') {
+            currentChatUserId = null;
+            if(chatInterval) clearInterval(chatInterval);
+        }
     }
 
-    // --- 4. NAVIGATION ---
-    function switchScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('screen-' + screenId).classList.add('active');
-        
-        if (screenId === 'home') { loadFeed(); loadStories(); }
-        if (screenId === 'profile') loadMyProfile();
-    }
-
-    function showOverlay(id) { document.getElementById(id).classList.add('active'); }
-    function hideOverlay(id) { document.getElementById(id).classList.remove('active'); tempBase64 = null; }
-    function toast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg; t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 3000);
-    }
-
-    // --- 5. GESTION DES FICHIERS (UPLOADS SANS URL) ---
-    function triggerUpload(target) {
-        uploadTarget = target;
-        document.getElementById('file-input').click();
-    }
-
-    document.getElementById('file-input').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onloadend = async function() {
-            tempBase64 = reader.result;
-            
-            if (uploadTarget === 'post') {
-                document.getElementById('post-preview').src = tempBase64;
-                document.getElementById('post-preview').classList.remove('hidden');
-                document.getElementById('post-ph').classList.add('hidden');
-            } else if (uploadTarget === 'avatar') {
-                document.getElementById('prof-avatar').src = tempBase64;
-                await supabase.from('profiles').update({ avatar_url: tempBase64 }).eq('id', currentUser.id);
-                toast("Photo de profil mise à jour !");
-            } else if (uploadTarget === 'story') {
-                await supabase.from('stories').insert([{ user_id: currentUser.id, image_url: tempBase64 }]);
-                toast("Story publiée !");
-                loadStories();
-            }
-        };
-        reader.readAsDataURL(file); // Convertit l'image locale en code (pas besoin de lien internet)
+    // Gérer l'affichage du nom du fichier sélectionné
+    document.getElementById('edit-avatar-file').addEventListener('change', function(e) {
+        const btn = document.querySelector('.file-input-btn');
+        if (this.files && this.files.length > 0) {
+            btn.innerHTML = "✅ " + this.files[0].name;
+            btn.style.background = "var(--primary)";
+            btn.style.color = "white";
+        }
     });
 
-    // --- 6. PROFIL & MODIFICATION ---
+    // ==========================================
+    // AUTHENTIFICATION
+    // ==========================================
+    async function init() {
+        const { data: { session } } = await sb.auth.getSession();
+        refreshRealUser(session);
+
+        sb.auth.onAuthStateChange((_event, session) => {
+            refreshRealUser(session);
+        });
+    }
+
+    async function refreshRealUser(session) {
+        if (!session) {
+            currentUser = null;
+            myProfile = null;
+            showAuth();
+            return;
+        }
+        currentUser = session.user;
+        await loadMyProfile();
+    }
+
+    async function login() {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        if (!email || !password) return setStatus("Remplissez tous les champs", true);
+       
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) setStatus(error.message, true);
+        else setStatus("Connecté !");
+    }
+
+    async function signup() {
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        if (!email || !password) return setStatus("Remplissez tous les champs", true);
+
+        const { error } = await sb.auth.signUp({ email, password });
+        if (error) setStatus(error.message, true);
+        else setStatus("Compte créé ! Vérifiez vos emails si nécessaire.");
+    }
+
+    async function logout() {
+        await sb.auth.signOut();
+        setStatus("Déconnecté");
+    }
+
+    // ==========================================
+    // GESTION DU PROFIL PERSONNEL
+    // ==========================================
     async function loadMyProfile() {
-        const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-        if (!data) return;
-        currentProfile = data;
-        
-        document.getElementById('prof-username').innerText = data.username;
-        document.getElementById('prof-bio-text').innerText = data.bio || "Aucune bio";
-        if (data.avatar_url) {
-            document.getElementById('prof-avatar').src = data.avatar_url;
-            document.getElementById('my-story-avatar').src = data.avatar_url;
+        if (!currentUser) return;
+        const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+       
+        if (error || !data) {
+            showScreen('setup-profile-screen');
+        } else {
+            myProfile = data;
+            showApp();
+        }
+    }
+
+    async function saveUsername() {
+        const username = document.getElementById('setup-username').value.trim();
+        if (!username) return setStatus("Pseudo requis", true);
+
+        const { error } = await sb.from('profiles').insert([
+            { id: currentUser.id, username: username }
+        ]);
+
+        if (error) {
+            setStatus("Ce pseudo est peut-être déjà pris.", true);
+        } else {
+            setStatus("Profil créé !");
+            await loadMyProfile();
+        }
+    }
+
+    async function fillProfileUI() {
+        if (!myProfile) return;
+        document.getElementById('my-avatar-preview').src = renderAvatar(myProfile.avatar_url);
+        document.getElementById('my-profile-username').textContent = '@' + escapeHtml(myProfile.username);
+        document.getElementById('my-profile-bio-text').textContent = escapeHtml(myProfile.bio || '');
+       
+        document.getElementById('edit-username').value = myProfile.username || '';
+        document.getElementById('edit-firstname').value = myProfile.first_name || '';
+        document.getElementById('edit-lastname').value = myProfile.last_name || '';
+        document.getElementById('edit-bio').value = myProfile.bio || '';
+
+        await loadFollowCounts(currentUser.id, 'my-stat');
+    }
+
+    async function uploadAvatarIfNeeded() {
+        const fileInput = document.getElementById('edit-avatar-file');
+        const file = fileInput.files[0];
+        if (!file) return myProfile.avatar_url;
+
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${currentUser.id}_${Date.now()}.${fileExt}`;
+        const filePath = `public/${fileName}`;
+
+        setStatus("Upload de l'image en cours...");
+        const { error: uploadError } = await sb.storage.from('avatars').upload(filePath, file);
+        if (uploadError) {
+            setStatus("Erreur upload: " + uploadError.message, true);
+            return myProfile.avatar_url;
         }
 
-        document.getElementById('edit-username').value = data.username;
-        document.getElementById('edit-bio').value = data.bio || "";
-
-        // Charger la grille de posts du profil
-        const posts = await supabase.from('posts').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-        const grid = document.getElementById('prof-grid');
-        grid.innerHTML = '';
-        document.getElementById('stat-posts').innerText = posts.data ? posts.data.length : 0;
-        
-        posts.data?.forEach(p => {
-            grid.innerHTML += `<img src="${p.image_url}">`;
-        });
-        
-        // Charger les followers (Basique)
-        const followers = await supabase.from('follows').select('*', { count: 'exact' }).eq('following_id', currentUser.id);
-        const following = await supabase.from('follows').select('*', { count: 'exact' }).eq('follower_id', currentUser.id);
-        document.getElementById('stat-followers').innerText = followers.count || 0;
-        document.getElementById('stat-following').innerText = following.count || 0;
+        const { data } = sb.storage.from('avatars').getPublicUrl(filePath);
+        return data.publicUrl;
     }
 
-    async function saveProfile() {
-        const username = document.getElementById('edit-username').value;
-        const bio = document.getElementById('edit-bio').value;
-        await supabase.from('profiles').update({ username, bio }).eq('id', currentUser.id);
-        toast("Profil enregistré !");
-        hideOverlay('ov-edit-profile');
-        loadMyProfile();
-    }
+    async function saveFullProfile() {
+        const username = document.getElementById('edit-username').value.trim();
+        const first_name = document.getElementById('edit-firstname').value.trim();
+        const last_name = document.getElementById('edit-lastname').value.trim();
+        const bio = document.getElementById('edit-bio').value.trim();
 
-    // --- 7. PUBLICATION & FEED ---
-    async function publishPost() {
-        if (!tempBase64) return toast("Choisis une photo !");
-        const caption = document.getElementById('post-caption').value;
-        
-        toast("Publication...");
-        const { error } = await supabase.from('posts').insert([{ user_id: currentUser.id, image_url: tempBase64, caption }]);
-        
-        if (error) return toast("Erreur: as-tu bien créé la table posts ?");
-        
-        toast("Publié !");
-        hideOverlay('ov-create-post');
-        if(document.getElementById('screen-home').classList.contains('active')) loadFeed();
-    }
+        if (!username) return setStatus("Le pseudo est obligatoire", true);
 
-    async function loadFeed() {
-        // Sélectionne les posts AVEC les infos du profil lié
-        const { data, error } = await supabase.from('posts').select('*, profiles(username, avatar_url)').order('created_at', { ascending: false });
-        const feed = document.getElementById('feed-list');
-        feed.innerHTML = '';
-        
-        if (error || !data || data.length === 0) {
-            feed.innerHTML = '<p style="text-align:center; padding:20px;">Aucun post.</p>'; return;
+        const newAvatarUrl = await uploadAvatarIfNeeded();
+
+        const updates = {
+            username, first_name, last_name, bio, avatar_url: newAvatarUrl
+        };
+
+        const { error } = await sb.from('profiles').update(updates).eq('id', currentUser.id);
+
+        if (error) {
+            setStatus("Erreur sauvegarde (pseudo pris?)", true);
+        } else {
+            setStatus("Profil mis à jour !");
+            document.getElementById('edit-avatar-file').value = "";
+            const btn = document.querySelector('.file-input-btn');
+            btn.innerHTML = "📸 Changer la photo de profil";
+            btn.style.background = "var(--primary-light)";
+            btn.style.color = "var(--primary)";
+            await loadMyProfile();
+            fillProfileUI();
         }
-
-        data.forEach(p => {
-            feed.innerHTML += `
-                <div class="post">
-                    <div class="post-header">
-                        <img src="${p.profiles?.avatar_url || 'https://via.placeholder.com/50'}">
-                        <span>${p.profiles?.username || 'Anonyme'}</span>
-                    </div>
-                    <img src="${p.image_url}" class="post-img">
-                    <div class="post-info">
-                        <strong>${p.profiles?.username || 'Anonyme'}</strong> ${p.caption || ''}
-                    </div>
-                </div>
-            `;
-        });
     }
 
-    // --- 8. STORIES ---
-    async function loadStories() {
-        const { data } = await supabase.from('stories').select('*, profiles(username, avatar_url)').order('created_at', { ascending: false });
-        const container = document.getElementById('stories-list');
-        
-        // Garder le bouton "Ta story" intact
-        const myStoryBtn = container.children[0].outerHTML;
-        container.innerHTML = myStoryBtn;
-
-        data?.forEach(s => {
-            container.innerHTML += `
-                <div style="text-align: center;">
-                    <div class="story-circle"><img src="${s.image_url}"></div>
-                    <span style="font-size: 12px; max-width: 60px; overflow:hidden; text-overflow:ellipsis; display:block;">${s.profiles?.username || 'User'}</span>
-                </div>
-            `;
-        });
-    }
-
-    // --- 9. RECHERCHE & FOLLOWERS ---
+    // ==========================================
+    // RECHERCHE
+    // ==========================================
     async function searchUsers() {
-        const query = document.getElementById('search-input').value;
-        if(query.length < 2) return;
-        
-        const { data } = await supabase.from('profiles').select('*').ilike('username', `%${query}%`).neq('id', currentUser.id);
-        const res = document.getElementById('search-results');
-        res.innerHTML = '';
-        
-        data?.forEach(u => {
-            res.innerHTML += `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${u.avatar_url || 'https://via.placeholder.com/50'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
-                        <strong>${u.username}</strong>
-                    </div>
-                    <button class="btn" style="width:auto; padding:5px 15px;" onclick="followUser('${u.id}')">Suivre</button>
+        const query = document.getElementById('search-input').value.trim();
+        const resultsDiv = document.getElementById('search-results');
+       
+        if (query.length < 2) {
+            resultsDiv.innerHTML = "<p style='text-align:center; color:var(--text-muted); margin-top:30px; font-size:14px;'>Tapez au moins 2 caractères</p>";
+            return;
+        }
+
+        const { data, error } = await sb.from('profiles')
+            .select('*')
+            .ilike('username', `%${query}%`)
+            .limit(20);
+
+        if (error) {
+            resultsDiv.innerHTML = "<p style='text-align:center; color:red;'>Erreur recherche</p>";
+            return;
+        }
+
+        if (data.length === 0) {
+            resultsDiv.innerHTML = "<p style='text-align:center; color:var(--text-muted); margin-top:30px; font-size:14px;'>Aucun résultat trouvé 😕</p>";
+            return;
+        }
+
+        resultsDiv.innerHTML = data.map(user => `
+            <div class="user-row" onclick="openPublicProfile('${user.id}')">
+                <img class="avatar" src="${renderAvatar(user.avatar_url)}">
+                <div class="user-info">
+                    <div class="username">@${escapeHtml(user.username)}</div>
+                    <div class="fullname">${fullNameOf(user.first_name, user.last_name)}</div>
                 </div>
-            `;
-        });
+                <button class="btn-small secondary">Voir</button>
+            </div>
+        `).join('');
     }
 
-    async function followUser(userId) {
-        await supabase.from('follows').insert([{ follower_id: currentUser.id, following_id: userId }]);
-        toast("Abonnement réussi !");
+    // ==========================================
+    // PROFIL PUBLIC & FOLLOW
+    // ==========================================
+    async function openPublicProfile(userId) {
+        if (userId === currentUser.id) {
+            switchTab('profil', document.querySelectorAll('.nav-item')[4]);
+            return;
+        }
+
+        currentPublicProfileId = userId;
+        const { data: profile, error } = await sb.from('profiles').select('*').eq('id', userId).single();
+        if (error || !profile) return setStatus("Utilisateur introuvable", true);
+
+        document.getElementById('public-avatar').src = renderAvatar(profile.avatar_url);
+        document.getElementById('public-username').textContent = '@' + escapeHtml(profile.username);
+        document.getElementById('public-fullname').textContent = fullNameOf(profile.first_name, profile.last_name);
+        document.getElementById('public-bio').textContent = escapeHtml(profile.bio || '');
+
+        await loadFollowCounts(userId, 'public-stat');
+        await isFollowingUser(userId);
+       
+        openOverlay('public-profile-overlay');
     }
+
+    async function loadFollowCounts(userId, prefix) {
+        const { count: followersCount } = await sb.from('followers').select('*', { count: 'exact', head: true }).eq('following_id', userId);
+        const { count: followingCount } = await sb.from('followers').select('*', { count: 'exact', head: true }).eq('follower_id', userId);
+       
+        document.getElementById(`${prefix}-followers`).textContent = followersCount || 0;
+        document.getElementById(`${prefix}-following`).textContent = followingCount || 0;
+    }
+
+    async function isFollowingUser(userId) {
+        const btn = document.getElementById('btn-follow');
+        const { data } = await sb.from('followers').select('*').eq('follower_id', currentUser.id).eq('following_id', userId).single();
+       
+        isFollowingCurrentPublic = !!data;
+        if (isFollowingCurrentPublic) {
+            btn.textContent = "Ne plus suivre";
+            btn.className = "secondary";
+        } else {
+            btn.textContent = "Suivre";
+            btn.className = "";
+        }
+    }
+
+    async function toggleFollow() {
+        if (!currentPublicProfileId) return;
+        const btn = document.getElementById('btn-follow');
+        btn.disabled = true;
+
+        if (isFollowingCurrentPublic) {
+            await sb.from('followers').delete().eq('follower_id', currentUser.id).eq('following_id', currentPublicProfileId);
+        } else {
+            await sb.from('followers').insert([{ follower_id: currentUser.id, following_id: currentPublicProfileId }]);
+        }
+
+        await isFollowingUser(currentPublicProfileId);
+        await loadFollowCounts(currentPublicProfileId, 'public-stat');
+        btn.disabled = false;
+    }
+
+    // ==========================================
+    // LISTES (Followers / Following)
+    // ==========================================
+    async function listPeople(type, targetUserId) {
+        const titleEl = document.getElementById('list-title');
+        const contentEl = document.getElementById('list-content');
+        titleEl.textContent = type === 'followers' ? "Abonnés" : "Abonnements";
+        contentEl.innerHTML = "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Chargement...</div>";
+        openOverlay('list-overlay');
+
+        let columnToFilter = type === 'followers' ? 'following_id' : 'follower_id';
+        let columnToExtract = type === 'followers' ? 'follower_id' : 'following_id';
+
+        const { data: relations } = await sb.from('followers').select('*').eq(columnToFilter, targetUserId);
+       
+        if (!relations || relations.length === 0) {
+            contentEl.innerHTML = "<p style='text-align:center; color:var(--text-muted); margin-top:30px;'>Aucun utilisateur trouvé.</p>";
+            return;
+        }
+
+        const ids = relations.map(r => r[columnToExtract]);
+        const { data: profiles } = await sb.from('profiles').select('*').in('id', ids);
+
+        contentEl.innerHTML = profiles.map(user => `
+            <div class="user-row" onclick="closeOverlay('list-overlay'); openPublicProfile('${user.id}')">
+                <img class="avatar" src="${renderAvatar(user.avatar_url)}">
+                <div class="user-info">
+                    <div class="username">@${escapeHtml(user.username)}</div>
+                    <div class="fullname">${fullNameOf(user.first_name, user.last_name)}</div>
+                </div>
+                <button class="btn-small secondary">Voir</button>
+            </div>
+        `).join('');
+    }
+
+    // ==========================================
+    // MESSAGES
+    // ==========================================
+    function openConversationFromProfile() {
+        closeOverlay('public-profile-overlay');
+        openConversation(currentPublicProfileId);
+    }
+
+    async function loadConversations() {
+        const listDiv = document.getElementById('conversations-list');
+        listDiv.innerHTML = "<div style='text-align:center; color:var(--text-muted); padding:20px;'>Chargement...</div>";
+
+        const { data: msgs, error } = await sb.from('messages')
+            .select('*')
+            .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+            .order('created_at', { ascending: false })
+            .limit(500);
+
+        if (error || !msgs) {
+            listDiv.innerHTML = "<p style='text-align:center; color:red;'>Erreur chargement</p>";
+            return;
+        }
+
+        const convos = {};
+        msgs.forEach(m => {
+            const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+            if (!convos[otherId]) convos[otherId] = m;
+        });
+
+        const userIds = Object.keys(convos);
+        if (userIds.length === 0) {
+            listDiv.innerHTML = "<div class='placeholder'><h3>Aucun message</h3><p>Recherchez un profil pour démarrer une discussion.</p></div>";
+            return;
+        }
+
+        const { data: profiles } = await sb.from('profiles').select('*').in('id', userIds);
+       
+        listDiv.innerHTML = profiles.map(user => {
+            const lastMsg = convos[user.id];
+            const isMe = lastMsg.sender_id === currentUser.id;
+            const prefix = isMe ? "Vous: " : "";
+            const msgPreview = lastMsg.content.length > 35 ? lastMsg.content.substring(0, 35) + "..." : lastMsg.content;
+           
+            return `
+            <div class="user-row" style="cursor:pointer;" onclick="openConversation('${user.id}')">
+                <img class="avatar" src="${renderAvatar(user.avatar_url)}">
+                <div class="user-info">
+                    <div class="username">@${escapeHtml(user.username)}</div>
+                    <div class="fullname">${prefix}${escapeHtml(msgPreview)}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    async function openConversation(userId) {
+        currentChatUserId = userId;
+        const headerName = document.getElementById('chat-header-name');
+        const headerAvatar = document.getElementById('chat-header-avatar');
+       
+        headerName.textContent = "Chargement...";
+        headerAvatar.src = DEFAULT_AVATAR;
+        document.getElementById('chat-messages-area').innerHTML = "";
+        openOverlay('chat-overlay');
+
+        const { data: profile } = await sb.from('profiles').select('username, avatar_url').eq('id', userId).single();
+        if(profile) {
+            headerName.textContent = '@' + escapeHtml(profile.username);
+            headerAvatar.src = renderAvatar(profile.avatar_url);
+        }
+
+        await loadMessagesWithUser();
+
+        if(chatInterval) clearInterval(chatInterval);
+        chatInterval = setInterval(loadMessagesWithUser, 3000);
+    }
+
+    async function loadMessagesWithUser() {
+        if (!currentChatUserId || !currentUser) return;
+       
+        const { data: msgs } = await sb.from('messages')
+            .select('*')
+            .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+            .order('created_at', { ascending: true });
+           
+        if (!msgs) return;
+
+        const chatMsgs = msgs.filter(m =>
+            (m.sender_id === currentUser.id && m.receiver_id === currentChatUserId) ||
+            (m.receiver_id === currentUser.id && m.sender_id === currentChatUserId)
+        );
+
+        const area = document.getElementById('chat-messages-area');
+       
+        const currentCount = area.childElementCount;
+        if(currentCount === chatMsgs.length) return;
+
+        area.innerHTML = chatMsgs.map(m => {
+            const isMe = m.sender_id === currentUser.id;
+            const cls = isMe ? "msg-sent" : "msg-received";
+            return `<div class="msg-bubble ${cls}">${escapeHtml(m.content)}</div>`;
+        }).join('');
+
+        area.scrollTop = area.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const content = input.value.trim();
+        if (!content || !currentChatUserId) return;
+
+        input.value = "";
+       
+        const area = document.getElementById('chat-messages-area');
+        area.innerHTML += `<div class="msg-bubble msg-sent" style="opacity:0.6">${escapeHtml(content)}</div>`;
+        area.scrollTop = area.scrollHeight;
+
+        const { error } = await sb.from('messages').insert([{
+            sender_id: currentUser.id,
+            receiver_id: currentChatUserId,
+            content: content
+        }]);
+
+        if (error) {
+            setStatus("Erreur d'envoi", true);
+        } else {
+            await loadMessagesWithUser();
+        }
+    }
+
+    // Démarrage
+    window.onload = init;
+
 </script>
 </body>
 </html>
