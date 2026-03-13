@@ -3,103 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AymaneSocial</title>
-    
+    <title>AymaneSocial Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
     <style>
-        :root { --olive: #556B2F; --bg: #f4f7f2; }
+        /* --- DESIGN SYSTEM (Thème Olive) --- */
+        :root { --primary: #556B2F; --bg: #fafafa; --border: #dbdbdb; --text: #262626; --light: #efefef; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #e0e0e0; height: 100vh; display: flex; justify-content: center; overflow: hidden; }
-        #app { width: 100%; max-width: 480px; height: 100%; background: white; display: flex; flex-direction: column; position: relative; }
-        .screen { flex-grow: 1; overflow-y: auto; display: none; background: var(--bg); padding-bottom: 70px; }
-        .screen.active { display: block; }
+        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; justify-content: center; }
+        #app { width: 100%; max-width: 500px; height: 100%; background: white; display: flex; flex-direction: column; position: relative; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+        
+        /* --- UTILITAIRES --- */
         .hidden { display: none !important; }
-        .btn { background: var(--olive); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; width: 100%; margin-top: 10px; cursor: pointer; }
-        .btn-outline { background: transparent; color: var(--olive); border: 1px solid var(--olive); }
-        input { width: 100%; padding: 14px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 10px; }
-        .auth-container { padding: 40px 30px; height: 100%; display: flex; flex-direction: column; justify-content: center; background: white;}
+        .screen { flex-grow: 1; overflow-y: auto; display: none; padding-bottom: 60px; }
+        .screen.active { display: block; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; }
+        .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; background: var(--bg); }
+        
+        /* --- HEADER & NAV --- */
+        header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: white; z-index: 10; font-weight: 700; font-size: 20px; color: var(--primary); }
+        nav { position: absolute; bottom: 0; width: 100%; height: 60px; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 20; }
+        .nav-icon { cursor: pointer; padding: 10px; }
+        
+        /* --- AUTH SCREEN --- */
+        .auth-container { padding: 40px 20px; display: flex; flex-direction: column; justify-content: center; height: 100%; }
+        .auth-container h1 { text-align: center; color: var(--primary); margin-bottom: 30px; font-size: 32px; }
+
+        /* --- HOME (STORIES & FEED) --- */
+        .stories { display: flex; gap: 15px; padding: 15px; overflow-x: auto; border-bottom: 1px solid var(--border); }
+        .story-circle { width: 66px; height: 66px; border-radius: 50%; padding: 2px; background: linear-gradient(45deg, var(--primary), #9acd32); cursor: pointer; }
+        .story-circle img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+        
+        .post { border-bottom: 1px solid var(--border); }
+        .post-header { display: flex; align-items: center; padding: 10px 15px; gap: 10px; font-weight: 600; }
+        .post-header img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .post-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        .post-info { padding: 10px 15px; font-size: 14px; }
+
+        /* --- PROFILE --- */
+        .profile-header { padding: 20px 15px; display: flex; align-items: center; gap: 20px; }
+        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
+        .profile-stats { display: flex; gap: 20px; text-align: center; flex-grow: 1; }
+        .profile-stats div span { display: block; font-weight: 700; font-size: 16px; }
+        .profile-bio { padding: 0 15px 15px; font-size: 14px; }
+        .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+        .profile-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+
+        /* --- OVERLAYS --- */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100; display: none; flex-direction: column; }
+        .overlay.active { display: flex; }
+        .ov-header { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border); font-weight: 600; background: white; }
+        
+        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 1000; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="app">
-        <div id="screen-auth" class="screen active">
-            <div class="auth-container">
-                <h1 style="color: var(--olive); text-align: center; margin-bottom: 30px;">AymaneSocial</h1>
-                
-                <input type="email" id="auth-email" placeholder="Email" required>
-                <input type="password" id="auth-password" placeholder="Mot de passe" required>
-                
-                <button class="btn" onclick="loginUser()">Se connecter</button>
-                <button class="btn btn-outline" onclick="registerUser()">Créer un compte</button>
-            </div>
-        </div>
+<div id="toast">Message</div>
+<input type="file" id="file-input" accept="image/*" class="hidden">
 
-        <div id="screen-home" class="screen">
-            <div style="padding: 20px; text-align: center; margin-top: 50px;">
-                <h2 style="color: var(--olive);">✅ Connexion Réussie !</h2>
-                <p style="margin-top: 10px; color: #555;">Bienvenue sur ton application AymaneSocial.</p>
-                <button class="btn" onclick="logoutUser()" style="margin-top: 30px;">Me déconnecter</button>
-            </div>
+<div id="app">
+    <div id="screen-auth" class="screen active">
+        <div class="auth-container">
+            <h1>AymaneSocial</h1>
+            <input type="email" id="auth-email" placeholder="Email">
+            <input type="password" id="auth-password" placeholder="Mot de passe">
+            <button class="btn" onclick="handleAuth()">Connexion / Inscription</button>
+            <p style="text-align: center; margin-top: 15px; font-size: 12px; color: #888;">Si le compte n'existe pas, il sera créé.</p>
         </div>
     </div>
 
-    <script>
-        // ON TESTE SI LE BOUTON MARCHE DES LE DEBUT
-        alert("L'application a bien été mise à jour !");
+    <header id="main-header" class="hidden">
+        <span>AymaneSocial</span>
+        <span style="cursor:pointer;" onclick="showOverlay('ov-messages')">💬</span>
+    </header>
 
-        // TES VRAIES CLES SUPABASE (Avec le 'h' minuscule corrigé)
-        const SUPABASE_URL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
+    <div id="screen-home" class="screen">
+        <div class="stories" id="stories-list">
+            <div style="text-align: center;">
+                <div class="story-circle" onclick="triggerUpload('story')">
+                    <img src="https://via.placeholder.com/150" id="my-story-avatar">
+                </div>
+                <span style="font-size: 12px;">Ta story</span>
+            </div>
+            </div>
+        <div id="feed-list"></div>
+    </div>
+
+    <div id="screen-search" class="screen">
+        <div style="padding: 15px;">
+            <input type="text" id="search-input" placeholder="Rechercher un utilisateur..." oninput="searchUsers()">
+            <div id="search-results" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <div id="screen-profile" class="screen">
+        <div class="profile-header">
+            <img src="https://via.placeholder.com/150" class="profile-avatar" id="prof-avatar" onclick="triggerUpload('avatar')">
+            <div class="profile-stats">
+                <div><span id="stat-posts">0</span>Posts</div>
+                <div><span id="stat-followers">0</span>Abonnés</div>
+                <div><span id="stat-following">0</span>Abonnements</div>
+            </div>
+        </div>
+        <div class="profile-bio">
+            <strong id="prof-username">Utilisateur</strong>
+            <p id="prof-bio-text">Bio...</p>
+            <button class="btn btn-outline" style="margin-top: 10px;" onclick="showOverlay('ov-edit-profile')">Modifier le profil</button>
+        </div>
+        <div class="profile-grid" id="prof-grid"></div>
+    </div>
+
+    <nav id="main-nav" class="hidden">
+        <div class="nav-icon" onclick="switchScreen('home')">🏠</div>
+        <div class="nav-icon" onclick="switchScreen('search')">🔍</div>
+        <div class="nav-icon" onclick="showOverlay('ov-create-post')" style="font-size: 24px; color: var(--primary);">➕</div>
+        <div class="nav-icon" onclick="switchScreen('profile')">👤</div>
+    </nav>
+
+    <div id="ov-create-post" class="overlay">
+        <div class="ov-header">
+            <span onclick="hideOverlay('ov-create-post')">Annuler</span>
+            <span>Nouveau Post</span>
+            <span style="color:var(--primary);" onclick="publishPost()">Partager</span>
+        </div>
+        <div style="padding: 15px;">
+            <div style="width:100%; aspect-ratio:1/1; background:var(--light); display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="triggerUpload('post')">
+                <span id="post-ph">Toucher pour choisir une photo</span>
+                <img id="post-preview" class="hidden" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <textarea id="post-caption" rows="3" placeholder="Écrire une légende..." style="margin-top:15px; border:none; outline:none;"></textarea>
+        </div>
+    </div>
+
+    <div id="ov-edit-profile" class="overlay">
+        <div class="ov-header">
+            <span onclick="hideOverlay('ov-edit-profile')">Annuler</span>
+            <span>Modifier Profil</span>
+            <span style="color:var(--primary);" onclick="saveProfile()">Enregistrer</span>
+        </div>
+        <div style="padding: 15px;">
+            <input type="text" id="edit-username" placeholder="Nom d'utilisateur">
+            <textarea id="edit-bio" rows="3" placeholder="Biographie"></textarea>
+        </div>
+    </div>
+
+    <div id="ov-messages" class="overlay">
+        <div class="ov-header">
+            <span onclick="hideOverlay('ov-messages')">Retour</span>
+            <span>Messages directs</span>
+            <span></span>
+        </div>
+        <div id="msg-list" style="padding: 15px;">
+            <p style="text-align:center; color:#888;">Recherchez un utilisateur pour discuter.</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- 1. CONFIGURATION SUPABASE ---
+    const SURL = "https://ymuoiyfyvqpxokndhsuz.supabase.co";
+    const SKEY = "sb_publishable_LVVb8iWlaJAuMa4D_LLiYg_DTe2KpyY";
+    const supabase = window.supabase.createClient(SURL, SKEY);
+
+    let currentUser = null;
+    let currentProfile = null;
+    let uploadTarget = ''; // 'post', 'story', ou 'avatar'
+    let tempBase64 = null;
+
+    // --- 2. AUTHENTIFICATION ---
+    async function handleAuth() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        if (!email || !password) return toast("Remplis tous les champs");
 
-        // FONCTION DE CONNEXION
-        async function loginUser() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            
-            if (!email || !password) return alert("Remplis l'email et le mot de passe !");
+        toast("Connexion...");
+        // Tentative de connexion
+        let { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        
+        // Si échec, tentative d'inscription
+        if (error) {
+            const res = await supabase.auth.signUp({ email, password });
+            if (res.error) return toast("Erreur: " + res.error.message);
+            data = res.data;
+            // Création automatique du profil
+            await supabase.from('profiles').insert([{ id: data.user.id, username: email.split('@')[0] }]);
+        }
 
-            alert("Tentative de connexion en cours...");
+        currentUser = data.user;
+        initApp();
+    }
+
+    // --- 3. INITIALISATION DE L'APP ---
+    async function initApp() {
+        document.getElementById('screen-auth').classList.remove('active');
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('main-nav').classList.remove('hidden');
+        
+        await loadMyProfile();
+        switchScreen('home');
+    }
+
+    // --- 4. NAVIGATION ---
+    function switchScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen-' + screenId).classList.add('active');
+        
+        if (screenId === 'home') { loadFeed(); loadStories(); }
+        if (screenId === 'profile') loadMyProfile();
+    }
+
+    function showOverlay(id) { document.getElementById(id).classList.add('active'); }
+    function hideOverlay(id) { document.getElementById(id).classList.remove('active'); tempBase64 = null; }
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg; t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
+    }
+
+    // --- 5. GESTION DES FICHIERS (UPLOADS SANS URL) ---
+    function triggerUpload(target) {
+        uploadTarget = target;
+        document.getElementById('file-input').click();
+    }
+
+    document.getElementById('file-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = async function() {
+            tempBase64 = reader.result;
             
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-            
-            if (error) {
-                alert("Erreur de connexion : " + error.message);
-            } else {
-                document.getElementById('screen-auth').classList.remove('active');
-                document.getElementById('screen-home').classList.add('active');
+            if (uploadTarget === 'post') {
+                document.getElementById('post-preview').src = tempBase64;
+                document.getElementById('post-preview').classList.remove('hidden');
+                document.getElementById('post-ph').classList.add('hidden');
+            } else if (uploadTarget === 'avatar') {
+                document.getElementById('prof-avatar').src = tempBase64;
+                await supabase.from('profiles').update({ avatar_url: tempBase64 }).eq('id', currentUser.id);
+                toast("Photo de profil mise à jour !");
+            } else if (uploadTarget === 'story') {
+                await supabase.from('stories').insert([{ user_id: currentUser.id, image_url: tempBase64 }]);
+                toast("Story publiée !");
+                loadStories();
             }
+        };
+        reader.readAsDataURL(file); // Convertit l'image locale en code (pas besoin de lien internet)
+    });
+
+    // --- 6. PROFIL & MODIFICATION ---
+    async function loadMyProfile() {
+        const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+        if (!data) return;
+        currentProfile = data;
+        
+        document.getElementById('prof-username').innerText = data.username;
+        document.getElementById('prof-bio-text').innerText = data.bio || "Aucune bio";
+        if (data.avatar_url) {
+            document.getElementById('prof-avatar').src = data.avatar_url;
+            document.getElementById('my-story-avatar').src = data.avatar_url;
         }
 
-        // FONCTION D'INSCRIPTION
-        async function registerUser() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            
-            if (!email || !password) return alert("Remplis l'email et le mot de passe !");
-            
-            alert("Création du compte en cours...");
-            
-            const { data, error } = await supabase.auth.signUp({ email, password });
-            
-            if (error) {
-                alert("Erreur d'inscription : " + error.message);
-            } else {
-                alert("✅ Compte créé ! Tu peux maintenant te connecter.");
-            }
+        document.getElementById('edit-username').value = data.username;
+        document.getElementById('edit-bio').value = data.bio || "";
+
+        // Charger la grille de posts du profil
+        const posts = await supabase.from('posts').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+        const grid = document.getElementById('prof-grid');
+        grid.innerHTML = '';
+        document.getElementById('stat-posts').innerText = posts.data ? posts.data.length : 0;
+        
+        posts.data?.forEach(p => {
+            grid.innerHTML += `<img src="${p.image_url}">`;
+        });
+        
+        // Charger les followers (Basique)
+        const followers = await supabase.from('follows').select('*', { count: 'exact' }).eq('following_id', currentUser.id);
+        const following = await supabase.from('follows').select('*', { count: 'exact' }).eq('follower_id', currentUser.id);
+        document.getElementById('stat-followers').innerText = followers.count || 0;
+        document.getElementById('stat-following').innerText = following.count || 0;
+    }
+
+    async function saveProfile() {
+        const username = document.getElementById('edit-username').value;
+        const bio = document.getElementById('edit-bio').value;
+        await supabase.from('profiles').update({ username, bio }).eq('id', currentUser.id);
+        toast("Profil enregistré !");
+        hideOverlay('ov-edit-profile');
+        loadMyProfile();
+    }
+
+    // --- 7. PUBLICATION & FEED ---
+    async function publishPost() {
+        if (!tempBase64) return toast("Choisis une photo !");
+        const caption = document.getElementById('post-caption').value;
+        
+        toast("Publication...");
+        const { error } = await supabase.from('posts').insert([{ user_id: currentUser.id, image_url: tempBase64, caption }]);
+        
+        if (error) return toast("Erreur: as-tu bien créé la table posts ?");
+        
+        toast("Publié !");
+        hideOverlay('ov-create-post');
+        if(document.getElementById('screen-home').classList.contains('active')) loadFeed();
+    }
+
+    async function loadFeed() {
+        // Sélectionne les posts AVEC les infos du profil lié
+        const { data, error } = await supabase.from('posts').select('*, profiles(username, avatar_url)').order('created_at', { ascending: false });
+        const feed = document.getElementById('feed-list');
+        feed.innerHTML = '';
+        
+        if (error || !data || data.length === 0) {
+            feed.innerHTML = '<p style="text-align:center; padding:20px;">Aucun post.</p>'; return;
         }
 
-        // FONCTION DE DECONNEXION
-        async function logoutUser() {
-            await supabase.auth.signOut();
-            document.getElementById('screen-home').classList.remove('active');
-            document.getElementById('screen-auth').classList.add('active');
-            alert("Tu es déconnecté.");
-        }
-    </script>
+        data.forEach(p => {
+            feed.innerHTML += `
+                <div class="post">
+                    <div class="post-header">
+                        <img src="${p.profiles?.avatar_url || 'https://via.placeholder.com/50'}">
+                        <span>${p.profiles?.username || 'Anonyme'}</span>
+                    </div>
+                    <img src="${p.image_url}" class="post-img">
+                    <div class="post-info">
+                        <strong>${p.profiles?.username || 'Anonyme'}</strong> ${p.caption || ''}
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // --- 8. STORIES ---
+    async function loadStories() {
+        const { data } = await supabase.from('stories').select('*, profiles(username, avatar_url)').order('created_at', { ascending: false });
+        const container = document.getElementById('stories-list');
+        
+        // Garder le bouton "Ta story" intact
+        const myStoryBtn = container.children[0].outerHTML;
+        container.innerHTML = myStoryBtn;
+
+        data?.forEach(s => {
+            container.innerHTML += `
+                <div style="text-align: center;">
+                    <div class="story-circle"><img src="${s.image_url}"></div>
+                    <span style="font-size: 12px; max-width: 60px; overflow:hidden; text-overflow:ellipsis; display:block;">${s.profiles?.username || 'User'}</span>
+                </div>
+            `;
+        });
+    }
+
+    // --- 9. RECHERCHE & FOLLOWERS ---
+    async function searchUsers() {
+        const query = document.getElementById('search-input').value;
+        if(query.length < 2) return;
+        
+        const { data } = await supabase.from('profiles').select('*').ilike('username', `%${query}%`).neq('id', currentUser.id);
+        const res = document.getElementById('search-results');
+        res.innerHTML = '';
+        
+        data?.forEach(u => {
+            res.innerHTML += `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${u.avatar_url || 'https://via.placeholder.com/50'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                        <strong>${u.username}</strong>
+                    </div>
+                    <button class="btn" style="width:auto; padding:5px 15px;" onclick="followUser('${u.id}')">Suivre</button>
+                </div>
+            `;
+        });
+    }
+
+    async function followUser(userId) {
+        await supabase.from('follows').insert([{ follower_id: currentUser.id, following_id: userId }]);
+        toast("Abonnement réussi !");
+    }
+</script>
 </body>
 </html>
